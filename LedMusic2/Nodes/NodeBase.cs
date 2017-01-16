@@ -19,6 +19,13 @@ namespace LedMusic2.Nodes
             UnselectAllNodes?.Invoke(sender, new EventArgs());
         }
 
+        public static event EventHandler OutputChanged;
+        public static bool FireOutputChangedEvents = true;
+        protected void InvokeOutputChanged()
+        {
+            OutputChanged?.Invoke(this, EventArgs.Empty);
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged([CallerMemberName] string name = "")
         {
@@ -78,9 +85,6 @@ namespace LedMusic2.Nodes
         }
         #endregion
 
-        public static bool FireInputChangedEvents { get; set; }
-        public static event EventHandler InputChanged;
-
         protected NodeInterfaceList _inputs = new NodeInterfaceList();
         public NodeInterfaceList Inputs { get { return _inputs; } }
 
@@ -92,7 +96,6 @@ namespace LedMusic2.Nodes
 
         public NodeBase(Point initPosition)
         {
-            _inputs.NodeInterfaceValueChanged += _inputs_NodeInterfaceValueChanged;
             MainViewModel.Instance.PropertyChanged += MainVM_PropertyChanged;
 
             PosX = initPosition.X;
@@ -107,24 +110,6 @@ namespace LedMusic2.Nodes
                 NotifyPropertyChanged("PosY");
             }                
         }
-
-        private void _inputs_NodeInterfaceValueChanged(object sender, NodeInterfaceValueChangedEventArgs e)
-        {
-            if (e.InterfaceName != null && e.InterfaceName != "" &&
-                InputValueChanged(e.InterfaceName) && FireInputChangedEvents)
-                InputChanged?.Invoke(this, new EventArgs());                
-        }
-
-        /// <summary>
-        /// This method is purely for optimization. It basically says: "This input value changed, should I recalculate
-        /// the output values?". For example, if the alpha value of a node is 0 and the color value changed, it would
-        /// be useless to calculate, since the output won't change.
-        /// Note: Even if this method returns true, it isn't guranteed to be recalculated, but it will always be called
-        /// if a input value changes. If it returns false, it will never calculate.
-        /// </summary>
-        /// <param name="NodeInterfaceName">The name of the interface that changed its value.</param>
-        /// <returns><c>true</c> if the node should recalculate its outputs, <c>false</c> if not.</returns>
-        protected abstract bool InputValueChanged(string NodeInterfaceName);
 
         public abstract bool Calculate();
 

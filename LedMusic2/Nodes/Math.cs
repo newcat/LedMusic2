@@ -1,6 +1,8 @@
 ﻿using LedMusic2.Attributes;
 using LedMusic2.Enums;
 using LedMusic2.Models;
+using LedMusic2.ViewModels;
+using System.ComponentModel;
 using System.Windows;
 
 namespace LedMusic2.Nodes
@@ -10,6 +12,9 @@ namespace LedMusic2.Nodes
     class MathNode : NodeBase
     {
 
+        NodeOptionViewModel optOperation;
+        NodeOptionViewModel optClamp;
+
         public MathNode(Point initPosition) : base(initPosition)
         {
 
@@ -17,6 +22,20 @@ namespace LedMusic2.Nodes
             _inputs.Add(new NodeInterface<double>("Value 2", ConnectionType.NUMBER, this, true, 0));
 
             _outputs.Add(new NodeInterface<double>("Output", ConnectionType.NUMBER, this, false));
+
+            optOperation = new NodeOptionViewModel(NodeOptionType.SELECTION, "Operation");
+            foreach (string s in new string[] { "Add", "Subtract", "Multiply", "Divide", "Sine", "Cosine", "Tangent", "Arcsine", "Arccosine",
+                                                "Arctangent", "Power", "Logarithm", "Minimum", "Maximum", "Round", "Modulo", "Absolute"})
+            {
+                optOperation.Options.Add(s);
+            }
+            optOperation.Value = "Add";
+            optOperation.PropertyChanged += Option_PropertyChanged;
+            _options.Add(optOperation);
+
+            optClamp = new NodeOptionViewModel(NodeOptionType.BOOL, "Clamp");
+            optClamp.PropertyChanged += Option_PropertyChanged;
+            _options.Add(optClamp);
 
             Calculate();
 
@@ -33,9 +52,11 @@ namespace LedMusic2.Nodes
 
         }
 
-        protected override bool InputValueChanged(string NodeInterfaceName)
+        private void Option_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            return true;
+            if (e.PropertyName == "Value")
+                InvokeOutputChanged();
         }
+
     }
 }

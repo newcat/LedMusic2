@@ -141,22 +141,31 @@ namespace LedMusic2.ViewModels
                     _valColor = (Color)value;
                     break;
                 case NodeOptionType.NUMBER:
-                    if (!(value is double))
-                    {
-                        double parsed = 0;
-                        if (double.TryParse(value.ToString(), out parsed))
-                            _valDouble = Math.Min(MaxValue, Math.Max(parsed, MinValue));
-                        else
-                            _valDouble = MinValue;
-                    } else
-                    {
-                        _valDouble = Math.Min(MaxValue, Math.Max((double)value, MinValue));
-                    }
+                    parseNumber(value);
                     break;
                 case NodeOptionType.SELECTION:
                     _valString = (string)value;
                     break;
             }
+        }
+
+        private void parseNumber(object value)
+        {
+
+            if (!(value is double))
+            {
+                double parsed = 0;
+                if (double.TryParse(value.ToString(), out parsed))
+                    _valDouble = Math.Min(MaxValue, Math.Max(parsed, MinValue));
+                else
+                    _valDouble = MinValue;
+            }
+            else
+            {
+                _valDouble = Math.Min(MaxValue, Math.Max((double)value, MinValue));
+            }
+            NotifyPropertyChanged("Value");
+
         }
 
         private void pickColor(object o)
@@ -165,8 +174,13 @@ namespace LedMusic2.ViewModels
             var c = _valColor.getColorRGB();
             var dlg = new ColorDialog();
             dlg.Color = System.Drawing.Color.FromArgb(255, c.R, c.G, c.B);
-            dlg.ShowDialog();
-            dlg.Dispose();
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                var resultColor = dlg.Color;
+                _valColor = new ColorRGB(resultColor.R, resultColor.G, resultColor.B);
+                NotifyPropertyChanged("Value");
+            }
+            dlg.Dispose();            
 
         }
 

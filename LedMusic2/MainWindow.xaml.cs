@@ -40,7 +40,7 @@ namespace LedMusic2
             DataContext = MainViewModel.Instance;
 
             Helpers.TypeConverter.Initialize();
-            NodeBase.FireInputChangedEvents = false; //TODO: Change to true when not playing back
+            NodeBase.FireOutputChangedEvents = true; //TODO: Change to false when playing back while settings keyframes
 
             Dot d1 = new Dot(new Point(10, 10));
             Dot d2 = new Dot(new Point(210, 10));

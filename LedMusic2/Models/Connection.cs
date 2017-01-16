@@ -12,7 +12,7 @@ using System.Windows.Shapes;
 
 namespace LedMusic2.Models
 {
-    public class Connection : INotifyPropertyChanged
+    public class Connection : INotifyPropertyChanged, IDisposable
     {
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -151,6 +151,42 @@ namespace LedMusic2.Models
             NotifyPropertyChanged("Point2");
             NotifyPropertyChanged("Point3");
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+
+                    if (Output != null)
+                    {
+                        Output.PropertyChanged -= NodeInterface_PropertyChanged;
+                        if (Output.Parent != null)
+                            Output.Parent.PropertyChanged -= NodeBase_PropertyChanged;
+                    }
+
+                    if (Input != null)
+                    {
+                        Input.ValueChanged -= Input_ValueChanged;
+                        Input.PropertyChanged -= NodeInterface_PropertyChanged;
+                        if (Input.Parent != null)
+                            Input.Parent.PropertyChanged += NodeBase_PropertyChanged;
+                    }
+
+                }
+
+                disposedValue = true;
+            }
+        }
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+        #endregion
 
     }
 

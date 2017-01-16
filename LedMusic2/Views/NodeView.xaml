@@ -118,6 +118,29 @@
                                                 </Setter.Value>
                                             </Setter>
                                         </DataTrigger>
+                                        <DataTrigger Binding="{Binding OptionType}" Value="{x:Static enums:NodeOptionType.BOOL}">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="ListViewItem">
+                                                        <CheckBox Content="{Binding Name}" IsChecked="{Binding Value}" 
+                                                                  HorizontalAlignment="Stretch" Margin="3"/>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding OptionType}" Value="{x:Static enums:NodeOptionType.SELECTION}">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="ListViewItem">
+                                                        <StackPanel Orientation="Vertical">
+                                                            <TextBlock Text="{Binding Name}" Margin="3" IsHitTestVisible="False" />
+                                                            <ComboBox ItemsSource="{Binding Options}" SelectedItem="{Binding Value}"
+                                                                  HorizontalAlignment="Stretch" Margin="3" />
+                                                        </StackPanel>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </DataTrigger>
                                     </Style.Triggers>
                                     <Setter Property="Template">
                                         <Setter.Value>

@@ -34,10 +34,7 @@ namespace LedMusic2.ViewModels
         {
             get { return _instance; }
         }
-        private MainViewModel()
-        {
-            NodeBase.UnselectAllNodes += NodeBase_UnselectAllNodes;
-        }
+        private MainViewModel() { }
         #endregion
 
         #region Properties
@@ -181,12 +178,23 @@ namespace LedMusic2.ViewModels
         }
         #endregion
 
+        #region Private Fields
+        private NodeBase[] currentNodeCalculationOrder = new NodeBase[0];
+        private NodeTreeBuilder ntb = new NodeTreeBuilder();
+        private bool calculating = false;
+        #endregion
+
         #region Public Methods
         public void Initialize()
         {
+            NodeBase.UnselectAllNodes += NodeBase_UnselectAllNodes;
+            NodeBase.OutputChanged += NodeBase_OutputChanged;
+
             fillNodeCategories();
+            calculateNodeTree();
         }
 
+        #region Connections
         public void CreateTemporaryConnection(NodeInterface sender)
         {
 
@@ -255,6 +263,8 @@ namespace LedMusic2.ViewModels
                 var c = new Connection(input, output);
                 Connections.Add(c);
 
+                calculateNodeTree();
+
             }
 
             TemporaryConnection.Dispose();
@@ -270,11 +280,44 @@ namespace LedMusic2.ViewModels
         }
         #endregion
 
+        #region Nodes
+        public void CalculateAllNodes()
+        {
+            CalculateNodes(0);
+        }
+
+        public void CalculateNodes(NodeBase startingNode)
+        {
+            var i = Array.IndexOf(currentNodeCalculationOrder, startingNode);
+            if (i >= 0 && i < currentNodeCalculationOrder.Length)
+                CalculateNodes(i);
+        }
+
+        public void CalculateNodes(int startingIndex)
+        {
+            calculating = true;
+            NodeBase.FireOutputChangedEvents = false;
+            for (int i = startingIndex; i < currentNodeCalculationOrder.Length; i++)
+            {
+                currentNodeCalculationOrder[i].Calculate();
+            }
+            calculating = false;
+            NodeBase.FireOutputChangedEvents = true;
+        }
+        #endregion
+        #endregion
+
         #region Private Methods
         private void NodeBase_UnselectAllNodes(object sender, EventArgs e)
         {
             foreach (NodeBase n in Nodes)
                 n.IsSelected = false;
+        }
+
+        private void NodeBase_OutputChanged(object sender, EventArgs e)
+        {
+            if (!calculating && sender is NodeBase)
+                CalculateNodes((NodeBase)sender);
         }
 
         private void fillNodeCategories()
@@ -298,6 +341,16 @@ namespace LedMusic2.ViewModels
                 NodeCategories.Add(c);
             }
 
+        }
+
+        private void calculateNodeTree()
+        {
+            var nodes = Nodes.ToArray();
+            var order = ntb.GetCalculationOrder(ntb.GetRootElements(nodes), nodes, Connections.ToArray());
+            if (order == null)
+                MessageBox.Show("Failed to calculate node tree.");
+            else
+                currentNodeCalculationOrder = order;
         }
         #endregion
 

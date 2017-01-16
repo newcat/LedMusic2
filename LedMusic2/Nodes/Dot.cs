@@ -23,23 +23,8 @@ namespace LedMusic2.Nodes
 
             _outputs.Add(new NodeInterface<Color[]>("Colors", ConnectionType.COLOR_ARRAY, this, false));
 
-            var option = new NodeOptionViewModel(NodeOptionType.NUMBER, "Optionstest");
-            option.MaxValue = 100;
-            option.MinValue = -100;
-            option.Value = 0;
-            _options.Add(option);
-
-            option = new NodeOptionViewModel(NodeOptionType.COLOR, "Testcolor");
-            option.Value = new ColorRGB(255, 255, 0);
-            _options.Add(option);
-
             Calculate();
 
-        }
-
-        protected override bool InputValueChanged(string name)
-        {
-            return true;
         }
 
         public override bool Calculate()
