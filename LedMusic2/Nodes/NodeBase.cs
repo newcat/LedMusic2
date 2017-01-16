@@ -1,4 +1,5 @@
-﻿using LedMusic2.Attributes;
+﻿using AttachedCommandBehavior;
+using LedMusic2.Attributes;
 using LedMusic2.Models;
 using LedMusic2.ViewModels;
 using System;

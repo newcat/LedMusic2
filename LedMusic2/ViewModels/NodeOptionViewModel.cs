@@ -5,6 +5,8 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
+using System.Windows.Forms;
 
 namespace LedMusic2.ViewModels
 {
@@ -90,6 +92,10 @@ namespace LedMusic2.ViewModels
             }
         }
 
+        //OptionType == COLOR
+        private SimpleCommand _cmdPickColor = new SimpleCommand();
+        public SimpleCommand CmdPickColor { get { return _cmdPickColor; } }
+
         //Internal Values
         private double _valDouble;
         private Color _valColor;
@@ -103,6 +109,7 @@ namespace LedMusic2.ViewModels
 
             _cmdDecreaseValue.ExecuteDelegate = (o) => Value = _valDouble - 1;
             _cmdIncreaseValue.ExecuteDelegate = (o) => Value = _valDouble + 1;
+            _cmdPickColor.ExecuteDelegate = pickColor;
 
         }
 
@@ -150,6 +157,17 @@ namespace LedMusic2.ViewModels
                     _valString = (string)value;
                     break;
             }
+        }
+
+        private void pickColor(object o)
+        {
+
+            var c = _valColor.getColorRGB();
+            var dlg = new ColorDialog();
+            dlg.Color = System.Drawing.Color.FromArgb(255, c.R, c.G, c.B);
+            dlg.ShowDialog();
+            dlg.Dispose();
+
         }
 
     }
