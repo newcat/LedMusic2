@@ -36,21 +36,21 @@ namespace LedMusic2.Helpers
                 (x) => ((double)x) > 0));
 
             //Colors
-            converters.Add(new SingleTypeConverter(typeof(double), typeof(Color),
+            converters.Add(new SingleTypeConverter(typeof(double), typeof(LedColor),
                 (x) =>
                 {
                     byte v = (byte)Math.Max(0, Math.Min(255, (double)x * 255));
-                    return new ColorRGB(v, v, v);
+                    return new LedColorRGB(v, v, v);
                 }));
 
             //Color Array
-            converters.Add(new SingleTypeConverter(typeof(Color), typeof(Color[]),
+            converters.Add(new SingleTypeConverter(typeof(LedColor), typeof(LedColor[]),
                 (x) =>
                 {
                     int ledCount = GlobalProperties.Instance.LedCount;
-                    Color[] arr = new Color[ledCount];
+                    LedColor[] arr = new LedColor[ledCount];
                     for (int i = 0; i < ledCount; i++)
-                        arr[i] = (Color)x;
+                        arr[i] = (LedColor)x;
                     return arr;
                 }));
 

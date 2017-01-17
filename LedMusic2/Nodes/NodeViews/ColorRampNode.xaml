@@ -5,8 +5,28 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:LedMusic2.Nodes.NodeViews"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="60" d:DesignWidth="300">
     <Grid>
-        <Button Content="{Binding ButtonName}" Width="80" Height="40" HorizontalAlignment="Center" />
+
+        <Grid.Resources>
+
+            <DataTemplate DataType="{x:Type GradientStop}">
+                <Rectangle Width="10" Height="10">
+                    <Rectangle.Fill>
+                        <SolidColorBrush Color="{Binding Color}" />
+                    </Rectangle.Fill>
+                </Rectangle>
+            </DataTemplate>
+            
+        </Grid.Resources>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35" />
+            <RowDefinition Height="25"/>
+        </Grid.RowDefinitions>
+
+        <Rectangle Grid.Row="0" Fill="{Binding FillBrush}" />
+        <ItemsControl Grid.Row="1" Width="{Binding Width, Mode=OneWayToSource}" ItemsSource="{Binding ColorStops}" />
+
     </Grid>
 </UserControl>

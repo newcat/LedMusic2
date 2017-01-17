@@ -125,7 +125,7 @@ namespace LedMusic2.ViewModels
 
         #region Internal Values
         private double _valDouble;
-        private Color _valColor;
+        private LedColor _valColor;
         private bool _valBool;
         private string _valString;
         #endregion
@@ -186,7 +186,7 @@ namespace LedMusic2.ViewModels
                     _valBool = (bool)value;
                     break;
                 case NodeOptionType.COLOR:
-                    _valColor = (Color)value;
+                    _valColor = (LedColor)value;
                     break;
                 case NodeOptionType.NUMBER:
                     parseNumber(value);
@@ -225,7 +225,7 @@ namespace LedMusic2.ViewModels
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 var resultColor = dlg.Color;
-                _valColor = new ColorRGB(resultColor.R, resultColor.G, resultColor.B);
+                _valColor = new LedColorRGB(resultColor.R, resultColor.G, resultColor.B);
                 NotifyPropertyChanged("Value");
             }
             dlg.Dispose();            

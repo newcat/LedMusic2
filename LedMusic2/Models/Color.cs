@@ -2,15 +2,15 @@
 
 namespace LedMusic2.Models
 {
-    public abstract class Color
+    public abstract class LedColor
     {
 
-        public abstract ColorRGB getColorRGB();
-        public abstract ColorHSV getColorHSV();
+        public abstract LedColorRGB getColorRGB();
+        public abstract LedColorHSV getColorHSV();
 
     }
 
-    public class ColorRGB : Color
+    public class LedColorRGB : LedColor
     {
 
         public byte R { get; set; }
@@ -24,16 +24,16 @@ namespace LedMusic2.Models
         /// <param name="_r">Red</param>
         /// <param name="_g">Green</param>
         /// <param name="_b">Blue</param>
-        public ColorRGB(byte _r, byte _g, byte _b)
+        public LedColorRGB(byte _r, byte _g, byte _b)
         {
             R = _r;
             G = _g;
             B = _b;
         }
 
-        public override ColorRGB getColorRGB() { return this; }
+        public override LedColorRGB getColorRGB() { return this; }
 
-        public override ColorHSV getColorHSV()
+        public override LedColorHSV getColorHSV()
         {
 
             int max = Math.Max(R, Math.Max(G, B));
@@ -43,13 +43,13 @@ namespace LedMusic2.Models
             double saturation = (max == 0) ? 0 : 1d - (1d * min / max);
             double value = max / 255d;
 
-            return new ColorHSV(hue, saturation, value);
+            return new LedColorHSV(hue, saturation, value);
 
         }
 
     }
 
-    public class ColorHSV : Color
+    public class LedColorHSV : LedColor
     {
 
         public double H { get; set; } //Range 0..359
@@ -63,14 +63,14 @@ namespace LedMusic2.Models
         /// <param name="_h">Hue</param>
         /// <param name="_s">Saturation</param>
         /// <param name="_v">Value</param>
-        public ColorHSV(double _h, double _s, double _v)
+        public LedColorHSV(double _h, double _s, double _v)
         {
             H = _h;
             S = _s;
             V = _v;
         }
 
-        public override ColorRGB getColorRGB()
+        public override LedColorRGB getColorRGB()
         {
             int hi = Convert.ToInt32(Math.Floor(H / 60)) % 6;
             double f = H / 60 - Math.Floor(H / 60);
@@ -82,20 +82,20 @@ namespace LedMusic2.Models
             byte t = Convert.ToByte(value * (1 - (1 - f) * S));
 
             if (hi == 0)
-                return new ColorRGB(v, t, p);
+                return new LedColorRGB(v, t, p);
             else if (hi == 1)
-                return new ColorRGB(q, v, p);
+                return new LedColorRGB(q, v, p);
             else if (hi == 2)
-                return new ColorRGB(p, v, t);
+                return new LedColorRGB(p, v, t);
             else if (hi == 3)
-                return new ColorRGB(p, q, v);
+                return new LedColorRGB(p, q, v);
             else if (hi == 4)
-                return new ColorRGB(t, p, v);
+                return new LedColorRGB(t, p, v);
             else
-                return new ColorRGB(v, p, q);
+                return new LedColorRGB(v, p, q);
         }
 
-        public override ColorHSV getColorHSV() { return this; }
+        public override LedColorHSV getColorHSV() { return this; }
     }
 
 }

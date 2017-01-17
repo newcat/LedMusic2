@@ -2,6 +2,7 @@
 using LedMusic2.Enums;
 using LedMusic2.Models;
 using LedMusic2.ViewModels;
+using System;
 using System.ComponentModel;
 using System.Windows;
 
@@ -46,6 +47,66 @@ namespace LedMusic2.Nodes
 
             double val1 = ((NodeInterface<double>)_inputs.GetNodeInterface("Value 1")).Value;
             double val2 = ((NodeInterface<double>)_inputs.GetNodeInterface("Value 2")).Value;
+            double outputVal = 0;
+
+            switch ((string)optOperation.Value)
+            {
+                case "Add":
+                    outputVal = val1 + val2;
+                    break;
+                case "Subtract":
+                    outputVal = val1 - val2;
+                    break;
+                case "Multiply":
+                    outputVal = val1 * val2;
+                    break;
+                case "Divide":
+                    outputVal = val2 != 0 ? val1 / val2 : 0;
+                    break;
+                case "Sine":
+                    outputVal = Math.Sin(val1);
+                    break;
+                case "Cosine":
+                    outputVal = Math.Cos(val1);
+                    break;
+                case "Tangent":
+                    outputVal = Math.Tan(val1);
+                    break;
+                case "Arcsine":
+                    outputVal = Math.Asin(val1);
+                    break;
+                case "Arccosine":
+                    outputVal = Math.Acos(val1);
+                    break;
+                case "Arctangent":
+                    outputVal = Math.Atan(val1);
+                    break;
+                case "Power":
+                    outputVal = Math.Pow(val1, val2);
+                    break;
+                case "Logarithm":
+                    outputVal = Math.Log(val1, val2);
+                    break;
+                case "Minimum":
+                    outputVal = Math.Min(val1, val2);
+                    break;
+                case "Maximum":
+                    outputVal = Math.Max(val1, val2);
+                    break;
+                case "Round":
+                    outputVal = Math.Round(val1);
+                    break;
+                case "Modulo":
+                    outputVal = val1 % val2;
+                    break;
+                case "Absolute":
+                    outputVal = Math.Abs(val1);
+                    break;
+                default:
+                    outputVal = 0;
+                    break;
+            }
+
 
             ((NodeInterface<double>)_outputs.GetNodeInterface("Output")).SetValue(val1 + val2);
             return true;
