@@ -10,7 +10,7 @@
         xmlns:Models="clr-namespace:LedMusic2.Models"
         xmlns:Converters="clr-namespace:LedMusic2.Converters"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525"
+        Title="MainWindow" Height="550" Width="925"
         MouseMove="window_MouseMove" MouseLeftButtonDown="window_MouseLeftButtonDown"
         MouseLeftButtonUp="window_MouseLeftButtonUp" MouseWheel="window_MouseWheel" Loaded="Window_Loaded" KeyDown="Window_KeyDown"
         >
@@ -43,24 +43,19 @@
                 </Grid.RowDefinitions>
 
                 <TextBlock Background="White" Foreground="Black" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                           Grid.Row="0" Text="{Binding Name}" Padding="5"/>
+                           Grid.Row="0" Text="{Binding Name}" Padding="5" />
 
-                <ListView Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="True"
-                                              ItemsSource="{Binding NodeTypes}" BorderBrush="Transparent" Grid.Row="1">
+                <ListBox Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="True"
+                                              ItemsSource="{Binding NodeTypes}" BorderBrush="Transparent" Grid.Row="1"
+                         MouseDoubleClick="ListBox_MouseDoubleClick">
 
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="ListViewItem">
-                                        <TextBlock Foreground="White" Text="{Binding Name}" Margin="5"/>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </ListView.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Foreground="White" Background="Transparent" Text="{Binding Name}" Margin="5"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
 
-                </ListView>
+                </ListBox>
 
             </Grid>
 

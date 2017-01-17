@@ -6,7 +6,8 @@
         NUMBER,
         COLOR,
         BOOL,
-        SELECTION, //ComboBox
+        SELECTION,
+        CUSTOM
 
     }
 }

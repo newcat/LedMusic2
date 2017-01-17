@@ -60,6 +60,9 @@ namespace LedMusic2.Models
         public NodeInterface Input { get; private set; }
         public NodeInterface Output { get; private set; }
 
+        public static int count = 0;
+        private int id = 0;
+
         /// <summary>
         /// Creates a connection between two node interfaces.
         /// </summary>
@@ -67,6 +70,9 @@ namespace LedMusic2.Models
         /// <param name="output">The input of another node.</param>
         public Connection(NodeInterface input, NodeInterface output)
         {
+            id = count;
+            count++;
+            System.Diagnostics.Debug.WriteLine("Created connection #" + id);
             SetInput(input);
             SetOutput(output);
             transferData();
@@ -162,6 +168,8 @@ namespace LedMusic2.Models
                 if (disposing)
                 {
 
+                    System.Diagnostics.Debug.WriteLine("Disposed connection #" + id);
+
                     if (Output != null)
                     {
                         Output.PropertyChanged -= NodeInterface_PropertyChanged;
@@ -174,8 +182,11 @@ namespace LedMusic2.Models
                         Input.ValueChanged -= Input_ValueChanged;
                         Input.PropertyChanged -= NodeInterface_PropertyChanged;
                         if (Input.Parent != null)
-                            Input.Parent.PropertyChanged += NodeBase_PropertyChanged;
+                            Input.Parent.PropertyChanged -= NodeBase_PropertyChanged;
                     }
+
+                    Input = null;
+                    Output = null;
 
                 }
 

@@ -15,7 +15,7 @@
         <converters:ColorToBrushConverter x:Key="colorToBrushConverter" />
     </UserControl.Resources>
 
-    <Thumb DragDelta="Thumb_DragDelta">
+    <Thumb DragDelta="Thumb_DragDelta" Tag="MainThumb">
         
         <Thumb.Effect>
             <DropShadowEffect BlurRadius="15"/>
@@ -137,6 +137,16 @@
                                                             <ComboBox ItemsSource="{Binding Options}" SelectedItem="{Binding Value}"
                                                                   HorizontalAlignment="Stretch" Margin="3" />
                                                         </StackPanel>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding OptionType}" Value="{x:Static enums:NodeOptionType.CUSTOM}">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="ListViewItem">
+                                                        <ContentControl Content="{Binding CustomUIElement}"
+                                                                        Margin="3" HorizontalAlignment="Stretch"/>
                                                     </ControlTemplate>
                                                 </Setter.Value>
                                             </Setter>

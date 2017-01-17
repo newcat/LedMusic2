@@ -304,6 +304,42 @@ namespace LedMusic2.ViewModels
             calculating = false;
             NodeBase.FireOutputChangedEvents = true;
         }
+
+        public void DeleteSelectedNode()
+        {
+            DeleteNode(Nodes.FirstOrDefault((x) => x.IsSelected));
+        }
+
+        public void DeleteNode(NodeBase node)
+        {
+
+            if (node == null)
+                return;
+
+            //Delete all the connections from and to the node.
+            var toDelete = Connections.Where((x) => x.Input.Parent == node || x.Output.Parent == node).ToArray();
+
+            foreach (Connection c in toDelete)
+            {
+                Connections.Remove(c);
+                c.Dispose();
+            }
+
+            Nodes.Remove(node);
+
+        }
+
+        public void AddNode(NodeType t)
+        {
+
+            if (t == null)
+                return;
+
+            var constructor = t.T.GetConstructor(new Type[] { typeof(Point) });
+            var node = (NodeBase)constructor.Invoke(new object[] { new Point(MousePosX - TranslateX, MousePosY - TranslateY) });
+            Nodes.Add(node);
+
+        }
         #endregion
         #endregion
 

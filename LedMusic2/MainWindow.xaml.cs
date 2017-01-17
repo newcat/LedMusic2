@@ -47,12 +47,14 @@ namespace LedMusic2
             MathNode m1 = new MathNode(new Point(410, 10));
             MathNode m2 = new MathNode(new Point(610, 10));
             MathNode m3 = new MathNode(new Point(810, 10));
+            ColorRampNode r1 = new ColorRampNode(new Point(10, 300));
 
             vm.Nodes.Add(d1);
             vm.Nodes.Add(d2);
             vm.Nodes.Add(m1);
             vm.Nodes.Add(m2);
             vm.Nodes.Add(m3);
+            vm.Nodes.Add(r1);
 
             vm.Initialize();
 
@@ -72,8 +74,7 @@ namespace LedMusic2
             MainViewModel.Instance.MousePosY = newPos.Y;
 
             if (e.LeftButton == MouseButtonState.Pressed && isDragging)
-            {
-                
+            {                
                 vm.TranslateX += newPos.X - oldMousePosition.X;
                 vm.TranslateY += newPos.Y - oldMousePosition.Y;
                 oldMousePosition = newPos;
@@ -125,6 +126,24 @@ namespace LedMusic2
         {
             if (e.Key == Key.A && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
                 vm.IsAddNodePanelOpen = !vm.IsAddNodePanelOpen;
+
+            if (e.Key == Key.Delete)
+                vm.DeleteSelectedNode();
+        }
+
+        private void ListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (!(sender is ListBox))
+                return;
+
+            var lb = (ListBox)sender;
+
+            if (!(lb.SelectedItem is NodeType))
+                return;
+
+            MainViewModel.Instance.AddNode((NodeType)lb.SelectedItem);
+            MainViewModel.Instance.IsAddNodePanelOpen = false;
+
         }
     }
 }

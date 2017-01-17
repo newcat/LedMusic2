@@ -41,8 +41,15 @@ namespace LedMusic2.Views
             if (vm == null)
                 return;
 
-            vm.PosX += e.HorizontalChange - MainViewModel.Instance.TranslateX;
-            vm.PosY += e.VerticalChange - MainViewModel.Instance.TranslateY;
+            if (e.OriginalSource is Thumb)
+            {
+                var t = (Thumb)e.OriginalSource;
+                if (t.Tag != null && t.Tag is string && (string)t.Tag == "MainThumb")
+                {
+                    vm.PosX += e.HorizontalChange - MainViewModel.Instance.TranslateX;
+                    vm.PosY += e.VerticalChange - MainViewModel.Instance.TranslateY;
+                }
+            }            
         }
 
         private void Thumb_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -61,7 +68,6 @@ namespace LedMusic2.Views
 
             var ellipse = (Ellipse)sender;
             var nodeInterface = (NodeInterface)ellipse.DataContext;
-            //nodeInterface.Ellipse = ellipse;
             MainViewModel.Instance.CreateTemporaryConnection(nodeInterface);
         }
     }

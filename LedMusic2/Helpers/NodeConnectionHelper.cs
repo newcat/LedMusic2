@@ -71,7 +71,8 @@ namespace LedMusic2.Helpers
             //the temporary connection to the real node tree.
             var nodes = MainViewModel.Instance.Nodes.ToArray();
             var tempConnections = MainViewModel.Instance.Connections.ToList();
-            tempConnections.Add(new Connection(output, input));
+            var connectionToTest = new Connection(output, input);
+            tempConnections.Add(connectionToTest);
             try
             {
                 NodeTreeBuilder ntb = new NodeTreeBuilder();
@@ -79,6 +80,9 @@ namespace LedMusic2.Helpers
             } catch (RecursionException)
             {
                 return false;
+            } finally
+            {
+                connectionToTest.Dispose();
             }
 
             return true;

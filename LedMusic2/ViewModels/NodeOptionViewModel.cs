@@ -51,7 +51,7 @@ namespace LedMusic2.ViewModels
             }
         }
 
-        //OptionType == NUMBER
+        #region OptionType == NUMBER
         private double _minValue = 0;
         public double MinValue
         {
@@ -79,8 +79,9 @@ namespace LedMusic2.ViewModels
 
         private SimpleCommand _cmdIncreaseValue = new SimpleCommand();
         public SimpleCommand CmdIncreaseValue { get { return _cmdIncreaseValue; } }
+        #endregion
 
-        //OptionType == SELECTION
+        #region OptionType == SELECTION
         private ObservableCollection<string> _options = new ObservableCollection<string>();
         public ObservableCollection<string> Options
         {
@@ -91,16 +92,43 @@ namespace LedMusic2.ViewModels
                 NotifyPropertyChanged();
             }
         }
+        #endregion
 
-        //OptionType == COLOR
+        #region OptionType == COLOR
         private SimpleCommand _cmdPickColor = new SimpleCommand();
         public SimpleCommand CmdPickColor { get { return _cmdPickColor; } }
+        #endregion
 
-        //Internal Values
+        #region OptionType == CUSTOM
+        private FrameworkElement _customUIElement;
+        public FrameworkElement CustomUIElement
+        {
+            get { return _customUIElement; }
+            set
+            {
+                _customUIElement = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private object _customViewModel;
+        public object CustomViewModel
+        {
+            get { return _customViewModel; }
+            set
+            {
+                _customViewModel = value;
+                NotifyPropertyChanged();
+            }
+        }
+        #endregion
+
+        #region Internal Values
         private double _valDouble;
         private Color _valColor;
         private bool _valBool;
         private string _valString;
+        #endregion
 
         public NodeOptionViewModel(NodeOptionType type, string name)
         {
@@ -110,6 +138,26 @@ namespace LedMusic2.ViewModels
             _cmdDecreaseValue.ExecuteDelegate = (o) => Value = _valDouble - 1;
             _cmdIncreaseValue.ExecuteDelegate = (o) => Value = _valDouble + 1;
             _cmdPickColor.ExecuteDelegate = pickColor;
+
+        }
+
+        public NodeOptionViewModel(NodeOptionType type, string name,
+            Type customUIControlType, object viewmodelInstance)
+        {
+            if (type != NodeOptionType.CUSTOM)
+                throw new ArgumentException(
+                    "When using a custom UI for the options, set NodeOptionType to CUSTOM.");
+
+            if (!customUIControlType.IsSubclassOf(typeof(FrameworkElement)))
+                throw new ArgumentException(
+                    "customUIControl needs to be a subclass of FrameworkElement.");
+
+            OptionType = type;
+            Name = name;
+            CustomViewModel = viewmodelInstance;
+
+            CustomUIElement = (FrameworkElement)Activator.CreateInstance(customUIControlType);
+            CustomUIElement.DataContext = CustomViewModel;
 
         }
 
