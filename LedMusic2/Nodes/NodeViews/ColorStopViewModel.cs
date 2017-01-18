@@ -1,34 +1,17 @@
-﻿using AttachedCommandBehavior;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 
 namespace LedMusic2.Nodes.NodeViews
 {
-    public class ColorStopViewModel : INotifyPropertyChanged, IDisposable
+    public class ColorStopViewModel : INotifyPropertyChanged, IDisposable, IComparable<ColorStopViewModel>
     {
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged([CallerMemberName]string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        public Action<object> DragDeltaAction
-        {
-            get { return new Action<object>((e) => addToPosition(((DragDeltaEventArgs)e).HorizontalChange)); }
-        }
-
-        public SimpleCommand CmdLeftClick
-        {
-            get { return new SimpleCommand() { ExecuteDelegate = (o) => parent?.SelectStop(this) }; }
         }
 
         private bool _isSelected = false;
@@ -56,7 +39,7 @@ namespace LedMusic2.Nodes.NodeViews
 
         public double AbsolutePosition
         {
-            get { return Position * parent.Width - 5; }
+            get { return Position * Parent.Width - 5; }
         }
 
         private Color _color = Colors.Red;
@@ -70,14 +53,14 @@ namespace LedMusic2.Nodes.NodeViews
             }
         }
 
-        private Nodes.ColorRampNode parent;
+        public Nodes.ColorRampNode Parent { get; private set; }
 
         public ColorStopViewModel(Color c, double p, Nodes.ColorRampNode n)
         {
             Color = c;
             Position = p;
-            parent = n;
-            parent.PropertyChanged += Parent_PropertyChanged;
+            Parent = n;
+            Parent.PropertyChanged += Parent_PropertyChanged;
         }
 
         private void Parent_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -86,9 +69,18 @@ namespace LedMusic2.Nodes.NodeViews
                 NotifyPropertyChanged("AbsolutePosition");
         }
 
-        private void addToPosition(double px)
+        public void AddToPosition(double px)
         {
-            Position = Math.Max(0, Math.Min(1, Position + px / parent.Width));
+            if (Parent.Width > 0)
+            {
+                Position = Math.Max(0, Math.Min(1, Position + px / Parent.Width));
+                Parent.CalcPreview();
+            }
+        }
+
+        public int CompareTo(ColorStopViewModel other)
+        {
+            return Position > other.Position ? 1 : -1;
         }
 
         #region IDisposable Support
@@ -100,9 +92,9 @@ namespace LedMusic2.Nodes.NodeViews
             {
                 if (disposing)
                 {
-                    if (parent != null)
-                        parent.PropertyChanged -= Parent_PropertyChanged;
-                    parent = null;
+                    if (Parent != null)
+                        Parent.PropertyChanged -= Parent_PropertyChanged;
+                    Parent = null;
                 }
 
                 disposedValue = true;

@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace LedMusic2.Nodes.NodeViews
 {
@@ -24,5 +14,39 @@ namespace LedMusic2.Nodes.NodeViews
         {
             InitializeComponent();
         }
+
+
+        private void Thumb_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+
+            if (!(sender is Thumb))
+                return;
+
+            var thumb = (Thumb)sender;
+
+            if (thumb.DataContext == null || !(thumb.DataContext is ColorStopViewModel))
+                return;
+
+            var vm = (ColorStopViewModel)thumb.DataContext;
+            vm.AddToPosition(e.HorizontalChange);
+            e.Handled = true;
+
+        }
+
+        private void Thumb_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!(sender is FrameworkElement))
+                return;
+
+            var thumb = (FrameworkElement)sender;
+
+            if (thumb.DataContext == null || !(thumb.DataContext is ColorStopViewModel))
+                return;
+
+            var vm = (ColorStopViewModel)thumb.DataContext;
+            vm.Parent.SelectStop(vm);
+
+        }
+
     }
 }

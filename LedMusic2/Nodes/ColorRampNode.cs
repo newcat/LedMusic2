@@ -5,13 +5,7 @@ using LedMusic2.Models;
 using LedMusic2.Nodes.NodeViews;
 using LedMusic2.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
@@ -27,8 +21,11 @@ namespace LedMusic2.Nodes
         private LinearGradientBrush _fillBrush = new LinearGradientBrush(Colors.Black, Colors.White, 0);
         public LinearGradientBrush FillBrush
         {
-            get {
-                return _fillBrush;
+            get { return _fillBrush; }
+            set
+            {
+                _fillBrush = value;
+                NotifyPropertyChanged();
             }
         }
 
@@ -85,7 +82,12 @@ namespace LedMusic2.Nodes
 
             _options.Add(new NodeOptionViewModel(NodeOptionType.CUSTOM, "Test", typeof(NodeViews.ColorRampNode), this));
 
-            _cmdAddStop.ExecuteDelegate = (o) => _colorStops.Add(new ColorStopViewModel(Colors.White, 0.0, this));
+            _cmdAddStop.ExecuteDelegate = (o) => {
+                var c = new ColorStopViewModel(Colors.White, 0.0, this);
+                _colorStops.Add(c);
+                SelectStop(c);
+                CalcPreview();
+            };
 
             _cmdRemoveStop.CanExecuteDelegate = (o) => SelectedColorStop != null;
             _cmdRemoveStop.ExecuteDelegate = (o) =>
@@ -95,15 +97,68 @@ namespace LedMusic2.Nodes
                     _colorStops.Remove(SelectedColorStop);
                     SelectedColorStop.Dispose();
                     SelectedColorStop = null;
+                    CalcPreview();
                 }
             };
 
+            ColorStops.Add(new ColorStopViewModel(Colors.Black, 0, this));
+            ColorStops.Add(new ColorStopViewModel(Colors.White, 1, this));
 
         }
 
         public override bool Calculate()
         {
+
+            var ledCount = GlobalProperties.Instance.LedCount;
+            var output = new LedColorRGB[ledCount];
+
+            if (ColorStops.Count == 0)
+            {
+                for (int i = 0; i < ledCount; i++)
+                {
+                    output[i] = new LedColorRGB(0, 0, 0);
+                }
+                _outputs[0].SetValue(output);
+                return true;
+            }
+
+            ColorStops.Sort();
+
+            var currentStopIndex = 0;
+            var colorStopCount = ColorStops.Count;
+
+            for (int i = 0; i < ledCount; i++)
+            {
+
+                var currentPos = (double)i / ledCount;
+                if (currentPos > ColorStops[currentStopIndex].Position && colorStopCount - 1 > currentStopIndex)
+                {
+                    currentStopIndex++;
+                } else if (colorStopCount - 1 == currentStopIndex)
+                {
+                    var c = ColorStops[currentStopIndex].Color;
+                    output[i] = new LedColorRGB(c.R, c.G, c.B);
+                } else
+                {
+                    
+                    var stop1 = ColorStops[currentStopIndex];
+                    var stop2 = ColorStops[currentStopIndex + 1];
+
+                    var fac = (stop2.Position - stop1.Position) / (currentPos - stop1.Position);
+                    output[i] = new LedColorRGB(
+                        (byte)Math.Max(255, (1 - fac) * stop1.Color.R + fac * stop2.Color.R),
+                        (byte)Math.Max(255, (1 - fac) * stop1.Color.G + fac * stop2.Color.G),
+                        (byte)Math.Max(255, (1 - fac) * stop1.Color.B + fac * stop2.Color.B)
+                        );
+
+                }
+
+            }
+
+            _outputs[0].SetValue(output);
+
             return true;
+
         }
 
         public void SelectStop(ColorStopViewModel vm)
@@ -123,8 +178,23 @@ namespace LedMusic2.Nodes
             {
                 var resultColor = dlg.Color;
                 SelectedColorStop.Color = Color.FromRgb(resultColor.R, resultColor.G, resultColor.B);
+                CalcPreview();
             }
             dlg.Dispose();
+        }
+
+        public void CalcPreview()
+        {
+
+            var sc = new GradientStopCollection();
+            foreach (ColorStopViewModel s in ColorStops)
+            {
+                sc.Add(new GradientStop(s.Color, s.Position));
+            }
+            FillBrush = new LinearGradientBrush(sc, 0);
+
+            InvokeOutputChanged();
+
         }
 
     }

@@ -66,6 +66,7 @@
     <Compile Include="CommandBehaviorStuff\SimpleCommand.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\ColorToBrushConverter.cs" />
+    <Compile Include="DataPiping.cs" />
     <Compile Include="Enums\NodeOptionType.cs" />
     <Compile Include="Converters\ConnectionTypeToColorConverter.cs" />
     <Compile Include="Exceptions\RecursionException.cs" />

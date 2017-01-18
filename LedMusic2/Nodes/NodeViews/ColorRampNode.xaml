@@ -2,7 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:led="clr-namespace:LedMusic2"
              xmlns:local="clr-namespace:LedMusic2.Nodes.NodeViews"
              xmlns:acb="clr-namespace:AttachedCommandBehavior"
              mc:Ignorable="d" Width="200"
@@ -12,16 +13,11 @@
         <Grid.Resources>
 
             <DataTemplate DataType="{x:Type local:ColorStopViewModel}">
-                <Thumb acb:CommandBehavior.Event="DragDelta" acb:CommandBehavior.Action="{Binding DragDeltaAction}"
-                       Canvas.Left="{Binding AbsolutePosition}">
+                <Thumb DragDelta="Thumb_DragDelta" >
 
-                    <Thumb.InputBindings>
-                        <MouseBinding MouseAction="LeftClick" Command="{Binding CmdLeftClick}" />
-                    </Thumb.InputBindings>
-                    
                     <Thumb.Template>
                         <ControlTemplate>
-                            <Path Width="10" Height="15" Data="M5,0L10,5L10,15L0,15L0,5L5,0">
+                            <Path Width="11" Height="16" Data="M5,0L10,5L10,15L0,15L0,5L5,0" MouseLeftButtonDown="Thumb_MouseLeftButtonDown">
                                 <Path.Fill>
                                     <SolidColorBrush Color="{Binding Color}" />
                                 </Path.Fill>
@@ -54,12 +50,27 @@
 
         <Rectangle Grid.Row="0" Fill="{Binding FillBrush}" />
 
-        <ItemsControl Grid.Row="1" Width="{Binding Width, Mode=OneWayToSource}" ItemsSource="{Binding ColorStops}">
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding ColorStops}">
+
+            <led:DataPiping.DataPipes>
+                <led:DataPipeCollection>
+                    <led:DataPipe Source="{Binding RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}, Path=ActualWidth}"
+                                  Target="{Binding Width, Mode=OneWayToSource}" />
+                </led:DataPipeCollection>
+            </led:DataPiping.DataPipes>
+            
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Canvas />
+                    <Canvas Background="Transparent" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemContainerStyle>
+                <Style TargetType="ContentPresenter">
+                    <Setter Property="Canvas.Left" Value="{Binding Path=AbsolutePosition}" />
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+            
         </ItemsControl>
         
         <Rectangle Grid.Row="2" Margin="6,3,6,3">
