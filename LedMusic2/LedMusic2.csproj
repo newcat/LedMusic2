@@ -77,6 +77,7 @@
     <Compile Include="Nodes\NodeViews\ColorRampNode.xaml.cs">
       <DependentUpon>ColorRampNode.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Nodes\NodeViews\ColorStopViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\NodeOptionViewModel.cs" />
     <Compile Include="ViewModels\TemporaryConnectionViewModel.cs" />

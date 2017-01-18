@@ -4,29 +4,88 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:LedMusic2.Nodes.NodeViews"
-             mc:Ignorable="d" 
-             d:DesignHeight="60" d:DesignWidth="300">
+             xmlns:acb="clr-namespace:AttachedCommandBehavior"
+             mc:Ignorable="d" Width="200"
+             d:DesignHeight="110" d:DesignWidth="200">
     <Grid>
 
         <Grid.Resources>
 
-            <DataTemplate DataType="{x:Type GradientStop}">
-                <Rectangle Width="10" Height="10">
-                    <Rectangle.Fill>
-                        <SolidColorBrush Color="{Binding Color}" />
-                    </Rectangle.Fill>
-                </Rectangle>
+            <DataTemplate DataType="{x:Type local:ColorStopViewModel}">
+                <Thumb acb:CommandBehavior.Event="DragDelta" acb:CommandBehavior.Action="{Binding DragDeltaAction}"
+                       Canvas.Left="{Binding AbsolutePosition}">
+
+                    <Thumb.InputBindings>
+                        <MouseBinding MouseAction="LeftClick" Command="{Binding CmdLeftClick}" />
+                    </Thumb.InputBindings>
+                    
+                    <Thumb.Template>
+                        <ControlTemplate>
+                            <Path Width="10" Height="15" Data="M5,0L10,5L10,15L0,15L0,5L5,0">
+                                <Path.Fill>
+                                    <SolidColorBrush Color="{Binding Color}" />
+                                </Path.Fill>
+                                <Path.Style>
+                                    <Style TargetType="Path">
+                                        <Setter Property="Stroke" Value="Black" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                <DataTrigger.Setters>
+                                                    <Setter Property="Stroke" Value="Orange" />
+                                                </DataTrigger.Setters>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Path.Style>
+                            </Path>
+                        </ControlTemplate>
+                    </Thumb.Template>
+                </Thumb>
             </DataTemplate>
             
         </Grid.Resources>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="35" />
-            <RowDefinition Height="25"/>
+            <RowDefinition Height="25" />
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="25" />
+            <RowDefinition Height="30" />
         </Grid.RowDefinitions>
 
         <Rectangle Grid.Row="0" Fill="{Binding FillBrush}" />
-        <ItemsControl Grid.Row="1" Width="{Binding Width, Mode=OneWayToSource}" ItemsSource="{Binding ColorStops}" />
+
+        <ItemsControl Grid.Row="1" Width="{Binding Width, Mode=OneWayToSource}" ItemsSource="{Binding ColorStops}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+        
+        <Rectangle Grid.Row="2" Margin="6,3,6,3">
+
+            <Rectangle.InputBindings>
+                <MouseBinding Command="{Binding CmdSelectColor}" MouseAction="LeftClick" />
+            </Rectangle.InputBindings>
+            
+            <Rectangle.Fill>
+                <SolidColorBrush Color="{Binding SelectedColorStop.Color}" />
+            </Rectangle.Fill>
+        </Rectangle>
+        
+        <Grid Grid.Row="3" HorizontalAlignment="Stretch">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            
+            <Button Content="Add" Margin="3" HorizontalAlignment="Stretch" Grid.Column="0" 
+                    Command="{Binding CmdAddStop}" />
+            <Button Content="Remove" Margin="3" HorizontalAlignment="Stretch" Grid.Column="1"
+                    Command="{Binding CmdRemoveStop}" />
+            
+        </Grid>
 
     </Grid>
 </UserControl>

@@ -1,6 +1,8 @@
-﻿using LedMusic2.Attributes;
+﻿using AttachedCommandBehavior;
+using LedMusic2.Attributes;
 using LedMusic2.Enums;
 using LedMusic2.Models;
+using LedMusic2.Nodes.NodeViews;
 using LedMusic2.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -11,13 +13,14 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Media;
 
 namespace LedMusic2.Nodes
 {
 
     [Node("Color Ramp", NodeCategory.COLOR)]
-    class ColorRampNode : NodeBase
+    public class ColorRampNode : NodeBase
     {
 
         #region ViewModel Properties
@@ -25,7 +28,7 @@ namespace LedMusic2.Nodes
         public LinearGradientBrush FillBrush
         {
             get {
-                //TODO
+                return _fillBrush;
             }
         }
 
@@ -40,8 +43,8 @@ namespace LedMusic2.Nodes
             }
         }
 
-        private ObservableCollection<CustomColorStop> _colorStops = new ObservableCollection<CustomColorStop>();
-        public ObservableCollection<CustomColorStop> ColorStops
+        private ObservableCollection<ColorStopViewModel> _colorStops = new ObservableCollection<ColorStopViewModel>();
+        public ObservableCollection<ColorStopViewModel> ColorStops
         {
             get { return _colorStops; }
             set
@@ -50,6 +53,28 @@ namespace LedMusic2.Nodes
                 NotifyPropertyChanged();
                 NotifyPropertyChanged("FillBrush");
             }
+        }
+
+        private ColorStopViewModel _selectedColorStop = null;
+        public ColorStopViewModel SelectedColorStop
+        {
+            get { return _selectedColorStop; }
+            set
+            {
+                _selectedColorStop = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private SimpleCommand _cmdAddStop = new SimpleCommand();
+        public SimpleCommand CmdAddStop { get { return _cmdAddStop; } }
+
+        private SimpleCommand _cmdRemoveStop = new SimpleCommand();
+        public SimpleCommand CmdRemoveStop { get { return _cmdRemoveStop; } }
+
+        public SimpleCommand CmdSelectColor
+        {
+            get { return new SimpleCommand() { ExecuteDelegate = (o) => setColorOfSelected() }; }
         }
         #endregion
 
@@ -60,7 +85,19 @@ namespace LedMusic2.Nodes
 
             _options.Add(new NodeOptionViewModel(NodeOptionType.CUSTOM, "Test", typeof(NodeViews.ColorRampNode), this));
 
-            _colorStops.Add(new GradientStop(Colors.White, 0.0));
+            _cmdAddStop.ExecuteDelegate = (o) => _colorStops.Add(new ColorStopViewModel(Colors.White, 0.0, this));
+
+            _cmdRemoveStop.CanExecuteDelegate = (o) => SelectedColorStop != null;
+            _cmdRemoveStop.ExecuteDelegate = (o) =>
+            {
+                if (SelectedColorStop != null)
+                {
+                    _colorStops.Remove(SelectedColorStop);
+                    SelectedColorStop.Dispose();
+                    SelectedColorStop = null;
+                }
+            };
+
 
         }
 
@@ -69,47 +106,27 @@ namespace LedMusic2.Nodes
             return true;
         }
 
-        public class CustomColorStop : INotifyPropertyChanged
+        public void SelectStop(ColorStopViewModel vm)
         {
+            if (SelectedColorStop != null)
+                SelectedColorStop.IsSelected = false;
+            vm.IsSelected = true;
+            SelectedColorStop = vm;
+        }
 
-            public event PropertyChangedEventHandler PropertyChanged;
-            public void NotifyPropertyChanged([CallerMemberName] string name = "")
+        private void setColorOfSelected()
+        {
+            var c = SelectedColorStop.Color;
+            var dlg = new ColorDialog();
+            dlg.Color = System.Drawing.Color.FromArgb(255, c.R, c.G, c.B);
+            if (dlg.ShowDialog() == DialogResult.OK)
             {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+                var resultColor = dlg.Color;
+                SelectedColorStop.Color = Color.FromRgb(resultColor.R, resultColor.G, resultColor.B);
             }
-
-            private double _position = 0;
-            public double Position
-            {
-                get { return _position; }
-                set
-                {
-                    _position = value;
-                    NotifyPropertyChanged();
-                }
-            }
-
-            private Color _color = Colors.Black;
-            public Color Color
-            {
-                get { return _color; }
-                set
-                {
-                    _color = value;
-                    NotifyPropertyChanged();
-                }
-            }
-
-            public ColorRampNode Parent { get; private set; }
-
-            public CustomColorStop(Color c, double p, ColorRampNode n)
-            {
-                Color = c;
-                Position = p;
-                Parent = n;
-            }
-
+            dlg.Dispose();
         }
 
     }
+
 }
