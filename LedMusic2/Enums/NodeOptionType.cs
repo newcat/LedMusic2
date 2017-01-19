@@ -7,6 +7,7 @@
         COLOR,
         BOOL,
         SELECTION,
+        PREVIEW,
         CUSTOM
 
     }

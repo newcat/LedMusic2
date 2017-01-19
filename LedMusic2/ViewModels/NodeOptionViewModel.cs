@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Media;
 
 namespace LedMusic2.ViewModels
 {
@@ -99,6 +100,19 @@ namespace LedMusic2.ViewModels
         public SimpleCommand CmdPickColor { get { return _cmdPickColor; } }
         #endregion
 
+        #region OptionType == PREVIEW
+        private LinearGradientBrush _previewBrush;
+        public LinearGradientBrush PreviewBrush
+        {
+            get { return _previewBrush; }
+            set
+            {
+                _previewBrush = value;
+                NotifyPropertyChanged();
+            }
+        }
+        #endregion
+
         #region OptionType == CUSTOM
         private FrameworkElement _customUIElement;
         public FrameworkElement CustomUIElement
@@ -128,6 +142,7 @@ namespace LedMusic2.ViewModels
         private LedColor _valColor;
         private bool _valBool;
         private string _valString;
+        private LedColor[] _valColorArray;
         #endregion
 
         public NodeOptionViewModel(NodeOptionType type, string name)
@@ -173,6 +188,8 @@ namespace LedMusic2.ViewModels
                     return _valDouble;
                 case NodeOptionType.SELECTION:
                     return _valString;
+                case NodeOptionType.PREVIEW:
+                    return _valColorArray;
             }
 
             return null;
@@ -193,6 +210,10 @@ namespace LedMusic2.ViewModels
                     break;
                 case NodeOptionType.SELECTION:
                     _valString = (string)value;
+                    break;
+                case NodeOptionType.PREVIEW:
+                    _valColorArray = (LedColor[])value;
+                    calcPreviewBrush();
                     break;
             }
         }
@@ -230,6 +251,18 @@ namespace LedMusic2.ViewModels
             }
             dlg.Dispose();            
 
+        }
+
+        private void calcPreviewBrush()
+        {
+            var len = _valColorArray.Length;
+            var coll = new GradientStopCollection();
+            for (int i = 0; i < len; i++)
+            {
+                var c = _valColorArray[i].getColorRGB();
+                coll.Add(new GradientStop(Color.FromRgb(c.R, c.G, c.B), (double)i / len));
+            }
+            PreviewBrush = new LinearGradientBrush(coll, 0);
         }
 
     }

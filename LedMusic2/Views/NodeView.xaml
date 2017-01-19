@@ -141,6 +141,15 @@
                                                 </Setter.Value>
                                             </Setter>
                                         </DataTrigger>
+                                        <DataTrigger Binding="{Binding OptionType}" Value="{x:Static enums:NodeOptionType.PREVIEW}">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="ListViewItem">
+                                                        <Rectangle Grid.Row="0" Fill="{Binding PreviewBrush}" />
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </DataTrigger>
                                         <DataTrigger Binding="{Binding OptionType}" Value="{x:Static enums:NodeOptionType.CUSTOM}">
                                             <Setter Property="Template">
                                                 <Setter.Value>

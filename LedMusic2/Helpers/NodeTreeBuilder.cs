@@ -64,8 +64,8 @@ namespace LedMusic2.Helpers
 
         public NodeBase[] GetRootElements(NodeBase[] nodes)
         {
-            //TODO: Change "Dot" to "OutputNode"
-            return nodes.Where((x) => x is Dot).ToArray();
+            //TODO: Dont check for output node but for NodeCategory.OUTPUT instead.
+            return nodes.Where((x) => x is OutputNode).ToArray();
         }
 
         #region Private Methods
