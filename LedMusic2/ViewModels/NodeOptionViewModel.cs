@@ -138,21 +138,24 @@ namespace LedMusic2.ViewModels
         #endregion
 
         #region Internal Values
-        private double _valDouble;
-        private LedColor _valColor;
-        private bool _valBool;
-        private string _valString;
-        private LedColor[] _valColorArray;
+        private double _valDouble = 0.0;
+        private LedColor _valColor = new LedColorRGB(0, 0, 0);
+        private bool _valBool = false;
+        private string _valString = "";
+        private LedColor[] _valColorArray = { new LedColorRGB(0, 0, 0) };
         #endregion
 
         public NodeOptionViewModel(NodeOptionType type, string name)
         {
+
             OptionType = type;
             Name = name;
 
             _cmdDecreaseValue.ExecuteDelegate = (o) => Value = _valDouble - 1;
             _cmdIncreaseValue.ExecuteDelegate = (o) => Value = _valDouble + 1;
             _cmdPickColor.ExecuteDelegate = pickColor;
+
+            calcPreviewBrush();
 
         }
 
@@ -221,18 +224,29 @@ namespace LedMusic2.ViewModels
         private void parseNumber(object value)
         {
 
+            double val = 0;
+
             if (!(value is double))
             {
                 double parsed = 0;
                 if (double.TryParse(value.ToString(), out parsed))
-                    _valDouble = Math.Min(MaxValue, Math.Max(parsed, MinValue));
+                    val = parsed;
                 else
-                    _valDouble = MinValue;
+                    val = MinValue;
             }
             else
             {
-                _valDouble = Math.Min(MaxValue, Math.Max((double)value, MinValue));
+                val = (double)value;
             }
+
+            if (MaxValue == 0 && MinValue == 0)
+            {
+                _valDouble = val;
+            } else
+            {
+                _valDouble = Math.Min(MaxValue, Math.Max(val, MinValue));
+            }
+
             NotifyPropertyChanged("Value");
 
         }
@@ -263,10 +277,13 @@ namespace LedMusic2.ViewModels
             for (int i = 0; i < len; i++)
             {
                 if (_valColorArray[i] == null)
-                    continue;
-
-                var c = _valColorArray[i].getColorRGB();
-                coll.Add(new GradientStop(Color.FromRgb(c.R, c.G, c.B), (double)i / len));
+                {
+                    coll.Add(new GradientStop(Color.FromRgb(0, 0, 0), (double)i / len));
+                } else
+                {
+                    var c = _valColorArray[i].getColorRGB();
+                    coll.Add(new GradientStop(Color.FromRgb(c.R, c.G, c.B), (double)i / len));
+                }                    
             }
             PreviewBrush = new LinearGradientBrush(coll, 0);
         }

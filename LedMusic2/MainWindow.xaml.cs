@@ -42,19 +42,7 @@ namespace LedMusic2
             Helpers.TypeConverter.Initialize();
             NodeBase.FireOutputChangedEvents = true; //TODO: Change to false when playing back while settings keyframes
 
-            Dot d1 = new Dot(new Point(10, 10));
-            Dot d2 = new Dot(new Point(210, 10));
-            MathNode m1 = new MathNode(new Point(410, 10));
-            MathNode m2 = new MathNode(new Point(610, 10));
-            MathNode m3 = new MathNode(new Point(810, 10));
-            ColorRampNode r1 = new ColorRampNode(new Point(10, 300));
-
-            vm.Nodes.Add(d1);
-            vm.Nodes.Add(d2);
-            vm.Nodes.Add(m1);
-            vm.Nodes.Add(m2);
-            vm.Nodes.Add(m3);
-            vm.Nodes.Add(r1);
+            vm.Nodes.Add(new OutputNode(new Point(200, 200)));
 
             vm.Initialize();
 
