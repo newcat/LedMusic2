@@ -9,7 +9,7 @@
     xmlns:converters="clr-namespace:LedMusic2.Converters"
     xmlns:cmd="clr-namespace:AttachedCommandBehavior"
     mc:Ignorable="d" 
-    d:DesignHeight="300" d:DesignWidth="200">
+    d:DesignHeight="300" d:DesignWidth="200" MinWidth="{Binding MinWidth}">
 
     <UserControl.Resources>
         <converters:ColorToBrushConverter x:Key="colorToBrushConverter" />
@@ -145,7 +145,8 @@
                                             <Setter Property="Template">
                                                 <Setter.Value>
                                                     <ControlTemplate TargetType="ListViewItem">
-                                                        <Rectangle Grid.Row="0" Fill="{Binding PreviewBrush}" />
+                                                        <Rectangle Grid.Row="0" Fill="{Binding PreviewBrush}" Height="25"
+                                                                   HorizontalAlignment="Stretch" Margin="3" />
                                                     </ControlTemplate>
                                                 </Setter.Value>
                                             </Setter>

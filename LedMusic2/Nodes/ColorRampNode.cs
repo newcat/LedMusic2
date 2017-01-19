@@ -131,10 +131,12 @@ namespace LedMusic2.Nodes
             {
 
                 var currentPos = (double)i / ledCount;
-                if (currentPos > ColorStops[currentStopIndex].Position && colorStopCount - 1 > currentStopIndex)
+                if (currentStopIndex < colorStopCount - 1 && currentPos > ColorStops[currentStopIndex + 1].Position)
                 {
                     currentStopIndex++;
-                } else if (colorStopCount - 1 == currentStopIndex)
+                }
+
+                if (colorStopCount - 1 == currentStopIndex)
                 {
                     var c = ColorStops[currentStopIndex].Color;
                     output[i] = new LedColorRGB(c.R, c.G, c.B);
@@ -143,12 +145,19 @@ namespace LedMusic2.Nodes
                     
                     var stop1 = ColorStops[currentStopIndex];
                     var stop2 = ColorStops[currentStopIndex + 1];
+                    var fac = 0.5;
 
-                    var fac = (stop2.Position - stop1.Position) / (currentPos - stop1.Position);
+                    if (currentPos <= stop1.Position)
+                        fac = 0;
+                    else if (currentPos >= stop2.Position)
+                        fac = 1;
+                    else
+                        fac = (currentPos - stop1.Position) / (stop2.Position - stop1.Position);
+
                     output[i] = new LedColorRGB(
-                        (byte)Math.Max(255, (1 - fac) * stop1.Color.R + fac * stop2.Color.R),
-                        (byte)Math.Max(255, (1 - fac) * stop1.Color.G + fac * stop2.Color.G),
-                        (byte)Math.Max(255, (1 - fac) * stop1.Color.B + fac * stop2.Color.B)
+                        (byte)Math.Min(255, stop1.Color.R + fac * (stop2.Color.R - stop1.Color.R)),
+                        (byte)Math.Min(255, stop1.Color.G + fac * (stop2.Color.G - stop1.Color.G)),
+                        (byte)Math.Min(255, stop1.Color.B + fac * (stop2.Color.B - stop1.Color.B))
                         );
 
                 }

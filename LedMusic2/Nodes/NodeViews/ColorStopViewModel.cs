@@ -80,7 +80,10 @@ namespace LedMusic2.Nodes.NodeViews
 
         public int CompareTo(ColorStopViewModel other)
         {
-            return Position > other.Position ? 1 : -1;
+            if (Position == other.Position)
+                return 0;
+            else
+                return Position > other.Position ? 1 : -1;
         }
 
         #region IDisposable Support

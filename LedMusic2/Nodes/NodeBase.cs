@@ -67,6 +67,17 @@ namespace LedMusic2.Nodes
             }
         }
 
+        private int _minWidth = 0;
+        public int MinWidth
+        {
+            get { return _minWidth; }
+            set
+            {
+                _minWidth = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         public int ZIndex
         {
             get { return IsSelected ? 2 : 1; }

@@ -255,10 +255,16 @@ namespace LedMusic2.ViewModels
 
         private void calcPreviewBrush()
         {
+            if (_valColorArray == null)
+                return;
+
             var len = _valColorArray.Length;
             var coll = new GradientStopCollection();
             for (int i = 0; i < len; i++)
             {
+                if (_valColorArray[i] == null)
+                    continue;
+
                 var c = _valColorArray[i].getColorRGB();
                 coll.Add(new GradientStop(Color.FromRgb(c.R, c.G, c.B), (double)i / len));
             }

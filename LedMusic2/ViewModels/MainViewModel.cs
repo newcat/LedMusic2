@@ -264,6 +264,7 @@ namespace LedMusic2.ViewModels
                 Connections.Add(c);
 
                 calculateNodeTree();
+                CalculateNodes(input.Parent);
 
             }
 
