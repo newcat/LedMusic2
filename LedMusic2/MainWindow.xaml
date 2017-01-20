@@ -95,51 +95,89 @@
         </DrawingBrush>
     </Window.Background>
 
-    <Grid>
+    <DockPanel>
+
+        <Menu IsMainMenu="True" DockPanel.Dock="Top" Panel.ZIndex="10">
+            <MenuItem Header="File">
+                <MenuItem Header="Open Project" />
+                <MenuItem Header="Save Project" />
+                <Separator />
+                <MenuItem Header="Quit" />
+            </MenuItem>
+        </Menu>
+
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <ProgressBar Width="100" Height="15" Margin="4" Value="{Binding ProgressValue, Mode=OneWay}" />
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding ProgressText}" />
+            </StatusBarItem>
+        </StatusBar>
         
-        <ItemsControl>
+        <Grid DockPanel.Dock="Bottom" Background="White">
 
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Canvas x:Name="canvas" Background="{x:Null}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="30" />
+            </Grid.RowDefinitions>
 
-                        <!-- TODO: Implement Zooming -->
-                        <!--<Canvas.LayoutTransform>
-                            <ScaleTransform ScaleX="{Binding Scale}" ScaleY="{Binding Scale}" CenterX="{Binding ScaleCenterX}" CenterY="{Binding ScaleCenterY}" />
-                        </Canvas.LayoutTransform>-->
+            <StackPanel Orientation="Horizontal" Grid.Row="1">
+                <Button Width="50" VerticalAlignment="Stretch" Margin="6">
+                    <Path Data="M0,0L8,5.5L0,10Z" Fill="Black" />
+                </Button>
+                <Button Width="50" VerticalAlignment="Stretch" Margin="6">
+                    <Path Data="M0,0L10,0L10,10L0,10Z" Fill="Black" />
+                </Button>
+            </StackPanel>
 
-                    </Canvas>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
+        </Grid>
 
-            <ItemsControl.ItemsSource>
-                <CompositeCollection>
-                    <CollectionContainer Collection="{Binding Source={StaticResource NodesSource}}" />
-                    <CollectionContainer Collection="{Binding Source={StaticResource ConnectionsSource}}" />
-                    <CollectionContainer Collection="{Binding Source={StaticResource TemporaryConnectionSource}}" />
-                </CompositeCollection>
-            </ItemsControl.ItemsSource>
+        <Grid>
+            <ItemsControl>
 
-            <ItemsControl.ItemContainerStyle>
-                <Style TargetType="ContentPresenter">
-                    <Setter Property="Panel.ZIndex" Value="{Binding ZIndex}" />
-                </Style>
-            </ItemsControl.ItemContainerStyle>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas x:Name="canvas" Background="{x:Null}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
-        </ItemsControl>
+                            <!-- TODO: Implement Zooming -->
+                            <!--<Canvas.LayoutTransform>
+                                <ScaleTransform ScaleX="{Binding Scale}" ScaleY="{Binding Scale}" CenterX="{Binding ScaleCenterX}" CenterY="{Binding ScaleCenterY}" />
+                            </Canvas.LayoutTransform>-->
 
-        <ItemsControl x:Name="addNodePanel" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="50" MaxWidth="1200" MaxHeight="600"
-                  Background="#EE000000" BorderBrush="Transparent" ItemsSource="{Binding NodeCategories}" IsHitTestVisible="True"
-                      Visibility="{Binding IsAddNodePanelOpen, Converter={StaticResource boolToVisibilityConverter}}" Panel.ZIndex="20000">
+                        </Canvas>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
 
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <UniformGrid Rows="1"></UniformGrid>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemsSource>
+                    <CompositeCollection>
+                        <CollectionContainer Collection="{Binding Source={StaticResource NodesSource}}" />
+                        <CollectionContainer Collection="{Binding Source={StaticResource ConnectionsSource}}" />
+                        <CollectionContainer Collection="{Binding Source={StaticResource TemporaryConnectionSource}}" />
+                    </CompositeCollection>
+                </ItemsControl.ItemsSource>
 
-        </ItemsControl>
+                <ItemsControl.ItemContainerStyle>
+                    <Style TargetType="ContentPresenter">
+                        <Setter Property="Panel.ZIndex" Value="{Binding ZIndex}" />
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
 
-    </Grid>
+            </ItemsControl>
+
+            <ItemsControl x:Name="addNodePanel" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="50" MaxWidth="1200" MaxHeight="600"
+                      Background="#EE000000" BorderBrush="Transparent" ItemsSource="{Binding NodeCategories}" IsHitTestVisible="True"
+                          Visibility="{Binding IsAddNodePanelOpen, Converter={StaticResource boolToVisibilityConverter}}" Panel.ZIndex="20000">
+
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows="1"></UniformGrid>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+            </ItemsControl>
+        </Grid>
+
+    </DockPanel>
 
 </Window>

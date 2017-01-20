@@ -1,24 +1,12 @@
 ﻿using LedMusic2.Exceptions;
 using LedMusic2.Models;
 using LedMusic2.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LedMusic2.Helpers
 {
-    public sealed class NodeConnectionHelper : INotifyPropertyChanged
+    public sealed class NodeConnectionHelper : VMBase
     {
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void NotifyPropertyChanged([CallerMemberName] string name = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
 
         #region Singleton and Constructor
         private static NodeConnectionHelper _instance = new NodeConnectionHelper();

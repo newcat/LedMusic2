@@ -1,16 +1,14 @@
-﻿using AttachedCommandBehavior;
-using LedMusic2.Attributes;
+﻿using LedMusic2.Attributes;
 using LedMusic2.Models;
 using LedMusic2.ViewModels;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows;
 
 namespace LedMusic2.Nodes
 {
-    public abstract class NodeBase : INotifyPropertyChanged //TODO: Implement IDisposable
+    public abstract class NodeBase : VMBase //TODO: Implement IDisposable
     {
 
         public static event EventHandler UnselectAllNodes;
@@ -24,12 +22,6 @@ namespace LedMusic2.Nodes
         protected void InvokeOutputChanged()
         {
             OutputChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void NotifyPropertyChanged([CallerMemberName] string name = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
         #region ViewModel Properties

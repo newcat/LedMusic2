@@ -81,7 +81,9 @@ namespace LedMusic2
                     return;
                 else
                     vm.IsAddNodePanelOpen = false;
-            }                
+            }
+
+            FocusManager.SetFocusedElement(this, this);
 
             oldMousePosition = e.GetPosition(this);
             isDragging = true;

@@ -12,14 +12,8 @@ using System.Windows.Shapes;
 
 namespace LedMusic2.Models
 {
-    public class Connection : INotifyPropertyChanged, IDisposable
+    public class Connection : VMBase, IDisposable
     {
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void NotifyPropertyChanged([CallerMemberName] string name = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
 
         #region ViewModel Properties
         private Point _point0 = new Point(0, 0);

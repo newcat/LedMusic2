@@ -1,18 +1,12 @@
-﻿using System;
+﻿using LedMusic2.ViewModels;
+using System;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows.Media;
 
 namespace LedMusic2.Nodes.NodeViews
 {
-    public class ColorStopViewModel : INotifyPropertyChanged, IDisposable, IComparable<ColorStopViewModel>
+    public class ColorStopViewModel : VMBase, IDisposable, IComparable<ColorStopViewModel>
     {
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void NotifyPropertyChanged([CallerMemberName]string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
 
         private bool _isSelected = false;
         public bool IsSelected

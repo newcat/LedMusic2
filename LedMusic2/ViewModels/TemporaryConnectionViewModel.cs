@@ -1,25 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using LedMusic2.Models;
+using System;
 using System.ComponentModel;
-using System.Windows;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using LedMusic2.Models;
-using System.Windows.Shapes;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Shapes;
 
 namespace LedMusic2.ViewModels
 {
-    public class TemporaryConnectionViewModel : INotifyPropertyChanged, IDisposable
+    public class TemporaryConnectionViewModel : VMBase, IDisposable
     {
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void NotifyPropertyChanged([CallerMemberName] string name = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
 
         public NodeInterface OriginInterface { get; private set; }
         public NodeInterface TargetInterface { get; private set; }

@@ -3,6 +3,7 @@ using LedMusic2.Enums;
 using LedMusic2.Helpers;
 using LedMusic2.Models;
 using LedMusic2.Nodes;
+using LedMusic2.Sound;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,14 +20,8 @@ using System.Windows.Shapes;
 
 namespace LedMusic2.ViewModels
 {
-    public class MainViewModel : INotifyPropertyChanged
+    public class MainViewModel : VMBase
     {
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void NotifyPropertyChanged([CallerMemberName] string name = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
 
         #region Singleton and Constructor
         private static MainViewModel _instance = new MainViewModel();
@@ -176,6 +171,43 @@ namespace LedMusic2.ViewModels
                 NotifyPropertyChanged();
             }
         }
+
+        private ObservableCollection<ProgressViewModel> _progresses = new ObservableCollection<ProgressViewModel>();
+        public ObservableCollection<ProgressViewModel> Progresses
+        {
+            get { return _progresses; }
+            set
+            {
+                _progresses = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public string ProgressText
+        {
+            get
+            {
+                if (_progresses.Count == 0)
+                    return "";
+                else if (_progresses.Count == 1)
+                    return _progresses[0].Name;
+                else
+                    return _progresses.Count + " operations running...";
+            }
+        }
+
+        public int ProgressValue
+        {
+            get
+            {
+                if (_progresses.Count == 0)
+                    return 0;
+                else if (_progresses.Count == 1)
+                    return _progresses[0].Progress;
+                else
+                    return calcTotalProgressValue();
+            }
+        }
         #endregion
 
         #region Private Fields
@@ -185,13 +217,16 @@ namespace LedMusic2.ViewModels
         #endregion
 
         #region Public Methods
-        public void Initialize()
+        public async void Initialize()
         {
             NodeBase.UnselectAllNodes += NodeBase_UnselectAllNodes;
             NodeBase.OutputChanged += NodeBase_OutputChanged;
 
             fillNodeCategories();
             calculateNodeTree();
+
+            await SoundEngine.Instance.OpenFile("D:\\Daten\\Eigene Musik\\TheUnder - Fire.mp3");
+
         }
 
         #region Connections
@@ -345,6 +380,24 @@ namespace LedMusic2.ViewModels
 
         }
         #endregion
+
+        #region Progress
+        public void AddProgress(ProgressViewModel vm)
+        {
+            vm.PropertyChanged += Progress_PropertyChanged;
+            _progresses.Add(vm);
+            NotifyPropertyChanged("ProgressText");
+            NotifyPropertyChanged("ProgressValue");
+        }
+
+        public void RemoveProgress(ProgressViewModel vm)
+        {
+            _progresses.Remove(vm);
+            vm.PropertyChanged -= Progress_PropertyChanged;
+            NotifyPropertyChanged("ProgressText");
+            NotifyPropertyChanged("ProgressValue");
+        }
+        #endregion
         #endregion
 
         #region Private Methods
@@ -391,6 +444,22 @@ namespace LedMusic2.ViewModels
                 MessageBox.Show("Failed to calculate node tree.");
             else
                 currentNodeCalculationOrder = order;
+        }
+
+        private int calcTotalProgressValue()
+        {
+            var val = 0;
+            foreach (var x in _progresses)
+            {
+                val += x.Progress;
+            }
+            return (int)Math.Floor((double)val / _progresses.Count);
+        }
+
+        private void Progress_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            NotifyPropertyChanged("ProgressText");
+            NotifyPropertyChanged("ProgressValue");
         }
         #endregion
 

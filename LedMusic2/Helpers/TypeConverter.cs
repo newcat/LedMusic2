@@ -53,6 +53,11 @@ namespace LedMusic2.Helpers
                 (x) => ((double)x) > 0);
             converters.Add(doubleToBool);
 
+            //Doubles
+            var boolToDouble = new SingleTypeConverter(typeof(bool), typeof(double),
+                (x) => (bool)x ? 1d : 0d);
+            converters.Add(boolToDouble);
+
             //Colors
             var doubleToColor = new SingleTypeConverter(typeof(double), typeof(LedColor),
                 (x) =>

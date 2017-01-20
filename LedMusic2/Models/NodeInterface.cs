@@ -4,22 +4,12 @@ using LedMusic2.Nodes;
 using LedMusic2.ViewModels;
 using LedMusic2.Views;
 using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows;
-using System.Windows.Shapes;
 
 namespace LedMusic2.Models
 {
 
-    public abstract class NodeInterface : INotifyPropertyChanged
+    public abstract class NodeInterface : VMBase
     {
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void NotifyPropertyChanged([CallerMemberName] string name = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
 
         public string Name { get; private set; }
         public ConnectionType ConnectionType { get; private set; }

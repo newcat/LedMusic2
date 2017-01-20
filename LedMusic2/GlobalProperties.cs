@@ -1,17 +1,10 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿using LedMusic2.ViewModels;
 
 namespace LedMusic2
 {
 
-    class GlobalProperties : INotifyPropertyChanged
+    class GlobalProperties : VMBase
     {
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void NotifyPropertyChanged([CallerMemberName] string name = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
 
         private int _fps = 30;
         public int FPS

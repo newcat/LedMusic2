@@ -3,22 +3,15 @@ using LedMusic2.Enums;
 using LedMusic2.Models;
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
 
 namespace LedMusic2.ViewModels
 {
-    public class NodeOptionViewModel : INotifyPropertyChanged
+    public class NodeOptionViewModel : VMBase
     {
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void NotifyPropertyChanged([CallerMemberName] string name = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
 
         private string _name = "";
         public string Name
@@ -221,6 +214,7 @@ namespace LedMusic2.ViewModels
             }
         }
 
+        //OptionType == NUMBER
         private void parseNumber(object value)
         {
 
@@ -229,7 +223,8 @@ namespace LedMusic2.ViewModels
             if (!(value is double))
             {
                 double parsed = 0;
-                if (double.TryParse(value.ToString(), out parsed))
+                if (double.TryParse(value.ToString(), NumberStyles.Number,
+                    CultureInfo.InvariantCulture, out parsed))
                     val = parsed;
                 else
                     val = MinValue;
@@ -251,6 +246,7 @@ namespace LedMusic2.ViewModels
 
         }
 
+        //OptionType == COLOR
         private void pickColor(object o)
         {
 
@@ -267,6 +263,7 @@ namespace LedMusic2.ViewModels
 
         }
 
+        //OptionType == PREVIEW
         private void calcPreviewBrush()
         {
             if (_valColorArray == null)
