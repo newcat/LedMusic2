@@ -9,10 +9,13 @@ namespace LedMusic2.Helpers
     {
 
         private static List<SingleTypeConverter> converters = new List<SingleTypeConverter>();
+        private static List<ConverterCombination> combinations = new List<ConverterCombination>();
 
         public static bool CanConvert(Type input, Type output)
         {
-            return input == output || converters.Exists((x) => x.InputType == input && x.OutputType == output);
+            return input == output ||
+                converters.Exists((x) => x.InputType == input && x.OutputType == output) ||
+                combinations.Exists((x) => x.InputType == input && x.OutputType == output);
         }
 
         public static object Convert(Type input, Type output, object value)
@@ -24,7 +27,21 @@ namespace LedMusic2.Helpers
             if (converter != null)
                 return converter.ConversionFunc(value);
             else
-                return null;
+            {
+                var comb = combinations.FirstOrDefault((x) => x.InputType == input && x.OutputType == output);
+                if (comb != null)
+                {
+                    foreach (var conv in comb.Converters)
+                    {
+                        value = conv.ConversionFunc(value);
+                    }
+                    return value;
+                } else
+                {
+                    return null;
+                }
+            }
+                
         }
 
         public static void Initialize()
@@ -32,27 +49,43 @@ namespace LedMusic2.Helpers
 
 
             //Booleans
-            converters.Add(new SingleTypeConverter(typeof(double), typeof(bool),
-                (x) => ((double)x) > 0));
+            var doubleToBool = new SingleTypeConverter(typeof(double), typeof(bool),
+                (x) => ((double)x) > 0);
+            converters.Add(doubleToBool);
 
             //Colors
-            converters.Add(new SingleTypeConverter(typeof(double), typeof(LedColor),
+            var doubleToColor = new SingleTypeConverter(typeof(double), typeof(LedColor),
                 (x) =>
                 {
                     byte v = (byte)Math.Max(0, Math.Min(255, (double)x * 255));
                     return new LedColorRGB(v, v, v);
-                }));
+                });
+            converters.Add(doubleToColor);
 
-            //Color Array
-            converters.Add(new SingleTypeConverter(typeof(LedColor), typeof(LedColor[]),
+            var colorArrayToColor = new SingleTypeConverter(typeof(LedColor[]), typeof(LedColor),
                 (x) =>
                 {
-                    int ledCount = GlobalProperties.Instance.LedCount;
-                    LedColor[] arr = new LedColor[ledCount];
-                    for (int i = 0; i < ledCount; i++)
-                        arr[i] = (LedColor)x;
-                    return arr;
-                }));
+
+                    if (x == null)
+                        return new LedColorRGB(0, 0, 0);
+
+                    var arr = (LedColor[])x;
+                    if (arr.Length > 0)
+                        return arr[0];
+                    else
+                        return new LedColorRGB(0, 0, 0);
+                });
+            converters.Add(colorArrayToColor);
+
+            //Color Array
+            var colorToColorArray = new SingleTypeConverter(typeof(LedColor), typeof(LedColor[]),
+                (x) => new LedColor[] { (LedColor)x });
+            converters.Add(colorToColorArray);
+
+            var doubleToColorArray = new ConverterCombination(typeof(double), typeof(LedColor[]));
+            doubleToColorArray.Converters.Add(doubleToColor);
+            doubleToColorArray.Converters.Add(colorToColorArray);
+            combinations.Add(doubleToColorArray);
 
         }
 
@@ -68,6 +101,23 @@ namespace LedMusic2.Helpers
                 InputType = input;
                 OutputType = output;
                 ConversionFunc = f;
+            }
+
+        }
+
+        private class ConverterCombination
+        {
+
+            private List<SingleTypeConverter> _converters = new List<SingleTypeConverter>();
+            public List<SingleTypeConverter> Converters { get { return _converters; } }
+
+            public Type InputType { get; private set; }
+            public Type OutputType { get; private set; }
+
+            public ConverterCombination(Type input, Type output)
+            {
+                InputType = input;
+                OutputType = output;
             }
 
         }

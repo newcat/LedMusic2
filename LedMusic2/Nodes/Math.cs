@@ -108,7 +108,7 @@ namespace LedMusic2.Nodes
             }
 
 
-            ((NodeInterface<double>)_outputs.GetNodeInterface("Output")).SetValue(val1 + val2);
+            ((NodeInterface<double>)_outputs.GetNodeInterface("Output")).SetValue(outputVal);
             return true;
 
         }

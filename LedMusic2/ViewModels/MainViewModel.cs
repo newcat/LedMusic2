@@ -258,7 +258,10 @@ namespace LedMusic2.ViewModels
                 //per input is allowed.
                 var oldC = Connections.FirstOrDefault((x) => x.Output == output);
                 if (oldC != null)
+                {
                     Connections.Remove(oldC);
+                    oldC.Dispose();
+                }
 
                 var c = new Connection(input, output);
                 Connections.Add(c);
