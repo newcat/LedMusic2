@@ -9,11 +9,12 @@
         xmlns:Views="clr-namespace:LedMusic2.Views"
         xmlns:Models="clr-namespace:LedMusic2.Models"
         xmlns:Converters="clr-namespace:LedMusic2.Converters"
+        xmlns:Sound="clr-namespace:LedMusic2.Sound"
         mc:Ignorable="d"
         Title="MainWindow" Height="550" Width="925"
         MouseMove="window_MouseMove" MouseLeftButtonDown="window_MouseLeftButtonDown"
         MouseLeftButtonUp="window_MouseLeftButtonUp" MouseWheel="window_MouseWheel" Loaded="Window_Loaded" KeyDown="Window_KeyDown"
-        >
+        Closing="Window_Closing">
 
     <Window.Resources>
         <SolidColorBrush x:Key="DarkSquareColor" Color="#1A1A1A" />
@@ -123,11 +124,28 @@
             </Grid.RowDefinitions>
 
             <StackPanel Orientation="Horizontal" Grid.Row="1">
-                <Button Width="50" VerticalAlignment="Stretch" Margin="6">
-                    <Path Data="M0,0L8,5.5L0,10Z" Fill="Black" />
+                <Button Width="50" VerticalAlignment="Stretch" Margin="6" Command="{Binding CmdPlayPause}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Content">
+                                <Setter.Value>
+                                    <Path Data="M0,0 L8,5.5 L0,10 Z" Fill="Black" />
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CanPause, Source={x:Static Sound:SoundEngine.Instance}}" Value="True">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <Path Data="M2,0 L2,10 M8,0 L8,10" Stroke="Black" StrokeThickness="2" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
                 </Button>
-                <Button Width="50" VerticalAlignment="Stretch" Margin="6">
-                    <Path Data="M0,0L10,0L10,10L0,10Z" Fill="Black" />
+                <Button Width="50" VerticalAlignment="Stretch" Margin="6" Command="{Binding CmdStop}">
+                    <Path Data="M0,0 L10,0 L10,10 L0,10 Z" Fill="Black" />
                 </Button>
             </StackPanel>
 

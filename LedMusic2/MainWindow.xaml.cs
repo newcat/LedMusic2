@@ -135,5 +135,10 @@ namespace LedMusic2
             MainViewModel.Instance.IsAddNodePanelOpen = false;
 
         }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            MainViewModel.Instance.End();
+        }
     }
 }

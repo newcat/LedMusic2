@@ -1,22 +1,16 @@
-﻿using LedMusic2.Attributes;
+﻿using AttachedCommandBehavior;
+using LedMusic2.Attributes;
 using LedMusic2.Enums;
 using LedMusic2.Helpers;
 using LedMusic2.Models;
 using LedMusic2.Nodes;
 using LedMusic2.Sound;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Shapes;
 
 namespace LedMusic2.ViewModels
 {
@@ -29,7 +23,22 @@ namespace LedMusic2.ViewModels
         {
             get { return _instance; }
         }
-        private MainViewModel() { }
+        private MainViewModel() {
+
+            CmdPlayPause = new SimpleCommand();
+            CmdPlayPause.ExecuteDelegate = (o) => {
+                if (SoundEngine.Instance.CanPlay)
+                    SoundEngine.Instance.Play();
+                else
+                    SoundEngine.Instance.Pause();
+            };
+            CmdPlayPause.CanExecuteDelegate = (o) => SoundEngine.Instance.CanPlay || SoundEngine.Instance.CanPause;
+
+            CmdStop = new SimpleCommand();
+            CmdStop.ExecuteDelegate = (o) => SoundEngine.Instance.Stop();
+            CmdStop.CanExecuteDelegate = (o) => SoundEngine.Instance.CanStop;
+
+        }
         #endregion
 
         #region Properties
@@ -208,6 +217,10 @@ namespace LedMusic2.ViewModels
                     return calcTotalProgressValue();
             }
         }
+
+        public SimpleCommand CmdOpenMusic { get; private set; }
+        public SimpleCommand CmdPlayPause { get; private set; }
+        public SimpleCommand CmdStop { get; private set; }
         #endregion
 
         #region Private Fields
@@ -227,6 +240,12 @@ namespace LedMusic2.ViewModels
 
             await SoundEngine.Instance.OpenFile("D:\\Daten\\Eigene Musik\\TheUnder - Fire.mp3");
 
+        }
+
+        public void End()
+        {
+            SoundEngine.Instance.Stop();
+            SoundEngine.Instance.CleanupPlayback();
         }
 
         #region Connections
