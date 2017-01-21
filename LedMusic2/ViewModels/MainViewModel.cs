@@ -25,6 +25,10 @@ namespace LedMusic2.ViewModels
         }
         private MainViewModel() {
 
+            PropertyChanged += MainViewModel_PropertyChanged;
+            SoundEngine.Instance.PropertyChanged += SoundEngine_PropertyChanged;
+            GlobalProperties.Instance.PropertyChanged += GlobalProperties_PropertyChanged;
+
             CmdPlayPause = new SimpleCommand();
             CmdPlayPause.ExecuteDelegate = (o) => {
                 if (SoundEngine.Instance.CanPlay)
@@ -42,6 +46,7 @@ namespace LedMusic2.ViewModels
         #endregion
 
         #region Properties
+        #region NodeDisplay
         private double _scale = 1.0;
         public double Scale
         {
@@ -180,7 +185,9 @@ namespace LedMusic2.ViewModels
                 NotifyPropertyChanged();
             }
         }
+        #endregion
 
+        #region Progress
         private ObservableCollection<ProgressViewModel> _progresses = new ObservableCollection<ProgressViewModel>();
         public ObservableCollection<ProgressViewModel> Progresses
         {
@@ -217,10 +224,46 @@ namespace LedMusic2.ViewModels
                     return calcTotalProgressValue();
             }
         }
+        #endregion
 
+        private int _currentFrame = 0;
+        public int CurrentFrame
+        {
+            get { return _currentFrame; }
+            set
+            {
+                _currentFrame = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private double _playerPosition = 0; //IN PIXELS!!!
+        public double PlayerPosition
+        {
+            get { return _playerPosition; }
+            set
+            {
+                _playerPosition = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private double _trackWidth = 1000;
+        public double TrackWidth
+        {
+            get { return _trackWidth; }
+            set
+            {
+                _trackWidth = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        #region Commands
         public SimpleCommand CmdOpenMusic { get; private set; }
         public SimpleCommand CmdPlayPause { get; private set; }
         public SimpleCommand CmdStop { get; private set; }
+        #endregion
         #endregion
 
         #region Private Fields
@@ -419,6 +462,40 @@ namespace LedMusic2.ViewModels
         #endregion
         #endregion
 
+        #region PropertyChangedEvents
+        private void MainViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "TrackWidth")
+            {
+                updatePlayerPosition();
+            }
+            else if (e.PropertyName == "CurrentFrame")
+            {
+                updatePlayerPosition();
+            }
+        }
+
+        private void SoundEngine_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Position")
+                calculateCurrentFrame();
+            else if (e.PropertyName == "Length")
+                updatePlayerPosition();
+        }
+
+        private void GlobalProperties_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "FPS")
+                calculateCurrentFrame();
+        }
+
+        private void Progress_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            NotifyPropertyChanged("ProgressText");
+            NotifyPropertyChanged("ProgressValue");
+        }
+        #endregion
+
         #region Private Methods
         private void NodeBase_UnselectAllNodes(object sender, EventArgs e)
         {
@@ -475,10 +552,23 @@ namespace LedMusic2.ViewModels
             return (int)Math.Floor((double)val / _progresses.Count);
         }
 
-        private void Progress_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void updatePlayerPosition()
         {
-            NotifyPropertyChanged("ProgressText");
-            NotifyPropertyChanged("ProgressValue");
+
+            double trackDuration = SoundEngine.Instance.Length.TotalSeconds;
+            if (trackDuration == 0)
+                return;
+
+            double secondWidth = (TrackWidth / trackDuration);
+            PlayerPosition = ((double)CurrentFrame / GlobalProperties.Instance.FPS) * secondWidth;
+
+        }
+
+        private void calculateCurrentFrame()
+        {
+            int fps = GlobalProperties.Instance.FPS;
+            double time = SoundEngine.Instance.Position.TotalSeconds;
+            CurrentFrame = (int)Math.Floor(time * fps);
         }
         #endregion
 

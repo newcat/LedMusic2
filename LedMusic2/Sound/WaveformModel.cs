@@ -2,7 +2,7 @@
 
 namespace LedMusic2.Sound
 {
-    class WaveformModel : VMBase
+    public class WaveformModel : VMBase
     {
 
         private float[] _samples;

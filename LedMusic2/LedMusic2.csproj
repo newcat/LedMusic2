@@ -104,6 +104,9 @@
     <Compile Include="Views\TemporaryConnectionView.xaml.cs">
       <DependentUpon>TemporaryConnectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Waveform.xaml.cs">
+      <DependentUpon>Waveform.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -141,6 +144,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\TemporaryConnectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Waveform.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

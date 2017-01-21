@@ -19,6 +19,7 @@
     <Window.Resources>
         <SolidColorBrush x:Key="DarkSquareColor" Color="#1A1A1A" />
         <SolidColorBrush x:Key="LightSquareColor" Color="#1C1C1C" />
+        <SolidColorBrush x:Key="PanelBackground" Color="#CCCCCC" />
 
         <DataTemplate DataType="{x:Type Nodes:NodeBase}">
             <Views:NodeView>
@@ -98,7 +99,7 @@
 
     <DockPanel>
 
-        <Menu IsMainMenu="True" DockPanel.Dock="Top" Panel.ZIndex="10">
+        <Menu IsMainMenu="True" DockPanel.Dock="Top" Panel.ZIndex="10" Background="{StaticResource PanelBackground}">
             <MenuItem Header="File">
                 <MenuItem Header="Open Project" />
                 <MenuItem Header="Save Project" />
@@ -107,21 +108,25 @@
             </MenuItem>
         </Menu>
 
-        <StatusBar DockPanel.Dock="Bottom">
-            <StatusBarItem>
-                <ProgressBar Width="100" Height="15" Margin="4" Value="{Binding ProgressValue, Mode=OneWay}" />
-            </StatusBarItem>
-            <StatusBarItem>
-                <TextBlock Text="{Binding ProgressText}" />
-            </StatusBarItem>
-        </StatusBar>
-        
-        <Grid DockPanel.Dock="Bottom" Background="White">
+        <Grid DockPanel.Dock="Bottom" Panel.ZIndex="10" Background="{StaticResource PanelBackground}">
 
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition Height="30" />
-            </Grid.RowDefinitions>
+            </Grid.RowDefinitions>            
+
+            <Views:Waveform x:Name="waveform" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="75" Grid.Row="0" Background="{x:Null}" 
+                           WaveformModel="{Binding WaveformModel, Source={x:Static Sound:SoundEngine.Instance}}" Foreground="#222222">
+                <local:DataPiping.DataPipes>
+                    <local:DataPipeCollection>
+                        <local:DataPipe Source="{Binding RelativeSource={RelativeSource AncestorType={x:Type Views:Waveform}}, Path=ActualWidth}"
+                                        Target="{Binding TrackWidth, Mode=OneWayToSource}" />
+                    </local:DataPipeCollection>
+                </local:DataPiping.DataPipes>
+            </Views:Waveform>
+
+            <Line X1="{Binding PlayerPosition}" X2="{Binding PlayerPosition}" Y1="0" Y2="{Binding ElementName=waveform, Path=ActualHeight}"
+                  Stroke="Red" StrokeThickness="3" />
 
             <StackPanel Orientation="Horizontal" Grid.Row="1">
                 <Button Width="50" VerticalAlignment="Stretch" Margin="6" Command="{Binding CmdPlayPause}">
@@ -147,6 +152,8 @@
                 <Button Width="50" VerticalAlignment="Stretch" Margin="6" Command="{Binding CmdStop}">
                     <Path Data="M0,0 L10,0 L10,10 L0,10 Z" Fill="Black" />
                 </Button>
+                <ProgressBar Width="100" Margin="20,6,4,6" Value="{Binding ProgressValue, Mode=OneWay}" />
+                <TextBlock Text="{Binding ProgressText}" VerticalAlignment="Center" />
             </StackPanel>
 
         </Grid>
