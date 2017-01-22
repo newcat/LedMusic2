@@ -271,17 +271,30 @@ namespace LedMusic2.ViewModels
 
             var len = _valColorArray.Length;
             var coll = new GradientStopCollection();
-            for (int i = 0; i < len; i++)
+
+            if (len == 1 && _valColorArray[0] != null)
             {
-                if (_valColorArray[i] == null)
-                {
-                    coll.Add(new GradientStop(Color.FromRgb(0, 0, 0), (double)i / len));
-                } else
-                {
-                    var c = _valColorArray[i].getColorRGB();
-                    coll.Add(new GradientStop(Color.FromRgb(c.R, c.G, c.B), (double)i / len));
-                }                    
+                var c = _valColorArray[0].getColorRGB();
+                coll.Add(new GradientStop(Color.FromRgb(c.R, c.G, c.B), 0));
             }
+            else if (len == 1)
+            {
+                coll.Add(new GradientStop(Color.FromRgb(0, 0, 0), 0));
+            }
+            else
+            {
+                for (int i = 0; i < len; i++)
+                {
+                    if (_valColorArray[i] == null)
+                        coll.Add(new GradientStop(Color.FromRgb(0, 0, 0), (double)i / (len - 1)));
+                    else
+                    {
+                        var c = _valColorArray[i].getColorRGB();
+                        coll.Add(new GradientStop(Color.FromRgb(c.R, c.G, c.B), (double)i / (len - 1)));
+                    }
+                }
+            }
+            
             PreviewBrush = new LinearGradientBrush(coll, 0);
         }
 

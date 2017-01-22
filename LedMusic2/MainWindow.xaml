@@ -12,8 +12,7 @@
         xmlns:Sound="clr-namespace:LedMusic2.Sound"
         mc:Ignorable="d"
         Title="MainWindow" Height="550" Width="925"
-        MouseMove="window_MouseMove" MouseLeftButtonDown="window_MouseLeftButtonDown"
-        MouseLeftButtonUp="window_MouseLeftButtonUp" MouseWheel="window_MouseWheel" Loaded="Window_Loaded" KeyDown="Window_KeyDown"
+        Loaded="Window_Loaded" KeyDown="Window_KeyDown"
         Closing="Window_Closing">
 
     <Window.Resources>
@@ -106,6 +105,9 @@
                 <Separator />
                 <MenuItem Header="Quit" />
             </MenuItem>
+            <MenuItem Header="Track">
+                <MenuItem Header="Open" Command="{Binding CmdOpenMusic}" />
+            </MenuItem>
         </Menu>
 
         <Grid DockPanel.Dock="Bottom" Panel.ZIndex="10" Background="{StaticResource PanelBackground}">
@@ -115,14 +117,17 @@
                 <RowDefinition Height="30" />
             </Grid.RowDefinitions>            
 
-            <Views:Waveform x:Name="waveform" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="75" Grid.Row="0" Background="{x:Null}" 
-                           WaveformModel="{Binding WaveformModel, Source={x:Static Sound:SoundEngine.Instance}}" Foreground="#222222">
+            <Views:Waveform x:Name="waveform" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="75" Grid.Row="0" Background="Transparent" 
+                            WaveformModel="{Binding WaveformModel, Source={x:Static Sound:SoundEngine.Instance}}" Foreground="#222222"
+                            MouseLeftButtonDown="waveform_MouseLeftButtonDown">
+                
                 <local:DataPiping.DataPipes>
                     <local:DataPipeCollection>
                         <local:DataPipe Source="{Binding RelativeSource={RelativeSource AncestorType={x:Type Views:Waveform}}, Path=ActualWidth}"
                                         Target="{Binding TrackWidth, Mode=OneWayToSource}" />
                     </local:DataPipeCollection>
                 </local:DataPiping.DataPipes>
+                
             </Views:Waveform>
 
             <Line X1="{Binding PlayerPosition}" X2="{Binding PlayerPosition}" Y1="0" Y2="{Binding ElementName=waveform, Path=ActualHeight}"
@@ -159,11 +164,13 @@
         </Grid>
 
         <Grid>
-            <ItemsControl>
+            <ItemsControl x:Name="nodeIC">
 
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <Canvas x:Name="canvas" Background="{x:Null}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Canvas x:Name="canvas" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                MouseLeftButtonDown="nodePanel_MouseLeftButtonDown" MouseLeftButtonUp="nodePanel_MouseLeftButtonUp"
+                                MouseWheel="nodePanel_MouseWheel" MouseMove="nodePanel_MouseMove">
 
                             <!-- TODO: Implement Zooming -->
                             <!--<Canvas.LayoutTransform>

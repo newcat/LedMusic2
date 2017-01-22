@@ -5,6 +5,7 @@ using LedMusic2.Helpers;
 using LedMusic2.Models;
 using LedMusic2.Nodes;
 using LedMusic2.Sound;
+using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -41,6 +42,9 @@ namespace LedMusic2.ViewModels
             CmdStop = new SimpleCommand();
             CmdStop.ExecuteDelegate = (o) => SoundEngine.Instance.Stop();
             CmdStop.CanExecuteDelegate = (o) => SoundEngine.Instance.CanStop;
+
+            CmdOpenMusic = new SimpleCommand();
+            CmdOpenMusic.ExecuteDelegate = (o) => openMusic();
 
         }
         #endregion
@@ -280,15 +284,18 @@ namespace LedMusic2.ViewModels
 
             fillNodeCategories();
             calculateNodeTree();
-
-            await SoundEngine.Instance.OpenFile("D:\\Daten\\Eigene Musik\\TheUnder - Fire.mp3");
-
         }
 
         public void End()
         {
             SoundEngine.Instance.Stop();
             SoundEngine.Instance.CleanupPlayback();
+
+            foreach (Connection c in Connections)
+                c.Dispose();
+
+            Connections.Clear();
+
         }
 
         #region Connections
@@ -472,6 +479,7 @@ namespace LedMusic2.ViewModels
             else if (e.PropertyName == "CurrentFrame")
             {
                 updatePlayerPosition();
+                CalculateAllNodes();
             }
         }
 
@@ -569,6 +577,18 @@ namespace LedMusic2.ViewModels
             int fps = GlobalProperties.Instance.FPS;
             double time = SoundEngine.Instance.Position.TotalSeconds;
             CurrentFrame = (int)Math.Floor(time * fps);
+        }
+
+        private async void openMusic()
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Multiselect = false;
+            ofd.CheckFileExists = true;
+            ofd.Filter = "Audio files (*.wav;*.mp3)|*.wav;*mp3";
+            if (ofd.ShowDialog() == true)
+            {
+                await SoundEngine.Instance.OpenFile(ofd.FileName);
+            }
         }
         #endregion
 

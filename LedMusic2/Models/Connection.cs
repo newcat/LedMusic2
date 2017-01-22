@@ -102,8 +102,14 @@ namespace LedMusic2.Models
             if (canvas == null)
                 return;
 
-            Point0 = ellInput.TransformToVisual(canvas).Transform(new Point(ellInput.ActualWidth / 2, ellInput.ActualHeight / 2));
-            Point3 = ellOutput.TransformToVisual(canvas).Transform(new Point(ellOutput.ActualWidth / 2, ellOutput.ActualHeight / 2));
+            try
+            {
+                Point0 = ellInput.TransformToVisual(canvas).Transform(new Point(ellInput.ActualWidth / 2, ellInput.ActualHeight / 2));
+                Point3 = ellOutput.TransformToVisual(canvas).Transform(new Point(ellOutput.ActualWidth / 2, ellOutput.ActualHeight / 2));
+            } catch (InvalidOperationException)
+            {
+                System.Diagnostics.Debug.WriteLine("Fail at connection #" + id);
+            }
 
         }
 

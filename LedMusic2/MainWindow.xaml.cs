@@ -1,6 +1,7 @@
 ﻿using LedMusic2.Helpers;
 using LedMusic2.Models;
 using LedMusic2.Nodes;
+using LedMusic2.Sound;
 using LedMusic2.ViewModels;
 using LedMusic2.Views;
 using System;
@@ -48,16 +49,16 @@ namespace LedMusic2
 
         }
 
-        private void window_MouseWheel(object sender, MouseWheelEventArgs e)
+        private void nodePanel_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             vm.Scale += e.Delta > 0 ? 0.1 : -0.1;
-            vm.ScaleCenterX = e.GetPosition(this).X;
-            vm.ScaleCenterY = e.GetPosition(this).Y;
+            vm.ScaleCenterX = e.GetPosition(nodeIC).X;
+            vm.ScaleCenterY = e.GetPosition(nodeIC).Y;
         }
 
-        private void window_MouseMove(object sender, MouseEventArgs e)
+        private void nodePanel_MouseMove(object sender, MouseEventArgs e)
         {
-            Point newPos = e.GetPosition(this);
+            Point newPos = e.GetPosition(nodeIC);
             MainViewModel.Instance.MousePosX = newPos.X;
             MainViewModel.Instance.MousePosY = newPos.Y;
 
@@ -74,7 +75,7 @@ namespace LedMusic2
 
         }
 
-        private void window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void nodePanel_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (vm.IsAddNodePanelOpen) {
                 if (addNodePanel.IsMouseOver)
@@ -85,11 +86,11 @@ namespace LedMusic2
 
             FocusManager.SetFocusedElement(this, this);
 
-            oldMousePosition = e.GetPosition(this);
+            oldMousePosition = e.GetPosition(nodeIC);
             isDragging = true;
         }
 
-        private void window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void nodePanel_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (!wasDragged)
                 NodeBase.InvokeUnselectAllNodes(this);
@@ -119,6 +120,14 @@ namespace LedMusic2
 
             if (e.Key == Key.Delete)
                 vm.DeleteSelectedNode();
+
+            if (e.Key == Key.Space)
+            {
+                if (SoundEngine.Instance.CanPlay)
+                    SoundEngine.Instance.Play();
+                else if (SoundEngine.Instance.CanPause)
+                    SoundEngine.Instance.Pause();
+            }
         }
 
         private void ListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -139,6 +148,17 @@ namespace LedMusic2
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             MainViewModel.Instance.End();
+        }
+
+        private void waveform_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            double width = MainViewModel.Instance.TrackWidth;
+            double trackDuration = SoundEngine.Instance.Length.TotalSeconds;
+            if (width == 0)
+                return;
+
+            double perc = e.GetPosition(waveform).X / width;
+            SoundEngine.Instance.Position = TimeSpan.FromSeconds(perc * trackDuration);
         }
     }
 }

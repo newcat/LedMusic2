@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace LedMusic2.Sound
@@ -73,7 +74,7 @@ namespace LedMusic2.Sound
         {
             get
             {
-                return soundOut != null && waveSource != null && PlaybackState == PlaybackState.Playing;
+                return soundOut != null && waveSource != null;
             }
         }
 
@@ -114,11 +115,6 @@ namespace LedMusic2.Sound
             }
         }
 
-        public float[] CurrentFftData
-        {
-            get { return currentFfTData; }
-        }
-
         private string _file = "";
         public string File
         {
@@ -138,11 +134,10 @@ namespace LedMusic2.Sound
 
         #region Fields
         private readonly DispatcherTimer positionTimer = new DispatcherTimer(DispatcherPriority.Render);
-        private readonly FftProvider fftProvider = new FftProvider(2, FFT_SIZE);
+        private FftProvider fftProvider;
         private ISoundOut soundOut;
         private IWaveSource waveSource;
         private bool buildingWaveform = false;
-        private float[] currentFfTData = new float[(int)FFT_SIZE];
         private List<float[]> fftData = new List<float[]>(1000);
         #endregion
 
@@ -174,12 +169,7 @@ namespace LedMusic2.Sound
 
             File = filename;
 
-            var src = CodecFactory.Instance.GetCodec(filename).ToSampleSource();
-
-            var notificationSource = new SingleBlockNotificationStream(src);
-            notificationSource.SingleBlockRead += (s, e) => fftProvider.Add(e.Left, e.Right);
-
-            waveSource = notificationSource.ToWaveSource();
+            waveSource = CodecFactory.Instance.GetCodec(filename).ToSampleSource().ToWaveSource();
 
             if (!waveSource.CanSeek)
             {
@@ -201,6 +191,9 @@ namespace LedMusic2.Sound
             NotifyPropertyChanged("CanPause");
             NotifyPropertyChanged("CanStop");
 
+            //To enable the play button
+            CommandManager.InvalidateRequerySuggested();
+
             return true;
 
         }
@@ -209,6 +202,7 @@ namespace LedMusic2.Sound
         {
             if (e.HasError)
                 Debug.WriteLine(e.Exception);
+            Stop();
         }
 
         public void Play()
@@ -262,6 +256,22 @@ namespace LedMusic2.Sound
 
         }
 
+        public float[] GetCurrentFftData()
+        {
+
+            double currentTime = Position.TotalSeconds;
+            if (currentTime <= 0)
+                return new float[(int)FFT_SIZE];
+
+            int sampleNumber = (int)Math.Floor((currentTime * waveSource.WaveFormat.SampleRate) / BLOCK_SIZE);
+
+            if (sampleNumber >= 0 && sampleNumber < fftData.Count)
+                return fftData[sampleNumber];
+            else
+                return new float[(int)FFT_SIZE];
+
+        }
+
         public int GetFftBandIndex(float frequency)
         {
             if (waveSource == null)
@@ -270,14 +280,6 @@ namespace LedMusic2.Sound
             int fftSize = (int)FFT_SIZE;
             double f = waveSource.WaveFormat.SampleRate / 2.0;
             return (int)((frequency / f) * (fftSize / 2));
-        }
-
-        public void CalculateFft()
-        {
-            if (!fftProvider.GetFftData(currentFfTData))
-            {
-                //TODO: Debug.WriteLine("GetFftData returned false");
-            }
         }
 
         public void CleanupPlayback()
@@ -318,9 +320,10 @@ namespace LedMusic2.Sound
             var newSamples = new float[sampleSource.Length / BLOCK_SIZE + 2];
             var buffer = new float[BLOCK_SIZE];
             float blockMaxValue;
-
             int x = 0;
-            var fftBuffer = new float[(int)FFT_SIZE];
+            fftProvider = new FftProvider(1, FFT_SIZE);
+            fftData.Clear();
+
             var progress = new ProgressViewModel("Building waveform");
             MainViewModel.Instance.AddProgress(progress);
 
@@ -335,6 +338,7 @@ namespace LedMusic2.Sound
                 newSamples[x] = blockMaxValue;
 
                 fftProvider.Add(buffer, BLOCK_SIZE);
+                var fftBuffer = new float[(int)FFT_SIZE];
                 fftProvider.GetFftData(fftBuffer);
                 fftData.Add(fftBuffer);
 
