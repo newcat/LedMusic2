@@ -129,7 +129,7 @@ namespace LedMusic2.Sound
 
         #region Constants
         private const int BLOCK_SIZE = 1000;
-        public const FftSize FFT_SIZE = FftSize.Fft2048;
+        public const FftSize FFT_SIZE = FftSize.Fft1024;
         #endregion
 
         #region Fields
@@ -168,7 +168,6 @@ namespace LedMusic2.Sound
             CleanupPlayback();
 
             File = filename;
-
             waveSource = CodecFactory.Instance.GetCodec(filename).ToSampleSource().ToWaveSource();
 
             if (!waveSource.CanSeek)

@@ -277,7 +277,7 @@ namespace LedMusic2.ViewModels
         #endregion
 
         #region Public Methods
-        public async void Initialize()
+        public void Initialize()
         {
             NodeBase.UnselectAllNodes += NodeBase_UnselectAllNodes;
             NodeBase.OutputChanged += NodeBase_OutputChanged;

@@ -42,14 +42,25 @@ namespace LedMusic2.Nodes
             }
 
             float[] fftData = SoundEngine.Instance.GetCurrentFftData();
+            if (fftData == null)
+            {
+                setOutput(0);
+                return false;
+            }
+
+            double level = 0;
             double totalLevel = 0;
 
             for (int i = lowerFrequencyIndex; i <= upperFrequencyIndex; i++)
             {
-                totalLevel += fftData[i] * 9;
+                totalLevel += fftData[i];
             }
 
-            double level = totalLevel / (upperFrequencyIndex - lowerFrequencyIndex);
+            if (upperFrequencyIndex == lowerFrequencyIndex || lowerFrequencyIndex > upperFrequencyIndex)
+                level = totalLevel;
+            else
+                level = totalLevel / (upperFrequencyIndex - lowerFrequencyIndex);
+
             if (double.IsNaN(level) || level < 0)
             {
                 setOutput(0);
