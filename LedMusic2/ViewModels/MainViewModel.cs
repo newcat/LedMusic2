@@ -309,6 +309,7 @@ namespace LedMusic2.ViewModels
                 var oldConnection = Connections.FirstOrDefault((x) => x.Output == sender);
                 var input = oldConnection.Input;
                 Connections.Remove(oldConnection);
+                oldConnection.Dispose();
                 TemporaryConnection = new TemporaryConnectionViewModel(input);
                 NodeConnectionHelper.Instance.ConnectionOrigin = input;
             } else

@@ -28,6 +28,17 @@ namespace LedMusic2.Models
             }
         }
 
+        private NodeOptionViewModel _option = null;
+        public NodeOptionViewModel Option
+        {
+            get { return _option; }
+            set
+            {
+                _option = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         private bool _isInput = false;
         public bool IsInput
         {
@@ -35,6 +46,17 @@ namespace LedMusic2.Models
             set
             {
                 _isInput = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private bool _isConnected = false;
+        public bool IsConnected
+        {
+            get { return _isConnected; }
+            set
+            {
+                _isConnected = value;
                 NotifyPropertyChanged();
             }
         }
@@ -62,6 +84,23 @@ namespace LedMusic2.Models
             Parent = parent;
             IsInput = isInput;
             _cmdEllipseClicked.ExecuteDelegate = (o) => MainViewModel.Instance.CreateTemporaryConnection(this);
+
+            if (isInput)
+            {
+                switch (ctype)
+                {
+                    case ConnectionType.BOOL:
+                        Option = new NodeOptionViewModel(NodeOptionType.BOOL, name);
+                        break;
+                    case ConnectionType.COLOR:
+                        Option = new NodeOptionViewModel(NodeOptionType.COLOR, name);
+                        break;
+                    case ConnectionType.NUMBER:
+                        Option = new NodeOptionViewModel(NodeOptionType.NUMBER, name);
+                        break;
+                }
+            }
+
         }
 
         protected virtual void OnValueChanged()

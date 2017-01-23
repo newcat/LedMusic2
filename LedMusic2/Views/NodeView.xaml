@@ -5,15 +5,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:local="clr-namespace:LedMusic2.Views"
     xmlns:Models="clr-namespace:LedMusic2.Models" x:Class="LedMusic2.Views.NodeView"
-    xmlns:enums="clr-namespace:LedMusic2.Enums"
-    xmlns:converters="clr-namespace:LedMusic2.Converters"
-    xmlns:cmd="clr-namespace:AttachedCommandBehavior"
+    xmlns:views="clr-namespace:LedMusic2.Views"
     mc:Ignorable="d" 
     d:DesignHeight="300" d:DesignWidth="200" MinWidth="{Binding MinWidth}">
-
-    <UserControl.Resources>
-        <converters:ColorToBrushConverter x:Key="colorToBrushConverter" />
-    </UserControl.Resources>
 
     <Thumb DragDelta="Thumb_DragDelta" Tag="MainThumb">
         
@@ -76,96 +70,10 @@
 
                             <ListView.ItemContainerStyle>
                                 <Style TargetType="ListViewItem">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding OptionType}" Value="{x:Static enums:NodeOptionType.NUMBER}">
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="ListViewItem">
-                                                        <StackPanel Orientation="Vertical">
-                                                            <TextBlock Text="{Binding Name}" Margin="3" IsHitTestVisible="False" />
-                                                            <Grid>
-                                                                <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition Width="20" />
-                                                                    <ColumnDefinition Width="*" />
-                                                                    <ColumnDefinition Width="20" />
-                                                                </Grid.ColumnDefinitions>
-                                                                
-                                                                <Button Width="20" Height="20" Content="&lt;" Command="{Binding CmdDecreaseValue}"
-                                                                        Grid.Column="0"/>
-                                                                <TextBox Text="{Binding Value, Mode=TwoWay}"
-                                                                         Grid.Column="1" />
-                                                                <Button Width="20" Height="20" Content="&gt;" Command="{Binding CmdIncreaseValue}"
-                                                                        Grid.Column="2"/>
-
-                                                            </Grid>
-                                                        </StackPanel>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding OptionType}" Value="{x:Static enums:NodeOptionType.COLOR}">
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="ListViewItem">
-                                                        <StackPanel Orientation="Vertical">
-                                                            <TextBlock Text="{Binding Name}" Margin="3" IsHitTestVisible="False" />
-                                                            <Rectangle Margin="3" HorizontalAlignment="Stretch" Height="20"
-                                                                       Fill="{Binding Value, Converter={StaticResource colorToBrushConverter}}"
-                                                                       cmd:CommandBehavior.Command="{Binding CmdPickColor}"
-                                                                       cmd:CommandBehavior.Event="MouseLeftButtonDown"/>
-                                                        </StackPanel>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding OptionType}" Value="{x:Static enums:NodeOptionType.BOOL}">
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="ListViewItem">
-                                                        <CheckBox Content="{Binding Name}" IsChecked="{Binding Value}" 
-                                                                  HorizontalAlignment="Stretch" Margin="3"/>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding OptionType}" Value="{x:Static enums:NodeOptionType.SELECTION}">
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="ListViewItem">
-                                                        <StackPanel Orientation="Vertical">
-                                                            <TextBlock Text="{Binding Name}" Margin="3" IsHitTestVisible="False" />
-                                                            <ComboBox ItemsSource="{Binding Options}" SelectedItem="{Binding Value}"
-                                                                  HorizontalAlignment="Stretch" Margin="3" />
-                                                        </StackPanel>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding OptionType}" Value="{x:Static enums:NodeOptionType.PREVIEW}">
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="ListViewItem">
-                                                        <Rectangle Grid.Row="0" Fill="{Binding PreviewBrush}" Height="25"
-                                                                   HorizontalAlignment="Stretch" Margin="3" />
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding OptionType}" Value="{x:Static enums:NodeOptionType.CUSTOM}">
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="ListViewItem">
-                                                        <ContentControl Content="{Binding CustomUIElement}"
-                                                                        Margin="3" HorizontalAlignment="Stretch"/>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </DataTrigger>
-                                    </Style.Triggers>
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate TargetType="ListViewItem">
-                                                
+                                                <views:NodeOptionView />
                                             </ControlTemplate>
                                         </Setter.Value>
                                     </Setter>

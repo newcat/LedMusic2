@@ -133,11 +133,13 @@ namespace LedMusic2.Models
             {
                 Output.Parent.PropertyChanged -= NodeBase_PropertyChanged;
                 Output.PropertyChanged -= NodeInterface_PropertyChanged;
+                Output.IsConnected = false;
             }
 
             Output = ni;
             Output.Parent.PropertyChanged += NodeBase_PropertyChanged;
             Output.PropertyChanged += NodeInterface_PropertyChanged;
+            Output.IsConnected = true;
         }
 
         private void Input_ValueChanged(object sender, EventArgs e)
@@ -172,6 +174,7 @@ namespace LedMusic2.Models
 
                     if (Output != null)
                     {
+                        Output.IsConnected = false;
                         Output.PropertyChanged -= NodeInterface_PropertyChanged;
                         if (Output.Parent != null)
                             Output.Parent.PropertyChanged -= NodeBase_PropertyChanged;

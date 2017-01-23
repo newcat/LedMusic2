@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:LedMusic2.Views"
              xmlns:cmd="clr-namespace:AttachedCommandBehavior"
              xmlns:converters="clr-namespace:LedMusic2.Converters"
+             xmlns:views="clr-namespace:LedMusic2.Views"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
@@ -55,18 +56,52 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
 
-                                    <Ellipse Grid.Column="0" Width="20" Height="20" Stroke="Black" x:Name="ell"
+                                    <Ellipse Grid.Column="0"
+                                             Width="20" Height="20" Stroke="Black" x:Name="ell"
                                              Fill="{Binding ConnectionType, Converter={StaticResource conv}}">
                                         <cmd:CommandBehaviorCollection.Behaviors>
                                             <cmd:BehaviorBinding Event="MouseLeftButtonDown" Command="{Binding CmdEllipseClicked}" />
                                         </cmd:CommandBehaviorCollection.Behaviors>
                                     </Ellipse>
-                                    <TextBlock Text="{Binding Name}" Grid.Column="1" HorizontalAlignment="Left" Margin="0,2,0,0" IsHitTestVisible="False"/>
+
+                                    <TextBlock Grid.Column="1" Text="{Binding Name}" HorizontalAlignment="Left"
+                                               Margin="0,2,0,0" IsHitTestVisible="False">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsConnected}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsConnected}" Value="False">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+
+                                    <views:NodeOptionView DataContext="{Binding Option}" Grid.Column="1">
+                                        <views:NodeOptionView.Style>
+                                            <Style TargetType="views:NodeOptionView">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsConnected}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsConnected}" Value="False">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </views:NodeOptionView.Style>
+                                    </views:NodeOptionView>
 
                                 </Grid>
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding IsConnected}" Value="True">
                 </DataTrigger>
                 
             </Style.Triggers>

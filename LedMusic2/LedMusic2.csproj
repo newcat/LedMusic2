@@ -100,6 +100,9 @@
     <Compile Include="Views\NodeInterfaceView.xaml.cs">
       <DependentUpon>NodeInterfaceView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\NodeOptionView.xaml.cs">
+      <DependentUpon>NodeOptionView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\NodeView.xaml.cs">
       <DependentUpon>NodeView.xaml</DependentUpon>
     </Compile>
@@ -138,6 +141,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\NodeInterfaceView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\NodeOptionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
