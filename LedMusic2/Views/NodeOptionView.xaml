@@ -14,94 +14,97 @@
         <converters:ColorToBrushConverter x:Key="colorToBrushConverter" />
     </UserControl.Resources>
 
-    <UserControl.Style>
-        <Style TargetType="UserControl">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding OptionType}" Value="{x:Static enums:NodeOptionType.NUMBER}">
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="UserControl">
-                                <StackPanel Orientation="Vertical">
-                                    <TextBlock Text="{Binding Name}" Margin="3" IsHitTestVisible="False" />
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="20" />
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="20" />
-                                        </Grid.ColumnDefinitions>
+    <Control>
+        <Control.Style>
+            <Style TargetType="Control">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding OptionType}" Value="{x:Static enums:NodeOptionType.NUMBER}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Control">
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock Text="{Binding Name}" Margin="3" IsHitTestVisible="False" />
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="20" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="20" />
+                                            </Grid.ColumnDefinitions>
 
-                                        <Button Width="20" Height="20" Content="&lt;" Command="{Binding CmdDecreaseValue}"
-                                                                                Grid.Column="0"/>
-                                        <TextBox Text="{Binding Value, Mode=TwoWay}"
-                                                                                    Grid.Column="1" />
-                                        <Button Width="20" Height="20" Content="&gt;" Command="{Binding CmdIncreaseValue}"
-                                                                                Grid.Column="2"/>
+                                            <Button Width="20" Height="20" Content="&lt;" Command="{Binding CmdDecreaseValue}"
+                                                                                    Grid.Column="0"/>
+                                            <TextBox Text="{Binding DisplayValue, Mode=TwoWay}"
+                                                                                        Grid.Column="1" />
+                                            <Button Width="20" Height="20" Content="&gt;" Command="{Binding CmdIncreaseValue}"
+                                                                                    Grid.Column="2"/>
 
-                                    </Grid>
-                                </StackPanel>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding OptionType}" Value="{x:Static enums:NodeOptionType.COLOR}">
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="UserControl">
-                                <StackPanel Orientation="Vertical">
-                                    <TextBlock Text="{Binding Name}" Margin="3" IsHitTestVisible="False" />
-                                    <Rectangle Margin="3" HorizontalAlignment="Stretch" Height="20"
-                                               Fill="{Binding Value, Converter={StaticResource colorToBrushConverter}}"
-                                               cmd:CommandBehavior.Command="{Binding CmdPickColor}"
-                                               cmd:CommandBehavior.Event="MouseLeftButtonDown"/>
-                                </StackPanel>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding OptionType}" Value="{x:Static enums:NodeOptionType.BOOL}">
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="UserControl">
-                                <CheckBox Content="{Binding Name}" IsChecked="{Binding Value}" 
-                                                                            HorizontalAlignment="Stretch" Margin="3"/>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding OptionType}" Value="{x:Static enums:NodeOptionType.SELECTION}">
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="UserControl">
-                                <StackPanel Orientation="Vertical">
-                                    <TextBlock Text="{Binding Name}" Margin="3" IsHitTestVisible="False" />
-                                    <ComboBox ItemsSource="{Binding Options}" SelectedItem="{Binding Value}"
-                                                                            HorizontalAlignment="Stretch" Margin="3" />
-                                </StackPanel>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding OptionType}" Value="{x:Static enums:NodeOptionType.PREVIEW}">
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="UserControl">
-                                <Rectangle Grid.Row="0" Fill="{Binding PreviewBrush}" Height="25"
-                                                                            HorizontalAlignment="Stretch" Margin="3" />
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding OptionType}" Value="{x:Static enums:NodeOptionType.CUSTOM}">
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="UserControl">
-                                <ContentControl Content="{Binding CustomUIElement}"
-                                                Margin="3" HorizontalAlignment="Stretch"/>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-    </UserControl.Style>
+                                        </Grid>
+                                    </StackPanel>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding OptionType}" Value="{x:Static enums:NodeOptionType.COLOR}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Control">
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock Text="{Binding Name}" Margin="3" IsHitTestVisible="False" />
+                                        <Rectangle Margin="3" HorizontalAlignment="Stretch" Height="20"
+                                                   Fill="{Binding DisplayValue, Converter={StaticResource colorToBrushConverter}}"
+                                                   cmd:CommandBehavior.Command="{Binding CmdPickColor}"
+                                                   cmd:CommandBehavior.Event="MouseLeftButtonDown"/>
+                                    </StackPanel>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding OptionType}" Value="{x:Static enums:NodeOptionType.BOOL}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Control">
+                                    <CheckBox Content="{Binding Name}" IsChecked="{Binding DisplayValue}" 
+                                                                                HorizontalAlignment="Stretch" Margin="3"/>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding OptionType}" Value="{x:Static enums:NodeOptionType.SELECTION}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Control">
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock Text="{Binding Name}" Margin="3" IsHitTestVisible="False" />
+                                        <ComboBox ItemsSource="{Binding Options}" SelectedItem="{Binding DisplayValue}"
+                                                                                HorizontalAlignment="Stretch" Margin="3" />
+                                    </StackPanel>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding OptionType}" Value="{x:Static enums:NodeOptionType.PREVIEW}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Control">
+                                    <Rectangle Grid.Row="0" Fill="{Binding PreviewBrush}" Height="25"
+                                                                                HorizontalAlignment="Stretch" Margin="3" />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding OptionType}" Value="{x:Static enums:NodeOptionType.CUSTOM}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Control">
+                                    <ContentControl Content="{Binding CustomUIElement}"
+                                                    Margin="3" HorizontalAlignment="Stretch"/>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Control.Style>
+    </Control>
+
 </UserControl>

@@ -76,6 +76,7 @@
     <Compile Include="Exceptions\RecursionException.cs" />
     <Compile Include="Helpers\NodeConnectionHelper.cs" />
     <Compile Include="Helpers\NodeTreeBuilder.cs" />
+    <Compile Include="Models\Keyframe.cs" />
     <Compile Include="Models\NodeCategoryModel.cs" />
     <Compile Include="Models\NodeType.cs" />
     <Compile Include="Nodes\ColorRampNode.cs" />

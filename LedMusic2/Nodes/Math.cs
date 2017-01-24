@@ -19,6 +19,8 @@ namespace LedMusic2.Nodes
         public MathNode(Point initPosition) : base(initPosition)
         {
 
+            MinWidth = 150;
+
             _inputs.Add(new NodeInterface<double>("Value 1", ConnectionType.NUMBER, this, true, 0));
             _inputs.Add(new NodeInterface<double>("Value 2", ConnectionType.NUMBER, this, true, 0));
 
@@ -30,7 +32,7 @@ namespace LedMusic2.Nodes
             {
                 optOperation.Options.Add(s);
             }
-            optOperation.Value = "Add";
+            optOperation.DisplayValue = "Add";
             optOperation.PropertyChanged += Option_PropertyChanged;
             _options.Add(optOperation);
 
@@ -49,7 +51,7 @@ namespace LedMusic2.Nodes
             double val2 = ((NodeInterface<double>)_inputs.GetNodeInterface("Value 2")).Value;
             double outputVal = 0;
 
-            switch ((string)optOperation.Value)
+            switch ((string)optOperation.RenderValue)
             {
                 case "Add":
                     outputVal = val1 + val2;
@@ -107,6 +109,8 @@ namespace LedMusic2.Nodes
                     break;
             }
 
+            if ((bool)optClamp.RenderValue)
+                outputVal = Math.Max(0, Math.Min(1, outputVal));
 
             ((NodeInterface<double>)_outputs.GetNodeInterface("Output")).SetValue(outputVal);
             return true;

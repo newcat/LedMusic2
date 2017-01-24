@@ -8,6 +8,7 @@
              xmlns:converters="clr-namespace:LedMusic2.Converters"
              xmlns:views="clr-namespace:LedMusic2.Views"
              mc:Ignorable="d" 
+             x:Name="uc"
              d:DesignHeight="300" d:DesignWidth="300">
 
     <UserControl.Resources>
@@ -44,7 +45,7 @@
                         </Setter.Value>
                     </Setter>
                 </DataTrigger>
-                
+
                 <DataTrigger Binding="{Binding IsInput}" Value="True">
                     <Setter Property="Template">
                         <Setter.Value>
@@ -80,19 +81,20 @@
                                         </TextBlock.Style>
                                     </TextBlock>
 
-                                    <views:NodeOptionView DataContext="{Binding Option}" Grid.Column="1">
+                                    <views:NodeOptionView Grid.Column="1" DataContext="{Binding Option}">
                                         <views:NodeOptionView.Style>
                                             <Style TargetType="views:NodeOptionView">
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsConnected}" Value="True">
+                                                    <DataTrigger Binding="{Binding DataContext.IsConnected, ElementName=uc}" Value="True">
                                                         <Setter Property="Visibility" Value="Collapsed" />
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsConnected}" Value="False">
+                                                    <DataTrigger Binding="{Binding DataContext.IsConnected, ElementName=uc}" Value="False">
                                                         <Setter Property="Visibility" Value="Visible" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </views:NodeOptionView.Style>
+
                                     </views:NodeOptionView>
 
                                 </Grid>
@@ -101,9 +103,6 @@
                     </Setter>
                 </DataTrigger>
 
-                <DataTrigger Binding="{Binding IsConnected}" Value="True">
-                </DataTrigger>
-                
             </Style.Triggers>
         </Style>
     </UserControl.Style>

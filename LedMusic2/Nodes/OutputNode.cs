@@ -32,7 +32,7 @@ namespace LedMusic2.Nodes
 
         public override bool Calculate()
         {
-            preview.Value = input.Value;
+            preview.DisplayValue = input.Value;
             return true;
         }
 

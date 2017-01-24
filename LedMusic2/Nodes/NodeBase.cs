@@ -19,7 +19,7 @@ namespace LedMusic2.Nodes
 
         public static event EventHandler OutputChanged;
         public static bool FireOutputChangedEvents = true;
-        protected void InvokeOutputChanged()
+        public void InvokeOutputChanged()
         {
             OutputChanged?.Invoke(this, EventArgs.Empty);
         }

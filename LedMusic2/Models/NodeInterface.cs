@@ -4,6 +4,7 @@ using LedMusic2.Nodes;
 using LedMusic2.ViewModels;
 using LedMusic2.Views;
 using System;
+using System.ComponentModel;
 
 namespace LedMusic2.Models
 {
@@ -77,6 +78,8 @@ namespace LedMusic2.Models
 
         public event EventHandler ValueChanged;
 
+        private bool suppressOptionValueChanged = false;
+
         public NodeInterface(string name, ConnectionType ctype, NodeBase parent, bool isInput)
         {
             Name = name;
@@ -91,21 +94,37 @@ namespace LedMusic2.Models
                 {
                     case ConnectionType.BOOL:
                         Option = new NodeOptionViewModel(NodeOptionType.BOOL, name);
+                        Option.PropertyChanged += Option_PropertyChanged;
                         break;
                     case ConnectionType.COLOR:
                         Option = new NodeOptionViewModel(NodeOptionType.COLOR, name);
+                        Option.PropertyChanged += Option_PropertyChanged;
                         break;
                     case ConnectionType.NUMBER:
                         Option = new NodeOptionViewModel(NodeOptionType.NUMBER, name);
+                        Option.PropertyChanged += Option_PropertyChanged;
                         break;
                 }
             }
 
         }
 
+        private void Option_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "RenderValue")
+            {
+                SetValue(Option.RenderValue);
+                Parent.InvokeOutputChanged();
+            }
+        }
+
         protected virtual void OnValueChanged()
         {
             ValueChanged?.Invoke(this, new EventArgs());
+            if (Option != null && IsInput && !IsConnected)
+            {
+                Option.DisplayValue = GetValue();
+            }
         }
 
         public abstract bool SetValue(object input);
@@ -126,7 +145,7 @@ namespace LedMusic2.Models
         public NodeInterface(string name, ConnectionType cType, NodeBase parent, bool isInput, T initialValue) :
             base(name, cType, parent, isInput)
         {
-            Value = initialValue;
+            SetValue(initialValue);
         }
 
         public override bool SetValue(object input)
@@ -138,8 +157,12 @@ namespace LedMusic2.Models
             }
             else if (NodeType.IsAssignableFrom(input.GetType()))
             {
+                object oldValue = Value;
                 Value = (T)input;
-                base.OnValueChanged(); //TODO: Optimization -> fire event only, if value really changed. (oldVal != newVal)
+
+                if (oldValue == null || !oldValue.Equals(input))
+                    base.OnValueChanged();
+
                 return true;
             }
             else

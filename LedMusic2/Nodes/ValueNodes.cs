@@ -41,7 +41,7 @@ namespace LedMusic2.Nodes
 
         public override bool Calculate()
         {
-            outputInterface.SetValue(opt.Value);
+            outputInterface.SetValue(opt.RenderValue);
             return true;
         }
 
@@ -73,7 +73,7 @@ namespace LedMusic2.Nodes
 
         public override bool Calculate()
         {
-            outputInterface.SetValue(opt.Value);
+            outputInterface.SetValue(opt.RenderValue);
             return true;
         }
 
@@ -107,7 +107,7 @@ namespace LedMusic2.Nodes
 
         public override bool Calculate()
         {
-            outputInterface.SetValue(opt.Value);
+            outputInterface.SetValue(opt.RenderValue);
             return true;
         }
 

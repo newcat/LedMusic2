@@ -3,6 +3,7 @@ using LedMusic2.Enums;
 using LedMusic2.Models;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Forms;
@@ -10,9 +11,10 @@ using System.Windows.Media;
 
 namespace LedMusic2.ViewModels
 {
-    public class NodeOptionViewModel : VMBase
+    public class NodeOptionViewModel : VMBase, IDisposable
     {
 
+        #region ViewModel Properties
         private string _name = "";
         public string Name
         {
@@ -35,15 +37,32 @@ namespace LedMusic2.ViewModels
             }
         }
 
-        public object Value
+        public object DisplayValue
         {
             get { return getValue(); }
             set
             {
-                setValue(value);
+                setDisplayValue(value);
                 NotifyPropertyChanged();
             }
         }
+
+        public object RenderValue
+        {
+            get { return getValue(); }
+        }
+
+        private ObservableCollection<Keyframe> _keyframes = new ObservableCollection<Keyframe>();
+        public ObservableCollection<Keyframe> Keyframes
+        {
+            get { return _keyframes; }
+            set
+            {
+                _keyframes = value;
+                NotifyPropertyChanged();
+            }
+        }
+        #endregion
 
         #region OptionType == NUMBER
         private double _minValue = 0;
@@ -144,11 +163,14 @@ namespace LedMusic2.ViewModels
             OptionType = type;
             Name = name;
 
-            _cmdDecreaseValue.ExecuteDelegate = (o) => Value = _valDouble - 1;
-            _cmdIncreaseValue.ExecuteDelegate = (o) => Value = _valDouble + 1;
+            _cmdDecreaseValue.ExecuteDelegate = (o) => DisplayValue = _valDouble - 1;
+            _cmdIncreaseValue.ExecuteDelegate = (o) => DisplayValue = _valDouble + 1;
             _cmdPickColor.ExecuteDelegate = pickColor;
 
             calcPreviewBrush();
+
+            //TODO
+            //MainViewModel.Instance.PropertyChanged += MainVM_PropertyChanged;
 
         }
 
@@ -191,7 +213,7 @@ namespace LedMusic2.ViewModels
             return null;
         }
 
-        private void setValue(object value)
+        private void setDisplayValue(object value)
         {
             switch (OptionType)
             {
@@ -297,6 +319,28 @@ namespace LedMusic2.ViewModels
             
             PreviewBrush = new LinearGradientBrush(coll, 0);
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false;
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    //TODO
+                    //MainViewModel.Instance.PropertyChanged -= MainVM_PropertyChanged;
+                }
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+        #endregion
 
     }
 }
