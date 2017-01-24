@@ -78,8 +78,6 @@ namespace LedMusic2.Models
 
         public event EventHandler ValueChanged;
 
-        private bool suppressOptionValueChanged = false;
-
         public NodeInterface(string name, ConnectionType ctype, NodeBase parent, bool isInput)
         {
             Name = name;

@@ -5,6 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
@@ -194,8 +195,64 @@ namespace LedMusic2.ViewModels
 
         }
 
+        public void AddKeyframe()
+        {
+            Keyframes.Add(new Keyframe(MainViewModel.Instance.CurrentFrame, getValue()));
+        }
+
         private object getValue()
         {
+
+            if (Keyframes.Count > 0)
+            {
+
+                var frame = MainViewModel.Instance.CurrentFrame;
+
+                if (OptionType == NodeOptionType.NUMBER)
+                {
+
+                    //Interpolate
+                    Keyframe k = Keyframes.FirstOrDefault(x => x.Frame == frame);
+                    double val = 0;
+
+                    if (k == null)
+                    {
+
+                        Keyframe previous = Keyframes.LastOrDefault(x => x.Frame < frame);
+                        Keyframe next = Keyframes.FirstOrDefault(x => x.Frame > frame);
+
+                        if (previous == null)
+                            val = (double)next.Value;
+                        else if (next == null)
+                            val = (double)previous.Value;
+                        else
+                        {
+
+                            var prevVal = (double)previous.Value;
+                            var nextVal = (double)next.Value;
+
+                            double m = (nextVal - prevVal) / (next.Frame - previous.Frame);
+                            val = prevVal + (frame - previous.Frame) * m;
+
+                        }
+                    }
+
+                    return val;
+
+                } else
+                {
+
+                    Keyframe k = Keyframes.LastOrDefault(x => x.Frame <= frame);
+
+                    if (k != null)
+                        return k.Value;
+                    else
+                        return null;
+
+                }
+
+            }
+
             switch (OptionType)
             {
                 case NodeOptionType.BOOL:
