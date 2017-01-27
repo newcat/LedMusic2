@@ -63,6 +63,13 @@ namespace LedMusic2.ViewModels
                 NotifyPropertyChanged();
             }
         }
+
+        public bool HasKeyframes { get { return Keyframes.Count > 0; } }
+
+        public bool IsKeyframe
+        {
+            get { return Keyframes.FirstOrDefault(x => x.Frame == MainViewModel.Instance.CurrentFrame) != null; }
+        }
         #endregion
 
         #region OptionType == NUMBER
@@ -170,8 +177,17 @@ namespace LedMusic2.ViewModels
 
             calcPreviewBrush();
 
-            //TODO
-            //MainViewModel.Instance.PropertyChanged += MainVM_PropertyChanged;
+            MainViewModel.Instance.PropertyChanged += MainVM_PropertyChanged;
+
+        }
+
+        private void MainVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            
+            if (e.PropertyName == "CurrentFrame")
+            {
+                NotifyPropertyChanged("IsKeyframe");
+            }
 
         }
 
@@ -198,6 +214,7 @@ namespace LedMusic2.ViewModels
         public void AddKeyframe()
         {
             Keyframes.Add(new Keyframe(MainViewModel.Instance.CurrentFrame, getValue()));
+            NotifyPropertyChanged("HasKeyframes");
         }
 
         private object getValue()
