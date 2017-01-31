@@ -40,17 +40,17 @@ namespace LedMusic2.ViewModels
 
         public object DisplayValue
         {
-            get { return getValue(); }
+            get { return getValue(true); }
             set
             {
-                setDisplayValue(value);
+                setDisplayValue(value, true);
                 NotifyPropertyChanged();
             }
         }
 
         public object RenderValue
         {
-            get { return getValue(); }
+            get { return getValue(false); }
         }
 
         private ObservableCollection<Keyframe> _keyframes = new ObservableCollection<Keyframe>();
@@ -186,6 +186,7 @@ namespace LedMusic2.ViewModels
             
             if (e.PropertyName == "CurrentFrame")
             {
+                setDisplayValue(getValue(false));
                 NotifyPropertyChanged("IsKeyframe");
             }
 
@@ -213,14 +214,24 @@ namespace LedMusic2.ViewModels
 
         public void AddKeyframe()
         {
-            Keyframes.Add(new Keyframe(MainViewModel.Instance.CurrentFrame, getValue()));
+            var oldKeyframe = Keyframes.FirstOrDefault(x => x.Frame == MainViewModel.Instance.CurrentFrame);
+
+            if (oldKeyframe != null)
+            {
+                oldKeyframe.Value = getValue(true);
+            } else
+            {
+                Keyframes.Add(new Keyframe(MainViewModel.Instance.CurrentFrame, getValue(true)));
+            }
+
             NotifyPropertyChanged("HasKeyframes");
+            NotifyPropertyChanged("IsKeyframe");
         }
 
-        private object getValue()
+        private object getValue(bool ignoreKeyframes)
         {
 
-            if (Keyframes.Count > 0)
+            if (!ignoreKeyframes && Keyframes.Count > 0)
             {
 
                 var frame = MainViewModel.Instance.CurrentFrame;
@@ -252,6 +263,9 @@ namespace LedMusic2.ViewModels
                             val = prevVal + (frame - previous.Frame) * m;
 
                         }
+                    } else
+                    {
+                        val = (double)k.Value;
                     }
 
                     return val;
@@ -287,7 +301,7 @@ namespace LedMusic2.ViewModels
             return null;
         }
 
-        private void setDisplayValue(object value)
+        private void setDisplayValue(object value, bool byUser = false)
         {
             switch (OptionType)
             {
@@ -298,7 +312,10 @@ namespace LedMusic2.ViewModels
                     _valColor = (LedColor)value;
                     break;
                 case NodeOptionType.NUMBER:
-                    parseNumber(value);
+                    if (byUser || !(value is double))
+                        parseNumber(value);
+                    else
+                        _valDouble = (double)value;
                     break;
                 case NodeOptionType.SELECTION:
                     _valString = (string)value;
@@ -308,6 +325,19 @@ namespace LedMusic2.ViewModels
                     calcPreviewBrush();
                     break;
             }
+
+            if (byUser)
+            {
+                var keyframe = Keyframes.FirstOrDefault(x => x.Frame == MainViewModel.Instance.CurrentFrame);
+                if (keyframe != null)
+                {
+                    keyframe.Value = getValue(true);
+                }
+            }
+
+            NotifyPropertyChanged("RenderValue");
+            NotifyPropertyChanged("DisplayValue");
+
         }
 
         //OptionType == NUMBER
@@ -338,8 +368,6 @@ namespace LedMusic2.ViewModels
                 _valDouble = Math.Min(MaxValue, Math.Max(val, MinValue));
             }
 
-            NotifyPropertyChanged("Value");
-
         }
 
         //OptionType == COLOR
@@ -352,8 +380,7 @@ namespace LedMusic2.ViewModels
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 var resultColor = dlg.Color;
-                _valColor = new LedColorRGB(resultColor.R, resultColor.G, resultColor.B);
-                NotifyPropertyChanged("Value");
+                setDisplayValue(new LedColorRGB(resultColor.R, resultColor.G, resultColor.B), true);
             }
             dlg.Dispose();            
 

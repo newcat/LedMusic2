@@ -128,6 +128,22 @@ namespace LedMusic2
                 else if (SoundEngine.Instance.CanPause)
                     SoundEngine.Instance.Pause();
             }
+
+            if (e.Key == Key.I)
+            {
+                if (Mouse.DirectlyOver != null && Mouse.DirectlyOver is FrameworkElement)
+                {
+
+                    var element = (FrameworkElement)Mouse.DirectlyOver;
+
+                    if (element.DataContext != null && element.DataContext is NodeOptionViewModel)
+                    {
+                        ((NodeOptionViewModel)element.DataContext).AddKeyframe();
+                    }
+
+                }
+            }
+
         }
 
         private void ListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
