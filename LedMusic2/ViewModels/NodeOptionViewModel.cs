@@ -175,7 +175,8 @@ namespace LedMusic2.ViewModels
             _cmdIncreaseValue.ExecuteDelegate = (o) => DisplayValue = _valDouble + 1;
             _cmdPickColor.ExecuteDelegate = pickColor;
 
-            calcPreviewBrush();
+            if (type == NodeOptionType.PREVIEW)
+                calcPreviewBrush();
 
             MainViewModel.Instance.PropertyChanged += MainVM_PropertyChanged;
 

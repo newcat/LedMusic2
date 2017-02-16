@@ -80,6 +80,7 @@
     <Compile Include="Models\NodeCategoryModel.cs" />
     <Compile Include="Models\NodeType.cs" />
     <Compile Include="Nodes\ColorRampNode.cs" />
+    <Compile Include="Nodes\MixColorNode.cs" />
     <Compile Include="Nodes\NodeViews\ColorRampNode.xaml.cs">
       <DependentUpon>ColorRampNode.xaml</DependentUpon>
     </Compile>

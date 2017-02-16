@@ -109,7 +109,7 @@ namespace LedMusic2.Models
 
         private void Option_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "RenderValue")
+            if (!IsConnected && e.PropertyName == "RenderValue")
             {
                 SetValue(Option.RenderValue);
                 Parent.InvokeOutputChanged();

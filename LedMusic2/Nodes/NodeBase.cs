@@ -21,7 +21,8 @@ namespace LedMusic2.Nodes
         public static bool FireOutputChangedEvents = true;
         public void InvokeOutputChanged()
         {
-            OutputChanged?.Invoke(this, EventArgs.Empty);
+            if (FireOutputChangedEvents)
+                OutputChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #region ViewModel Properties

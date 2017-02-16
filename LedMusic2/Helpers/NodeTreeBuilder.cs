@@ -26,8 +26,13 @@ namespace LedMusic2.Helpers
         public NodeBase[] GetCalculationOrder(NodeBase[] rootElements, NodeBase[] nodes, Connection[] connections)
         {
 
-            //Build dependency database
+            //clear old data
+            multilayers.Clear();
+            layers = null;
             dependencies.Clear();
+            depth = 0;
+
+            //Build dependency database
             foreach (Connection c in connections)
             {
                 dependencies.Add(new Dependency(c.Output.Parent, c.Input.Parent));
