@@ -134,7 +134,7 @@
                   Stroke="Red" StrokeThickness="3" />
 
             <StackPanel Orientation="Horizontal" Grid.Row="1">
-                <Button Width="50" VerticalAlignment="Stretch" Margin="6" Command="{Binding CmdPlayPause}">
+                <Button Width="50" VerticalAlignment="Center" Height="18" Margin="6,0,6,0" Command="{Binding CmdPlayPause}">
                     <Button.Style>
                         <Style TargetType="Button">
                             <Setter Property="Content">
@@ -154,11 +154,13 @@
                         </Style>
                     </Button.Style>
                 </Button>
-                <Button Width="50" VerticalAlignment="Stretch" Margin="6" Command="{Binding CmdStop}">
+                <Button Width="50" VerticalAlignment="Center" Height="18" Margin="6,0,6,0" Command="{Binding CmdStop}">
                     <Path Data="M0,0 L10,0 L10,10 L0,10 Z" Fill="Black" />
                 </Button>
-                <ProgressBar Width="100" Margin="20,6,4,6" Value="{Binding ProgressValue, Mode=OneWay}" />
+                <ProgressBar Width="100" Margin="20,0,4,0" Height="20" VerticalAlignment="Center" Value="{Binding ProgressValue, Mode=OneWay}" />
                 <TextBlock Text="{Binding ProgressText}" VerticalAlignment="Center" />
+                <TextBlock Text="|" Margin="10,0,10,0" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding CurrentFrame}" VerticalAlignment="Center" />
             </StackPanel>
 
         </Grid>

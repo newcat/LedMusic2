@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -129,16 +130,18 @@ namespace LedMusic2.Sound
 
         #region Constants
         private const int BLOCK_SIZE = 1000;
-        public const FftSize FFT_SIZE = FftSize.Fft1024;
+        public const FftSize FFT_SIZE = FftSize.Fft8192;
         #endregion
 
         #region Fields
         private readonly DispatcherTimer positionTimer = new DispatcherTimer(DispatcherPriority.Render);
-        private FftProvider fftProvider;
+        private Thread fftThread;
+        private object fftLockObject = new object();
+        private FftProvider fftProvider = new FftProvider(2, FFT_SIZE);
         private ISoundOut soundOut;
         private IWaveSource waveSource;
         private bool buildingWaveform = false;
-        private List<float[]> fftData = new List<float[]>(1000);
+        private float[] currentFftData = new float[(int)FFT_SIZE];
         #endregion
 
         #region Constructor
@@ -168,7 +171,12 @@ namespace LedMusic2.Sound
             CleanupPlayback();
 
             File = filename;
-            waveSource = CodecFactory.Instance.GetCodec(filename).ToSampleSource().ToWaveSource();
+
+            var src = CodecFactory.Instance.GetCodec(filename).ToSampleSource();
+            var notificationSource = new SingleBlockNotificationStream(src);
+            notificationSource.SingleBlockRead += (s, e) => fftProvider.Add(e.Left, e.Right);
+
+            waveSource = notificationSource.ToWaveSource();
 
             if (!waveSource.CanSeek)
             {
@@ -189,6 +197,9 @@ namespace LedMusic2.Sound
             NotifyPropertyChanged("CanPlay");
             NotifyPropertyChanged("CanPause");
             NotifyPropertyChanged("CanStop");
+
+            fftThread = new Thread(calculateFft);
+            fftThread.Start();
 
             //To enable the play button
             CommandManager.InvalidateRequerySuggested();
@@ -257,18 +268,10 @@ namespace LedMusic2.Sound
 
         public float[] GetCurrentFftData()
         {
-
-            double currentTime = Position.TotalSeconds;
-            if (currentTime <= 0)
-                return new float[(int)FFT_SIZE];
-
-            int sampleNumber = (int)Math.Floor((currentTime * waveSource.WaveFormat.SampleRate) / BLOCK_SIZE);
-
-            if (sampleNumber >= 0 && sampleNumber < fftData.Count)
-                return fftData[sampleNumber];
-            else
-                return new float[(int)FFT_SIZE];
-
+            lock (fftLockObject)
+            {
+                return currentFftData;
+            }
         }
 
         public int GetFftBandIndex(float frequency)
@@ -283,6 +286,9 @@ namespace LedMusic2.Sound
 
         public void CleanupPlayback()
         {
+            if (fftThread != null)
+                fftThread.Abort();
+
             if (soundOut != null)
             {
                 soundOut.Dispose();
@@ -320,8 +326,6 @@ namespace LedMusic2.Sound
             var buffer = new float[BLOCK_SIZE];
             float blockMaxValue;
             int x = 0;
-            fftProvider = new FftProvider(1, FFT_SIZE);
-            fftData.Clear();
 
             var progress = new ProgressViewModel("Building waveform");
             MainViewModel.Instance.AddProgress(progress);
@@ -335,11 +339,6 @@ namespace LedMusic2.Sound
                         blockMaxValue = Math.Abs(buffer[i]);
                 }
                 newSamples[x] = blockMaxValue;
-
-                fftProvider.Add(buffer, BLOCK_SIZE);
-                var fftBuffer = new float[(int)FFT_SIZE];
-                fftProvider.GetFftData(fftBuffer);
-                fftData.Add(fftBuffer);
 
                 x++;
                 if (x % 500 == 0)
@@ -357,6 +356,24 @@ namespace LedMusic2.Sound
             WaveformModel.Samples = newSamples;
             MainViewModel.Instance.RemoveProgress(progress);
 
+        }
+
+        private void calculateFft()
+        {
+            try
+            {
+                while (true)
+                {
+                    lock (fftLockObject)
+                    {
+                        fftProvider.GetFftData(currentFftData);
+                    }
+                    Thread.Sleep(10);
+                }
+            } catch (ThreadAbortException)
+            {
+                Debug.WriteLine("FFT thread ended.");
+            }            
         }
 
         private void PositionTimer_Tick(object sender, EventArgs e)

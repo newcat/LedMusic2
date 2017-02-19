@@ -1,4 +1,5 @@
-﻿using LedMusic2.Helpers;
+﻿using CSCore.SoundOut;
+using LedMusic2.Helpers;
 using LedMusic2.Models;
 using LedMusic2.Nodes;
 using LedMusic2.Sound;
@@ -128,6 +129,18 @@ namespace LedMusic2
                 else if (SoundEngine.Instance.CanPause)
                     SoundEngine.Instance.Pause();
             }
+
+            if (SoundEngine.Instance.PlaybackState != PlaybackState.Playing)
+            {
+                if (e.Key == Key.Left && MainViewModel.Instance.CurrentFrame > 0)
+                {
+                    MainViewModel.Instance.SetCurrentFrame(MainViewModel.Instance.CurrentFrame - 1);
+                }
+                else if (e.Key == Key.Right)
+                {
+                    MainViewModel.Instance.SetCurrentFrame(MainViewModel.Instance.CurrentFrame + 1);
+                }
+            }            
 
             if (e.Key == Key.I)
             {

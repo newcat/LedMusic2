@@ -245,7 +245,7 @@ namespace LedMusic2.ViewModels
         public int CurrentFrame
         {
             get { return _currentFrame; }
-            set
+            private set
             {
                 _currentFrame = value;
                 NotifyPropertyChanged();
@@ -309,6 +309,11 @@ namespace LedMusic2.ViewModels
 
             Connections.Clear();
 
+        }
+
+        public void SetCurrentFrame(int n)
+        {
+            SoundEngine.Instance.Position = TimeSpan.FromSeconds((n + 0.5) / GlobalProperties.Instance.FPS);
         }
 
         #region Connections
