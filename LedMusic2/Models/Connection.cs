@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Xml.Linq;
 
 namespace LedMusic2.Models
 {
@@ -71,6 +72,20 @@ namespace LedMusic2.Models
             SetOutput(output);
             transferData();
             CalculatePoints();
+        }
+
+        public XElement GetXmlElement()
+        {
+            XElement connectionX = new XElement("connection");
+
+            XElement inputX = new XElement("input");
+            inputX.SetAttributeValue("interfaceid", Input.Id);
+
+            XElement outputX = new XElement("output");
+            outputX.SetAttributeValue("interfaceid", Output.Id);
+
+            connectionX.Add(inputX, outputX);
+            return connectionX;
         }
 
         private void NodeBase_PropertyChanged(object sender, PropertyChangedEventArgs e)

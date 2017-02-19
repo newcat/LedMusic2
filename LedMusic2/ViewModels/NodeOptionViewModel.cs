@@ -9,6 +9,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
+using System.Xml.Linq;
 
 namespace LedMusic2.ViewModels
 {
@@ -182,6 +183,8 @@ namespace LedMusic2.ViewModels
 
         }
 
+        
+
         private void MainVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             
@@ -225,6 +228,7 @@ namespace LedMusic2.ViewModels
                 Keyframes.Add(new Keyframe(MainViewModel.Instance.CurrentFrame, getValue(true)));
             }
 
+            Keyframes.Sort();
             NotifyPropertyChanged("HasKeyframes");
             NotifyPropertyChanged("IsKeyframe");
         }
@@ -375,7 +379,7 @@ namespace LedMusic2.ViewModels
         private void pickColor(object o)
         {
 
-            var c = _valColor.getColorRGB();
+            var c = _valColor.GetColorRGB();
             var dlg = new ColorDialog();
             dlg.Color = System.Drawing.Color.FromArgb(255, c.R, c.G, c.B);
             if (dlg.ShowDialog() == DialogResult.OK)
@@ -398,7 +402,7 @@ namespace LedMusic2.ViewModels
 
             if (len == 1 && _valColorArray[0] != null)
             {
-                var c = _valColorArray[0].getColorRGB();
+                var c = _valColorArray[0].GetColorRGB();
                 coll.Add(new GradientStop(Color.FromRgb(c.R, c.G, c.B), 0));
             }
             else if (len == 1)
@@ -413,7 +417,7 @@ namespace LedMusic2.ViewModels
                         coll.Add(new GradientStop(Color.FromRgb(0, 0, 0), (double)i / (len - 1)));
                     else
                     {
-                        var c = _valColorArray[i].getColorRGB();
+                        var c = _valColorArray[i].GetColorRGB();
                         coll.Add(new GradientStop(Color.FromRgb(c.R, c.G, c.B), (double)i / (len - 1)));
                     }
                 }
@@ -421,6 +425,73 @@ namespace LedMusic2.ViewModels
             
             PreviewBrush = new LinearGradientBrush(coll, 0);
         }
+
+        #region Saving and Loading
+        public XElement GetXmlElement()
+        {
+            XElement nodeOptionX = new XElement("nodeoption");
+            nodeOptionX.SetAttributeValue("type", (int)OptionType);
+            nodeOptionX.SetAttributeValue("name", Name);
+
+            if (HasKeyframes)
+            {
+                XElement keyframesX = new XElement("keyframes");
+                foreach (Keyframe k in Keyframes)
+                {
+                    XElement keyframeX = new XElement("keyframe");
+                    keyframeX.SetAttributeValue("frame", k.Frame);
+                    keyframeX.Value = k.Value.ToString();
+                    keyframesX.Add(keyframeX);
+                }
+                nodeOptionX.Add(keyframesX);
+            }
+            else
+            {
+                if (OptionType == NodeOptionType.NUMBER)
+                    nodeOptionX.Add(new XElement("value", _valDouble.ToString(CultureInfo.InvariantCulture)));
+                else
+                    nodeOptionX.Add(new XElement("value", DisplayValue));
+            }
+            return nodeOptionX;
+        }
+
+        public void LoadFromXml(XElement nodeOptionX)
+        {
+            foreach (XElement el in nodeOptionX.Elements())
+            {
+                switch (el.Name.LocalName)
+                {
+                    case "value":
+                        DisplayValue = parseValue(el.Value);
+                        break;
+                    case "keyframes":
+                        foreach (XElement keyframeX in el.Elements())
+                        {
+                            Keyframes.Add(new Keyframe(int.Parse(keyframeX.Attribute("frame").Value), parseValue(keyframeX.Value)));
+                        }
+                        Keyframes.Sort();
+                        break;
+                }
+            }
+        }
+
+        private object parseValue(string s)
+        {
+            switch (OptionType)
+            {
+                case NodeOptionType.BOOL:
+                    return bool.Parse(s);
+                case NodeOptionType.COLOR:
+                    return LedColor.Parse(s);
+                case NodeOptionType.NUMBER:
+                    return double.Parse(s);
+                case NodeOptionType.SELECTION:
+                    return s;
+                default:
+                    return null;
+            }
+        }
+#endregion
 
         #region IDisposable Support
         private bool disposedValue = false;

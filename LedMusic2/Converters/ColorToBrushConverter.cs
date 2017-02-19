@@ -12,7 +12,7 @@ namespace LedMusic2.Converters
         {
             if (value is LedColor)
             {
-                var c = ((LedColor)value).getColorRGB();
+                var c = ((LedColor)value).GetColorRGB();
                 return new SolidColorBrush(Color.FromRgb(c.R, c.G, c.B));
             } else
             {

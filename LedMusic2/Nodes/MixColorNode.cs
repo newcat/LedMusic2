@@ -35,7 +35,7 @@ namespace LedMusic2.Nodes
             {
                 optMode.Options.Add(s);
             }
-            optMode.DisplayValue = "Mix";
+            optMode.DisplayValue = "Overlay";
             optMode.PropertyChanged += OptMode_PropertyChanged;
             _options.Add(optMode);
 
@@ -67,13 +67,13 @@ namespace LedMusic2.Nodes
             for (int i = 0; i < length; i++)
             {
 
-                LedColorRGB a = i < colorsA.Length ?
-                    (colorsA[i] != null ? colorsA[i].getColorRGB() :
-                    new LedColorRGB(0, 0, 0)) : new LedColorRGB(0, 0, 0);
+                LedColorRGBf a = i < colorsA.Length ?
+                    (colorsA[i] != null ? LedColorRGBf.FromLedColorRGB(colorsA[i].GetColorRGB()) :
+                    new LedColorRGBf(0f, 0f, 0f)) : new LedColorRGBf(0f, 0f, 0f);
 
-                LedColorRGB b = i < colorsB.Length ?
-                    (colorsB[i] != null ? colorsB[i].getColorRGB() :
-                    new LedColorRGB(0, 0, 0)) : new LedColorRGB(0, 0, 0);
+                LedColorRGBf b = i < colorsB.Length ?
+                    (colorsB[i] != null ? LedColorRGBf.FromLedColorRGB(colorsB[i].GetColorRGB()) :
+                    new LedColorRGBf(0f, 0f, 0f)) : new LedColorRGBf(0f, 0f, 0f);
 
                 switch (mode)
                 {
@@ -89,9 +89,27 @@ namespace LedMusic2.Nodes
                     case "Subtract":
                         result[i] = subtract(a, b);
                         break;
+                    case "Screen":
+                        result[i] = screen(a, b);
+                        break;
+                    case "Divide":
+                        result[i] = divide(a, b);
+                        break;
+                    case "Difference":
+                        result[i] = difference(a, b);
+                        break;
+                    case "Darken":
+                        result[i] = darken(a, b);
+                        break;
+                    case "Lighten":
+                        result[i] = lighten(a, b);
+                        break;
+                    case "Overlay":
+                        result[i] = overlay(a, b);
+                        break;
 
                     default:
-                        result[i] = mix(a, b);
+                        result[i] = overlay(a, b);
                         break;
                 }
 
@@ -102,61 +120,136 @@ namespace LedMusic2.Nodes
 
         }
 
-        private LedColorRGB mix(LedColorRGB a, LedColorRGB b)
+        private LedColorRGB mix(LedColorRGBf a, LedColorRGBf b)
         {
-            byte red = (byte)((1.0f - factor) * (a.R) + factor * (b.R));
-            byte green = (byte)((1.0f - factor) * (a.G) + factor * (b.G));
-            byte blue = (byte)((1.0f - factor) * (a.B) + factor * (b.B));
-            return new LedColorRGB(red, green, blue);
-        }
-
-        private LedColorRGB add(LedColorRGB a, LedColorRGB b)
-        {
-            int red = (int)(a.R + factor * b.R);
-            int green = (int)(a.G + factor * b.G);
-            int blue = (int)(a.B + factor * b.B);
+            float factorm = 1.0f - factor;
+            float red = factorm * a.R + factor * b.R;
+            float green = factorm * a.G + factor * b.G;
+            float blue = factorm * a.B + factor * b.B;
             return clamp(red, green, blue);
         }
 
-        private LedColorRGB multiply(LedColorRGB a, LedColorRGB b)
+        private LedColorRGB add(LedColorRGBf a, LedColorRGBf b)
         {
-            int red = 0;
-            if (b.R >= 128)
-                red = (int)(a.R + factor * (2.0f * (b.R - 0.5f)));
-            else
-                red = (int)(a.R + factor * (2.0f * (b.R - 1.0f)));
-
-            int green = 0;
-            if (b.G >= 128)
-                green = (int)(a.G + factor * (2.0f * (b.G - 0.5f)));
-            else
-                green = (int)(a.G + factor * (2.0f * (b.G - 1.0f)));
-
-            int blue = 0;
-            if (b.B >= 128)
-                blue = (int)(a.B + factor * (2.0f * (b.B - 0.5f)));
-            else
-                blue = (int)(a.B + factor * (2.0f * (b.B - 1.0f)));
-
+            float red = a.R + factor * b.R;
+            float green = a.G + factor * b.G;
+            float blue = a.B + factor * b.B;
             return clamp(red, green, blue);
         }
 
-        private LedColorRGB subtract(LedColorRGB a, LedColorRGB b)
+        private LedColorRGB multiply(LedColorRGBf a, LedColorRGBf b)
         {
-            int red = (int)(a.R - factor * b.R);
-            int green = (int)(a.G - factor * b.G);
-            int blue = (int)(a.B - factor * b.B);
+            float facm = 1.0f - factor;
+            float red = a.R * (facm + factor * b.R);
+            float green = a.G * (facm + factor * b.G);
+            float blue = a.B * (facm + factor * b.B);
             return clamp(red, green, blue);
         }
 
-        private byte clamp(int b)
+        private LedColorRGB subtract(LedColorRGBf a, LedColorRGBf b)
         {
-            return (byte)Math.Max(0, Math.Min(255, b));
+            float red = a.R - factor * b.R;
+            float green = a.G - factor * b.G;
+            float blue = a.B - factor * b.B;
+            return clamp(red, green, blue);
         }
 
-        private LedColorRGB clamp(int r, int g, int b)
+        private LedColorRGB screen(LedColorRGBf a, LedColorRGBf b)
         {
-            return new LedColorRGB(clamp(r), clamp(g), clamp(b));
+            float facm = 1.0f - factor;
+            float red = 1.0f - (facm + factor * (1.0f - b.R)) * (1.0f - a.R);
+            float green = 1.0f - (facm + factor * (1.0f - b.G)) * (1.0f - a.G);
+            float blue = 1.0f - (facm + factor * (1.0f - b.B)) * (1.0f - a.B);
+            return clamp(red, green, blue);
+        }
+
+        private LedColorRGB divide(LedColorRGBf a, LedColorRGBf b)
+        {
+            float facm = 1.0f - factor;
+            float red = b.R != 0.0f ? (facm * a.R + factor * a.R / b.R) : 0f;
+            float green = b.G != 0.0f ? (facm * a.G + factor * a.G / b.G) : 0f;
+            float blue = b.B != 0.0f ? (facm * a.B + factor * a.B / b.B) : 0f;
+            return clamp(red, green, blue);
+        }
+
+        private LedColorRGB difference(LedColorRGBf a, LedColorRGBf b)
+        {
+            float facm = 1.0f - factor;
+            float red = facm * a.R + factor * Math.Abs(a.R - b.R);
+            float green = facm * a.G + factor * Math.Abs(a.G - b.G);
+            float blue = facm * a.B + factor * Math.Abs(a.B - b.B);
+            return clamp(red, green, blue);
+        }
+
+        private LedColorRGB darken(LedColorRGBf a, LedColorRGBf b)
+        {
+            float facm = 1.0f - factor;
+            float red = Math.Min(a.R, b.R) * factor + a.R * facm;
+            float green = Math.Min(a.G, b.G) * factor + a.G * facm;
+            float blue = Math.Min(a.B, b.B) * factor + a.B * facm;
+            return clamp(red, green, blue);
+        }
+
+        private LedColorRGB lighten(LedColorRGBf a, LedColorRGBf b)
+        {
+            float red = Math.Max(factor * b.R, a.R);
+            float green = Math.Max(factor * b.G, a.G);
+            float blue = Math.Max(factor * b.B, a.B);
+            return clamp(red, green, blue);
+        }
+
+        private LedColorRGB overlay(LedColorRGBf a, LedColorRGBf b)
+        {
+            return a.GetColorRGB().Overlay(b.GetColorRGB());
+        }
+
+        private float clamp(float f)
+        {
+            return Math.Max(0, Math.Min(1, f));
+        }
+
+        private LedColorRGB clamp(float r, float g, float b)
+        {
+            return new LedColorRGBf(clamp(r), clamp(g), clamp(b)).GetColorRGB();
+        }
+
+        private float getValue(LedColorRGBf c)
+        {
+            return Math.Max(Math.Max(c.R, c.G), c.B);
+        }
+
+        private class LedColorRGBf : LedColor
+        {
+
+            public static LedColorRGBf FromLedColorRGB(LedColorRGB c)
+            {
+                return new LedColorRGBf(c.R / 255f, c.G / 255f, c.B / 255f);
+            }
+
+            public float R { get; set; }
+            public float G { get; set; }
+            public float B { get; set; }
+
+            public LedColorRGBf(float r, float g, float b)
+            {
+                R = r;
+                G = g;
+                B = b;
+            }
+
+            public override LedColorRGB GetColorRGB()
+            {
+                byte red = (byte)(255 * R);
+                byte green = (byte)(255 * G);
+                byte blue = (byte)(255 * B);
+                return new LedColorRGB(red, green, blue);
+            }
+
+            public override LedColorHSV GetColorHSV()
+            {
+                return GetColorRGB().GetColorHSV();
+            }
+
         }
 
     }

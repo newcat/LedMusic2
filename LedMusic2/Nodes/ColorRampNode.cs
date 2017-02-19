@@ -6,9 +6,11 @@ using LedMusic2.Nodes.NodeViews;
 using LedMusic2.ViewModels;
 using System;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
+using System.Xml.Linq;
 
 namespace LedMusic2.Nodes
 {
@@ -204,6 +206,39 @@ namespace LedMusic2.Nodes
 
             InvokeOutputChanged();
 
+        }
+
+        protected override void LoadAdditionalXmlData(XElement x)
+        {
+            ColorStops.Clear();
+            SelectedColorStop = null;
+            foreach (XElement el in x.Elements())
+            {
+                if (el.Name.LocalName == "colorstops")
+                {
+                    foreach (XElement colorStopX in el.Elements())
+                    {
+                        double pos = double.Parse(colorStopX.Attribute("position").Value, CultureInfo.InvariantCulture);
+                        LedColorRGB c = LedColor.Parse(colorStopX.Value);
+                        ColorStopViewModel cvm = new ColorStopViewModel(Color.FromRgb(c.R, c.G, c.B), pos, this);
+                        ColorStops.Add(cvm);
+                    }
+                }
+            }
+            CalcPreview();
+        }
+
+        protected override void SaveAdditionalXmlData(XElement x)
+        {
+            XElement colorStopsX = new XElement("colorstops");
+            foreach (ColorStopViewModel cvm in ColorStops)
+            {
+                Color c = cvm.Color;
+                XElement colorStopX = new XElement("colorstop", new LedColorRGB(c.R, c.G, c.B));
+                colorStopX.SetAttributeValue("position", cvm.Position);
+                colorStopsX.Add(colorStopX);
+            }
+            x.Add(colorStopsX);
         }
 
     }

@@ -21,8 +21,8 @@ namespace LedMusic2
 
         public static LedColorRGB Overlay(this LedColorRGB a, LedColorRGB b)
         {
-            double alphaA = a.getColorHSV().V;
-            double alphaB = a.getColorHSV().V;
+            double alphaA = a.GetColorHSV().V;
+            double alphaB = a.GetColorHSV().V;
             byte red = Convert.ToByte(alphaA * a.R + (1 - alphaA) * b.R);
             byte green = Convert.ToByte(alphaA * a.G + (1 - alphaA) * b.G);
             byte blue = Convert.ToByte(alphaA * a.B + (1 - alphaA) * b.B);
@@ -31,12 +31,12 @@ namespace LedMusic2
 
         public static LedColorHSV Add(this LedColorHSV a, LedColorHSV b)
         {
-            LedColorRGB aRGB = a.getColorRGB();
-            LedColorRGB bRGB = b.getColorRGB();
+            LedColorRGB aRGB = a.GetColorRGB();
+            LedColorRGB bRGB = b.GetColorRGB();
             byte red = Convert.ToByte(Math.Min(aRGB.R + bRGB.R, 255));
             byte green = Convert.ToByte(Math.Min(aRGB.G + bRGB.G, 255));
             byte blue = Convert.ToByte(Math.Min(aRGB.B + bRGB.B, 255));
-            return new LedColorRGB(red, green, blue).getColorHSV();
+            return new LedColorRGB(red, green, blue).GetColorHSV();
         }
 
         public static T FindParent<T>(this DependencyObject obj) where T : DependencyObject

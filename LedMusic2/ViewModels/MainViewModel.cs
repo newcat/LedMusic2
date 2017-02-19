@@ -9,9 +9,14 @@ using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace LedMusic2.ViewModels
 {
@@ -45,6 +50,12 @@ namespace LedMusic2.ViewModels
 
             CmdOpenMusic = new SimpleCommand();
             CmdOpenMusic.ExecuteDelegate = (o) => openMusic();
+
+            CmdSaveProject = new SimpleCommand();
+            CmdSaveProject.ExecuteDelegate = (o) => save();
+
+            CmdOpenProject = new SimpleCommand();
+            CmdOpenProject.ExecuteDelegate = (o) => load();
 
         }
         #endregion
@@ -267,6 +278,8 @@ namespace LedMusic2.ViewModels
         public SimpleCommand CmdOpenMusic { get; private set; }
         public SimpleCommand CmdPlayPause { get; private set; }
         public SimpleCommand CmdStop { get; private set; }
+        public SimpleCommand CmdSaveProject { get; private set; }
+        public SimpleCommand CmdOpenProject { get; private set; }
         #endregion
         #endregion
 
@@ -438,15 +451,16 @@ namespace LedMusic2.ViewModels
 
         }
 
-        public void AddNode(NodeType t)
+        public NodeBase AddNode(NodeType t)
         {
 
             if (t == null)
-                return;
+                return null;
 
             var constructor = t.T.GetConstructor(new Type[] { typeof(Point) });
             var node = (NodeBase)constructor.Invoke(new object[] { new Point(MousePosX - TranslateX, MousePosY - TranslateY) });
             Nodes.Add(node);
+            return node;
 
         }
         #endregion
@@ -590,6 +604,209 @@ namespace LedMusic2.ViewModels
             {
                 await SoundEngine.Instance.OpenFile(ofd.FileName);
             }
+        }
+        #endregion
+
+        #region Saving and Loading
+        private void save()
+        {
+
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.AddExtension = true;
+            sfd.DefaultExt = "lmp";
+            sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            if (sfd.ShowDialog() != true)
+            {
+                return;
+            }
+
+            Stream s = sfd.OpenFile();
+
+            XDocument doc = new XDocument();
+            doc.Declaration = new XDeclaration("1.0", "UTF-8", "yes");
+
+            XElement rootX = new XElement("ledmusicproject");
+
+            XElement translateX = new XElement("translate");
+            translateX.SetAttributeValue("x", TranslateX.ToString(CultureInfo.InvariantCulture));
+            translateX.SetAttributeValue("y", TranslateY.ToString(CultureInfo.InvariantCulture));
+
+            XElement currentFrameX = new XElement("currentframe", CurrentFrame);
+            XElement musicFileX = new XElement("musicfile", SoundEngine.Instance.File);
+
+            rootX.Add(translateX, currentFrameX, musicFileX);
+
+            XElement nodesX = new XElement("nodes");
+            foreach (NodeBase n in Nodes)
+            {
+                nodesX.Add(n.GetXmlElement());
+            }
+            rootX.Add(nodesX);
+
+            XElement connectionsX = new XElement("connections");
+            foreach (Connection c in Connections)
+            {
+                connectionsX.Add(c.GetXmlElement());
+            }
+            rootX.Add(connectionsX);
+
+            doc.Add(rootX);
+            doc.Save(s);
+            s.Close();
+
+        }
+
+        private void load()
+        {
+
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "LedMusic Project File|*.lmp";
+            ofd.Multiselect = false;
+            if (ofd.ShowDialog() != true)
+                return;
+
+            ProgressViewModel prg = new ProgressViewModel("Loading project");
+            AddProgress(prg);
+
+            Stream s = ofd.OpenFile();
+
+            try
+            {
+
+                XDocument doc = XDocument.Load(s);
+
+                foreach (Connection c in Connections)
+                {
+                    c.Dispose();
+                }
+                Connections.Clear();
+                Nodes.Clear();
+
+                XElement rootX = (XElement)doc.FirstNode;
+                int totalElements = rootX.Elements().Count();
+                int counter = 0;
+
+                foreach (XElement n in rootX.Elements())
+                {
+                    switch (n.Name.LocalName)
+                    {
+
+                        case "translate":
+                            TranslateX = double.Parse(n.Attribute("x").Value, CultureInfo.InvariantCulture);
+                            TranslateY = double.Parse(n.Attribute("y").Value, CultureInfo.InvariantCulture);
+                            break;
+
+                        case "currentframe":
+                            CurrentFrame = int.Parse(n.Value);
+                            break;
+
+                        case "musicfile":
+                            if (File.Exists(n.Value))
+                                Task.Run(() => SoundEngine.Instance.OpenFile(n.Value));
+                            else
+                                MessageBox.Show("Couldn't locate music file. Please open it manually.");
+                            break;
+
+                        case "nodes":
+                            foreach (XElement nodeX in n.Elements())
+                                loadNode(nodeX);
+                            break;
+
+                        case "connections":
+                            foreach (XElement connectionX in n.Elements())
+                                loadConnection(connectionX);
+                            break;
+
+                    }
+
+                    counter++;
+                    prg.Progress = (int)(1.0 * counter / totalElements) * 100;
+
+                }
+
+                calculateNodeTree();
+                CalculateAllNodes();
+                //TODO: make connections draw when the nodes are displayed
+                
+
+            } catch (XmlException e)
+            {
+                MessageBox.Show("Failed to open project file: " + e.Message);
+                Console.WriteLine(e.StackTrace);
+            } finally
+            {
+                s.Close();
+                RemoveProgress(prg);
+            }
+
+        }
+
+        private void loadNode(XElement nodeX)
+        {
+
+            string type = nodeX.Attribute("type").Value;
+            NodeBase nodeInstance = null;
+            foreach (NodeCategoryModel ncm in NodeCategories)
+            {
+                foreach (NodeType n in ncm.NodeTypes)
+                {
+                    if (n.Name == type)
+                    {
+                        nodeInstance = AddNode(n);
+                        break;
+                    }
+                }
+                if (nodeInstance != null)
+                    break;
+            }
+
+            nodeInstance.LoadFromXml(nodeX);
+
+        }
+
+        private void loadConnection(XElement connectionX)
+        {
+
+            Guid inputId = Guid.Empty, outputId = Guid.Empty;
+
+            foreach (XElement el in connectionX.Elements())
+            {
+                if (el.Name.LocalName == "input")
+                    inputId = Guid.Parse(el.Attribute("interfaceid").Value);
+                else if (el.Name.LocalName == "output")
+                    outputId = Guid.Parse(el.Attribute("interfaceid").Value);
+            }
+
+            if (inputId == Guid.Empty || outputId == Guid.Empty)
+                return;
+
+            NodeInterface input = findInterfaceById(inputId);
+            NodeInterface output = findInterfaceById(outputId);
+
+            if (input == null || output == null)
+                return;
+
+            Connection c = new Connection(input, output);
+            Connections.Add(c);
+
+        }
+
+        private NodeInterface findInterfaceById(Guid id)
+        {
+            foreach (NodeBase n in Nodes)
+            {
+                foreach (NodeInterface ni in n.Inputs)
+                {
+                    if (ni.Id == id)
+                        return ni;
+                }
+                foreach (NodeInterface ni in n.Outputs)
+                {
+                    if (ni.Id == id)
+                        return ni;
+                }
+            }
+            return null;
         }
         #endregion
 

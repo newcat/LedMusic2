@@ -100,8 +100,8 @@
 
         <Menu IsMainMenu="True" DockPanel.Dock="Top" Panel.ZIndex="10" Background="{StaticResource PanelBackground}">
             <MenuItem Header="File">
-                <MenuItem Header="Open Project" />
-                <MenuItem Header="Save Project" />
+                <MenuItem Header="Open Project" Command="{Binding CmdOpenProject}" />
+                <MenuItem Header="Save Project" Command="{Binding CmdSaveProject}" />
                 <Separator />
                 <MenuItem Header="Quit" />
             </MenuItem>

@@ -41,7 +41,7 @@ namespace LedMusic2.Nodes
             double glow = clamp(
                 ((NodeInterface<double>)_inputs.GetNodeInterface("Glow")).Value, 0, ledCount);
 
-            LedColorHSV color = ((NodeInterface<LedColor>)_inputs.GetNodeInterface("Color")).Value.getColorHSV();
+            LedColorHSV color = ((NodeInterface<LedColor>)_inputs.GetNodeInterface("Color")).Value.GetColorHSV();
 
             bool symmetric = ((NodeInterface<bool>)_inputs.GetNodeInterface("Symmetric")).Value;
 

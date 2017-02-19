@@ -5,6 +5,7 @@ using LedMusic2.ViewModels;
 using LedMusic2.Views;
 using System;
 using System.ComponentModel;
+using System.Xml.Linq;
 
 namespace LedMusic2.Models
 {
@@ -78,6 +79,9 @@ namespace LedMusic2.Models
 
         public event EventHandler ValueChanged;
 
+        private Guid _id = Guid.NewGuid();
+        public Guid Id { get { return _id; } set { _id = value; } }
+
         public NodeInterface(string name, ConnectionType ctype, NodeBase parent, bool isInput)
         {
             Name = name;
@@ -105,6 +109,30 @@ namespace LedMusic2.Models
                 }
             }
 
+        }
+
+        public XElement GetXmlElement()
+        {
+            XElement interfaceX = new XElement("nodeinterface");
+            interfaceX.SetAttributeValue("name", Name);
+            interfaceX.SetAttributeValue("id", Id);
+            if (Option != null)
+                interfaceX.Add(Option.GetXmlElement());
+            return interfaceX;
+        }
+
+        public void LoadFromXml(XElement niX)
+        {
+            Id = Guid.Parse(niX.Attribute("id").Value);
+            foreach (XElement el in niX.Elements())
+            {
+                switch (el.Name.LocalName)
+                {
+                    case "nodeoption":
+                        Option.LoadFromXml(el);
+                        break;
+                }
+            }
         }
 
         private void Option_PropertyChanged(object sender, PropertyChangedEventArgs e)

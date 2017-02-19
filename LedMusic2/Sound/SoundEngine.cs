@@ -228,7 +228,7 @@ namespace LedMusic2.Sound
 
         public void Stop()
         {
-            if (CanStop)
+            if (CanStop && soundOut.PlaybackState != PlaybackState.Stopped)
             {
                 soundOut.Stop();
                 waveSource.SetPosition(TimeSpan.Zero);

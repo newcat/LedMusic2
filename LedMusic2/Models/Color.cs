@@ -5,8 +5,34 @@ namespace LedMusic2.Models
     public abstract class LedColor
     {
 
-        public abstract LedColorRGB getColorRGB();
-        public abstract LedColorHSV getColorHSV();
+        public abstract LedColorRGB GetColorRGB();
+        public abstract LedColorHSV GetColorHSV();
+
+        public override string ToString()
+        {
+            LedColorRGB c = GetColorRGB();
+            return string.Format("{0},{1},{2}", c.R, c.G, c.B);
+        }
+
+        public static LedColorRGB Parse(string s)
+        {
+
+            string[] values = s.Split(',');
+            if (values.Length != 3)
+                throw new FormatException();
+
+            try
+            {
+                byte r = byte.Parse(values[0]);
+                byte g = byte.Parse(values[1]);
+                byte b = byte.Parse(values[2]);
+                return new LedColorRGB(r, g, b);
+            } catch (FormatException)
+            {
+                throw;
+            }
+
+        }
 
     }
 
@@ -31,9 +57,9 @@ namespace LedMusic2.Models
             B = _b;
         }
 
-        public override LedColorRGB getColorRGB() { return this; }
+        public override LedColorRGB GetColorRGB() { return this; }
 
-        public override LedColorHSV getColorHSV()
+        public override LedColorHSV GetColorHSV()
         {
 
             int max = Math.Max(R, Math.Max(G, B));
@@ -70,7 +96,7 @@ namespace LedMusic2.Models
             V = _v;
         }
 
-        public override LedColorRGB getColorRGB()
+        public override LedColorRGB GetColorRGB()
         {
             int hi = Convert.ToInt32(Math.Floor(H / 60)) % 6;
             double f = H / 60 - Math.Floor(H / 60);
@@ -95,7 +121,7 @@ namespace LedMusic2.Models
                 return new LedColorRGB(v, p, q);
         }
 
-        public override LedColorHSV getColorHSV() { return this; }
+        public override LedColorHSV GetColorHSV() { return this; }
     }
 
 }
