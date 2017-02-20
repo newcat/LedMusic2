@@ -17,28 +17,6 @@ namespace LedMusic2
             }
         }
 
-        private double _bpm = 130;
-        public double BPM
-        {
-            get { return _bpm; }
-            set
-            {
-                _bpm = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        private double _beatOffset = 0;
-        public double BeatOffset
-        {
-            get { return _beatOffset; }
-            set
-            {
-                _beatOffset = value;
-                NotifyPropertyChanged();
-            }
-        }
-
         private int _ledCount = 30;
         public int LedCount
         {

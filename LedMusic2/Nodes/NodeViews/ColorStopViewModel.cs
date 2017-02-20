@@ -81,7 +81,7 @@ namespace LedMusic2.Nodes.NodeViews
         }
 
         #region IDisposable Support
-        private bool disposedValue = false; // Dient zur Erkennung redundanter Aufrufe.
+        private bool disposedValue = false;
 
         protected virtual void Dispose(bool disposing)
         {
@@ -98,19 +98,9 @@ namespace LedMusic2.Nodes.NodeViews
             }
         }
 
-        // TODO: Finalizer nur überschreiben, wenn Dispose(bool disposing) weiter oben Code für die Freigabe nicht verwalteter Ressourcen enthält.
-        // ~ColorStopViewModel() {
-        //   // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
-        //   Dispose(false);
-        // }
-
-        // Dieser Code wird hinzugefügt, um das Dispose-Muster richtig zu implementieren.
         public void Dispose()
         {
-            // Ändern Sie diesen Code nicht. Fügen Sie Bereinigungscode in Dispose(bool disposing) weiter oben ein.
             Dispose(true);
-            // TODO: Auskommentierung der folgenden Zeile aufheben, wenn der Finalizer weiter oben überschrieben wird.
-            // GC.SuppressFinalize(this);
         }
         #endregion
 

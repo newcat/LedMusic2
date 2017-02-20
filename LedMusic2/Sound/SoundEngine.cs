@@ -126,6 +126,8 @@ namespace LedMusic2.Sound
                 NotifyPropertyChanged();
             }
         }
+
+        public BeatDetector BeatDetector { get { return beatDetector; } }
         #endregion
 
         #region Constants
@@ -134,14 +136,24 @@ namespace LedMusic2.Sound
         #endregion
 
         #region Fields
+        //Display
         private readonly DispatcherTimer positionTimer = new DispatcherTimer(DispatcherPriority.Render);
+
+        //FFT
         private Thread fftThread;
         private object fftLockObject = new object();
         private FftProvider fftProvider = new FftProvider(2, FFT_SIZE);
+        private float[] currentFftData = new float[(int)FFT_SIZE];
+
+        //Waveform
+        private bool buildingWaveform = false;
+
+        //Sound out
         private ISoundOut soundOut;
         private IWaveSource waveSource;
-        private bool buildingWaveform = false;
-        private float[] currentFftData = new float[(int)FFT_SIZE];
+        
+        //Beat detection
+        BeatDetector beatDetector = new BeatDetector();
         #endregion
 
         #region Constructor
@@ -201,8 +213,7 @@ namespace LedMusic2.Sound
             fftThread = new Thread(calculateFft);
             fftThread.Start();
 
-            BeatDetector bd = new BeatDetector();
-            bd.Detect(File);
+            beatDetector.Detect(File);
 
             //To enable the play button
             CommandManager.InvalidateRequerySuggested();

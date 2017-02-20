@@ -22,9 +22,43 @@ namespace LedMusic2.Sound
         private int sampleRate = 44100;
         private List<float> beats = new List<float>();
 
-        public float[] AverageIntensity;
+        private int bpm;
+        private float offset;
 
-        public void Detect(string file)
+        //TODO
+        private float maxIntensity;
+        private float[] averageIntensity;
+
+        public float GetIntensity(int frame)
+        {
+            return 0;
+        }
+
+        public float GetBeatValue(int frame, bool onlyUseDetected = false)
+        {
+
+            float time = frame * 1.0f / GlobalProperties.Instance.FPS;
+            float bps = bpm / 60f;
+            float spb = 1f / bps;
+
+            if (onlyUseDetected)
+            {
+                return 0;
+            } else
+            {
+                int lastBeatNumber = (int)Math.Floor(time * bps);
+                float lastBeatTime = lastBeatNumber * spb;
+                return 1f - (time - lastBeatTime) / spb;
+            }
+
+        }
+
+        public bool IsBeat(int frame, bool onlyUseDetected = false)
+        {
+            return GetBeatValue(frame) > GetBeatValue(frame - 1);
+        }
+
+        internal void Detect(string file)
         {
             Task.Run(() => _detect(file));
         }
@@ -36,12 +70,15 @@ namespace LedMusic2.Sound
             prg.Progress = 0;
             MainViewModel.Instance.AddProgress(prg);
 
+            beats.Clear();
+
             ISampleSource sampleSrc = CodecFactory.Instance.GetCodec(file).ToSampleSource().ToStereo();
             sampleRate = sampleSrc.WaveFormat.SampleRate;
             long length = sampleSrc.Length;
 
-            long totalFrames = (sampleSrc.Length / sampleRate) * GlobalProperties.Instance.FPS;
-            AverageIntensity = new float[totalFrames];
+            //TODO
+            //long totalFrames = (sampleSrc.Length / sampleRate) * GlobalProperties.Instance.FPS;
+            //averageIntensity = new float[totalFrames];
 
             int energyBufferLength = sampleRate / 1024;
             float[] soundEnergyBuffer = new float[energyBufferLength];
@@ -94,27 +131,88 @@ namespace LedMusic2.Sound
             }
 
             ConcurrentDictionary<int, int> histogram = new ConcurrentDictionary<int, int>();
-            Parallel.For(0, beats.Count, (i) =>
+            Parallel.For(0, beats.Count - 1, (i) =>
             {
                 float delta = beats[i + 1] - beats[i];
                 int calculatedBpm = (int)Math.Round((1 / delta) * 60);
-                histogram.AddOrUpdate(calculatedBpm, 1, (x, y) => y++);
+                histogram.AddOrUpdate(calculatedBpm, 1, (x, y) => ++y);
             });
-            int bpm = histogram.OrderByDescending(x => x.Value).First().Key;
+            bpm = histogram.OrderByDescending(x => x.Value).First().Key;
+            while (bpm < 80)
+                bpm *= 2;
 
             prg.Name = "Matching BPM " + bpm;
             prg.Progress = 0;
 
+            object progressUpdateLockObject = new object();
             float bps = bpm / 60f;
 
-            ConcurrentDictionary<int, int> fitting = new ConcurrentDictionary<int, int>();
+            ConcurrentDictionary<float, float> fitting = new ConcurrentDictionary<float, float>();
             int progress = 0;
-            Parallel.For(0, beats.Count, (i) => {
-                //TODO: Continue here
-                Interlocked.Add(ref progress, 1);
-            });
+            for (int i = 0; i < beats.Count; i++)
+            {
+                int n = (int)Math.Floor(beats[i] / bps);
+                float localOffset = beats[i] - n * bps;
+
+                float deviation = 0;
+                float lastBeat = beats.Last();
+                int j = 0;
+
+                while (j / bps <= lastBeat)
+                {
+                    float targetTime = (j / bps) + localOffset;
+                    float delta = findClosestBeat(targetTime) - targetTime;
+                    deviation += delta * delta;
+                    j++;
+                }
+
+                fitting.AddOrUpdate(offset, deviation, (k, v) => deviation);
+
+                lock (progressUpdateLockObject)
+                {
+                    progress++;
+                    prg.Progress = progress;
+                }
+            }
+
+            offset = fitting.OrderBy(x => x.Value).First().Key;
 
             MainViewModel.Instance.RemoveProgress(prg);
+
+        }
+
+        private float findClosestBeat(float targetTime)
+        {
+
+            //find last beat before targetTime
+            int rangeMin = 0;
+            int rangeMax = beats.Count;
+            int index = 0;
+
+            while (true)
+            {
+
+                index = rangeMin + (rangeMax - rangeMin) / 2;
+
+                if (rangeMax - rangeMin == 0)
+                    return beats[rangeMin];
+
+                if (rangeMax - rangeMin == 1)
+                {
+                    if (index == beats.Count - 1 || Math.Abs(beats[index] - targetTime) < Math.Abs(beats[index + 1] - targetTime))
+                        return beats[index];
+                    else
+                        return beats[index + 1];
+                }
+
+                if (beats[index] == targetTime)
+                    return beats[index];
+                else if (beats[index] < targetTime)
+                    rangeMin = index;
+                else
+                    rangeMax = index;
+
+            }
 
         }
 
