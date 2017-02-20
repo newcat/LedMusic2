@@ -89,6 +89,7 @@
     <Compile Include="Nodes\PeakNode.cs" />
     <Compile Include="Nodes\SpectrumNode.cs" />
     <Compile Include="Nodes\ValueNodes.cs" />
+    <Compile Include="Sound\BeatDetector.cs" />
     <Compile Include="Sound\SoundEngine.cs" />
     <Compile Include="Sound\WaveformModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />

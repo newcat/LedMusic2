@@ -201,6 +201,9 @@ namespace LedMusic2.Sound
             fftThread = new Thread(calculateFft);
             fftThread.Start();
 
+            BeatDetector bd = new BeatDetector();
+            bd.Detect(File);
+
             //To enable the play button
             CommandManager.InvalidateRequerySuggested();
 
