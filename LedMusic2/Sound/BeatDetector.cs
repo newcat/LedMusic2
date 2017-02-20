@@ -7,10 +7,12 @@ using CSCore.Streams;
 using LedMusic2.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace LedMusic2.Sound
 {
@@ -90,6 +92,27 @@ namespace LedMusic2.Sound
                     i = 0;
                 }
             }
+
+            ConcurrentDictionary<int, int> histogram = new ConcurrentDictionary<int, int>();
+            Parallel.For(0, beats.Count, (i) =>
+            {
+                float delta = beats[i + 1] - beats[i];
+                int calculatedBpm = (int)Math.Round((1 / delta) * 60);
+                histogram.AddOrUpdate(calculatedBpm, 1, (x, y) => y++);
+            });
+            int bpm = histogram.OrderByDescending(x => x.Value).First().Key;
+
+            prg.Name = "Matching BPM " + bpm;
+            prg.Progress = 0;
+
+            float bps = bpm / 60f;
+
+            ConcurrentDictionary<int, int> fitting = new ConcurrentDictionary<int, int>();
+            int progress = 0;
+            Parallel.For(0, beats.Count, (i) => {
+                //TODO: Continue here
+                Interlocked.Add(ref progress, 1);
+            });
 
             MainViewModel.Instance.RemoveProgress(prg);
 
