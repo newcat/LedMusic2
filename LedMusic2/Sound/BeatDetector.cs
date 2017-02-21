@@ -166,6 +166,15 @@ namespace LedMusic2.Sound
             while (bpm < 80)
                 bpm *= 2;
 
+            //create a csv string for visualizing
+            //TODO: Remove after debugging
+            StringBuilder sb = new StringBuilder();
+            foreach (KeyValuePair<int, int> x in histogram)
+            {
+                sb.AppendFormat("{0},{1}\n", x.Key, x.Value);
+            }
+            string csv = sb.ToString();
+
             prg.Name = "Matching BPM " + bpm;
             prg.Progress = 0;
 
