@@ -274,6 +274,17 @@ namespace LedMusic2.ViewModels
             }
         }
 
+        private string _infotext = "";
+        public string Infotext
+        {
+            get { return _infotext; }
+            set
+            {
+                _infotext = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         #region Commands
         public SimpleCommand CmdOpenMusic { get; private set; }
         public SimpleCommand CmdPlayPause { get; private set; }

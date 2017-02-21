@@ -76,8 +76,6 @@ namespace LedMusic2.Sound
             sampleRate = sampleSrc.WaveFormat.SampleRate;
             long length = sampleSrc.Length;
 
-            //TODO
-            //long totalFrames = (sampleSrc.Length / sampleRate) * GlobalProperties.Instance.FPS;
             //averageIntensity = new float[totalFrames];
 
             int energyBufferLength = sampleRate / 1024;
@@ -110,7 +108,7 @@ namespace LedMusic2.Sound
                 if (instantEnergy > 1.3 * averageEnergy)
                     beats.Add(1.0f * sampleSrc.Position / sampleRate);
 
-                if (sampleSrc.Position % 5000 == 0)
+                if (sampleSrc.Position % 2500 == 0)
                     prg.Progress = (int)((1.0f * sampleSrc.Position / length) * 100);
 
             }
@@ -137,6 +135,33 @@ namespace LedMusic2.Sound
                 int calculatedBpm = (int)Math.Round((1 / delta) * 60);
                 histogram.AddOrUpdate(calculatedBpm, 1, (x, y) => ++y);
             });
+
+            //bring into range 80 - 180
+            List<int> toRemove = new List<int>();
+            foreach (var x in histogram)
+            {
+                if (x.Key < 80)
+                {
+                    int b = x.Key;
+                    while (b < 80)
+                        b *= 2;
+                    histogram.AddOrUpdate(b, x.Value, (k, v) => v + x.Value);
+                    toRemove.Add(x.Key);
+                } else if (x.Key > 180)
+                {
+                    int b = x.Key;
+                    while (b > 180)
+                        b /= 2;
+                    histogram.AddOrUpdate(b, x.Value, (k, v) => v + x.Value);
+                    toRemove.Add(x.Key);
+                }
+            }
+            foreach (int i in toRemove)
+            {
+                int v = 0;
+                histogram.TryRemove(i, out v);
+            }           
+
             bpm = histogram.OrderByDescending(x => x.Value).First().Key;
             while (bpm < 80)
                 bpm *= 2;
@@ -171,12 +196,13 @@ namespace LedMusic2.Sound
                 lock (progressUpdateLockObject)
                 {
                     progress++;
-                    prg.Progress = progress;
+                    prg.Progress = (int)(progress * 100f / beats.Count);
                 }
             }
 
             offset = fitting.OrderBy(x => x.Value).First().Key;
 
+            MainViewModel.Instance.Infotext = string.Format("BPM: {0} | offset: {1}", bpm, offset.ToString("N2"));
             MainViewModel.Instance.RemoveProgress(prg);
 
         }

@@ -184,6 +184,8 @@ namespace LedMusic2.Sound
 
             File = filename;
 
+            beatDetector.Detect(File);
+
             var src = CodecFactory.Instance.GetCodec(filename).ToSampleSource();
             var notificationSource = new SingleBlockNotificationStream(src);
             notificationSource.SingleBlockRead += (s, e) => fftProvider.Add(e.Left, e.Right);
@@ -212,8 +214,6 @@ namespace LedMusic2.Sound
 
             fftThread = new Thread(calculateFft);
             fftThread.Start();
-
-            beatDetector.Detect(File);
 
             //To enable the play button
             CommandManager.InvalidateRequerySuggested();
