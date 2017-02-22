@@ -160,11 +160,7 @@ namespace LedMusic2.Sound
             {
                 int v = 0;
                 histogram.TryRemove(i, out v);
-            }           
-
-            bpm = histogram.OrderByDescending(x => x.Value).First().Key;
-            while (bpm < 80)
-                bpm *= 2;
+            }
 
             //create a csv string for visualizing
             //TODO: Remove after debugging
@@ -173,43 +169,58 @@ namespace LedMusic2.Sound
             {
                 sb.AppendFormat("{0},{1}\n", x.Key, x.Value);
             }
-            string csv = sb.ToString();
-
-            prg.Name = "Matching BPM " + bpm;
-            prg.Progress = 0;
+            Debug.WriteLine(sb.ToString());
 
             object progressUpdateLockObject = new object();
-            float bps = bpm / 60f;
 
-            ConcurrentDictionary<float, float> fitting = new ConcurrentDictionary<float, float>();
-            int progress = 0;
-            for (int i = 0; i < beats.Count; i++)
+            var beatFittings = new Dictionary<int, KeyValuePair<float, float>>();
+            var threshold = histogram.OrderByDescending(x => x.Value).First().Value * 0.75;
+            var candidates = histogram.Where(x => x.Value >= threshold);
+
+            foreach (KeyValuePair<int, int> candidate in candidates)
             {
-                int n = (int)Math.Floor(beats[i] / bps);
-                float localOffset = beats[i] - n * bps;
 
-                float deviation = 0;
-                float lastBeat = beats.Last();
-                int j = 0;
+                int candidateBpm = candidate.Key;
+                float candidateBps = candidateBpm / 60f;
 
-                while (j / bps <= lastBeat)
+                prg.Name = "Matching BPM " + candidateBpm;
+                prg.Progress = 0;
+
+                ConcurrentDictionary<float, float> fitting = new ConcurrentDictionary<float, float>();
+                int progress = 0;
+                for (int i = 0; i < beats.Count; i++)
                 {
-                    float targetTime = (j / bps) + localOffset;
-                    float delta = findClosestBeat(targetTime) - targetTime;
-                    deviation += delta * delta;
-                    j++;
+                    int n = (int)Math.Floor(beats[i] / candidateBps);
+                    float localOffset = beats[i] - n * candidateBps;
+
+                    float deviation = 0;
+                    float lastBeat = beats.Last();
+                    int j = 0;
+
+                    while (j / candidateBps <= lastBeat)
+                    {
+                        float targetTime = (j / candidateBps) + localOffset;
+                        float delta = findClosestBeat(targetTime) - targetTime;
+                        deviation += delta * delta;
+                        j++;
+                    }
+
+                    fitting.AddOrUpdate(localOffset, deviation, (k, v) => deviation);
+
+                    lock (progressUpdateLockObject)
+                    {
+                        progress++;
+                        prg.Progress = (int)(progress * 100f / beats.Count);
+                    }
                 }
 
-                fitting.AddOrUpdate(offset, deviation, (k, v) => deviation);
+                beatFittings.Add(candidateBpm, fitting.OrderBy(x => x.Value).First());
 
-                lock (progressUpdateLockObject)
-                {
-                    progress++;
-                    prg.Progress = (int)(progress * 100f / beats.Count);
-                }
             }
 
-            offset = fitting.OrderBy(x => x.Value).First().Key;
+            var bestOfBest = beatFittings.OrderBy(x => x.Value.Value).First();
+            bpm = bestOfBest.Key;
+            offset = bestOfBest.Value.Key;
 
             MainViewModel.Instance.Infotext = string.Format("BPM: {0} | offset: {1}", bpm, offset.ToString("N2"));
             MainViewModel.Instance.RemoveProgress(prg);
