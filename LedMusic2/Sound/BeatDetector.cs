@@ -177,6 +177,22 @@ namespace LedMusic2.Sound
             var threshold = histogram.OrderByDescending(x => x.Value).First().Value * 0.75;
             var candidates = histogram.Where(x => x.Value >= threshold);
 
+            //Since sometimes the BPM can also be in the middle of two recognized bpm values,
+            //add the middle between the two highest rated bpm as a candidate,
+            //if both are rated in between 90% of each other
+            //TODO
+            if (candidates.Count() > 1)
+            {
+                var sortedCandidates = candidates.OrderByDescending(x => x.Value);
+                var bestBpm = sortedCandidates.ElementAt(0);
+                var secondBest = sortedCandidates.ElementAt(1);
+                if (secondBest.Value >= bestBpm.Value * 0.9 && !candidates.Contains()
+                {
+                    candidates = candidates.ToList().Add(new KeyValuePair<int, int>(
+                        bestBpm + (bestBpm + )))
+                }
+            }
+
             foreach (KeyValuePair<int, int> candidate in candidates)
             {
 
