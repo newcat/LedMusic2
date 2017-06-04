@@ -57,6 +57,10 @@ namespace LedMusic2.ViewModels
             CmdOpenProject = new SimpleCommand();
             CmdOpenProject.ExecuteDelegate = (o) => load();
 
+            var c1 = new LedColorRGB(250, 250, 0);
+            var c2 = c1.GetColorHSV();
+            var c3 = c2.GetColorRGB();
+
         }
         #endregion
 

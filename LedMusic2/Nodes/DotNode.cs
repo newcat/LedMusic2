@@ -9,19 +9,19 @@ namespace LedMusic2.Nodes
 {
 
     [Node("Dot", NodeCategory.GENERATOR)]
-    public class Dot : NodeBase
+    public class DotNode : NodeBase
     {
 
-        public Dot(Point initPosition) : base(initPosition)
+        public DotNode(Point initPosition) : base(initPosition)
         {
 
-            _inputs.Add(new NodeInterface<double>("Center Position", ConnectionType.NUMBER, this, true, 0));
-            _inputs.Add(new NodeInterface<double>("Alpha", ConnectionType.NUMBER, this, true, 1));
-            _inputs.Add(new NodeInterface<LedColor>("Color", ConnectionType.COLOR, this, true, new LedColorRGB(0, 0, 0)));
-            _inputs.Add(new NodeInterface<double>("Glow", ConnectionType.NUMBER, this, true, 0));
-            _inputs.Add(new NodeInterface<bool>("Symmetric", ConnectionType.BOOL, this, true, false));
+            Inputs.Add(new NodeInterface<double>("Center Position", ConnectionType.NUMBER, this, true, 0));
+            Inputs.Add(new NodeInterface<double>("Alpha", ConnectionType.NUMBER, this, true, 1));
+            Inputs.Add(new NodeInterface<LedColor>("Color", ConnectionType.COLOR, this, true, new LedColorRGB(0, 0, 0)));
+            Inputs.Add(new NodeInterface<double>("Glow", ConnectionType.NUMBER, this, true, 0));
+            Inputs.Add(new NodeInterface<bool>("Symmetric", ConnectionType.BOOL, this, true, false));
 
-            _outputs.Add(new NodeInterface<LedColor[]>("Colors", ConnectionType.COLOR_ARRAY, this, false));
+            Outputs.Add(new NodeInterface<LedColor[]>("Colors", ConnectionType.COLOR_ARRAY, this, false));
 
             Calculate();
 
@@ -33,17 +33,17 @@ namespace LedMusic2.Nodes
             int ledCount = GlobalProperties.Instance.LedCount;
 
             int centerPosition = (int)clamp(
-                ((NodeInterface<double>)_inputs.GetNodeInterface("Center Position")).Value, 0, ledCount);
+                ((NodeInterface<double>)Inputs.GetNodeInterface("Center Position")).Value, 0, ledCount);
 
             double alpha = clamp(
-                ((NodeInterface<double>)_inputs.GetNodeInterface("Alpha")).Value, 0, 1);
+                ((NodeInterface<double>)Inputs.GetNodeInterface("Alpha")).Value, 0, 1);
 
             double glow = clamp(
-                ((NodeInterface<double>)_inputs.GetNodeInterface("Glow")).Value, 0, ledCount);
+                ((NodeInterface<double>)Inputs.GetNodeInterface("Glow")).Value, 0, ledCount);
 
-            LedColorHSV color = ((NodeInterface<LedColor>)_inputs.GetNodeInterface("Color")).Value.GetColorHSV();
+            LedColorHSV color = ((NodeInterface<LedColor>)Inputs.GetNodeInterface("Color")).Value.GetColorHSV();
 
-            bool symmetric = ((NodeInterface<bool>)_inputs.GetNodeInterface("Symmetric")).Value;
+            bool symmetric = ((NodeInterface<bool>)Inputs.GetNodeInterface("Symmetric")).Value;
 
             LedColorHSV[] buffer = new LedColorHSV[ledCount];
 
@@ -69,7 +69,7 @@ namespace LedMusic2.Nodes
                 }
             }
 
-            ((NodeInterface<LedColor[]>)_outputs.GetNodeInterface("Colors")).SetValue(buffer);
+            ((NodeInterface<LedColor[]>)Outputs.GetNodeInterface("Colors")).SetValue(buffer);
 
             return true;
 

@@ -484,7 +484,7 @@ namespace LedMusic2.ViewModels
                 case NodeOptionType.COLOR:
                     return LedColor.Parse(s);
                 case NodeOptionType.NUMBER:
-                    return double.Parse(s);
+                    return double.Parse(s, CultureInfo.InvariantCulture);
                 case NodeOptionType.SELECTION:
                     return s;
                 default:

@@ -181,7 +181,7 @@ namespace LedMusic2.Sound
             //add the middle between the two highest rated bpm as a candidate,
             //if both are rated in between 90% of each other
             //TODO
-            if (candidates.Count() > 1)
+            /*if (candidates.Count() > 1)
             {
                 var sortedCandidates = candidates.OrderByDescending(x => x.Value);
                 var bestBpm = sortedCandidates.ElementAt(0);
@@ -191,7 +191,7 @@ namespace LedMusic2.Sound
                     candidates = candidates.ToList().Add(new KeyValuePair<int, int>(
                         bestBpm + (bestBpm + )))
                 }
-            }
+            }*/
 
             foreach (KeyValuePair<int, int> candidate in candidates)
             {

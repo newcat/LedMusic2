@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace LedMusic2.Models
 {
@@ -73,6 +74,11 @@ namespace LedMusic2.Models
 
         }
 
+        public double GetValue()
+        {
+            return Math.Max(R, Math.Max(G, B)) / 255.0;
+        }
+
     }
 
     public class LedColorHSV : LedColor
@@ -94,6 +100,12 @@ namespace LedMusic2.Models
             H = _h;
             S = _s;
             V = _v;
+        }
+
+        public string ToHsvString()
+        {
+            return string.Format("{0},{1},{2}", H.ToString(CultureInfo.InvariantCulture),
+                S.ToString(CultureInfo.InvariantCulture), V.ToString(CultureInfo.InvariantCulture));
         }
 
         public override LedColorRGB GetColorRGB()
