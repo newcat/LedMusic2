@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
 using System.Xml.Linq;
+using System.Linq;
 
 namespace LedMusic2.Nodes
 {
@@ -80,19 +81,22 @@ namespace LedMusic2.Nodes
         public ColorRampNode(Point initPosition) : base(initPosition)
         {
 
-            _outputs.Add(new NodeInterface<LedColor[]>("Color", ConnectionType.COLOR_ARRAY, this, false));
+            Inputs.Add(new NodeInterface<double>("Factor", ConnectionType.NUMBER, this, true));
 
-            _options.Add(new NodeOptionViewModel(NodeOptionType.CUSTOM, "Test", typeof(NodeViews.ColorRampNode), this));
+            Outputs.Add(new NodeInterface<LedColor[]>("Color Band", ConnectionType.COLOR_ARRAY, this, false));
+            Outputs.Add(new NodeInterface<LedColor>("Single Color", ConnectionType.COLOR, this, false));
 
-            _cmdAddStop.ExecuteDelegate = (o) => {
+            Options.Add(new NodeOptionViewModel(NodeOptionType.CUSTOM, "Test", typeof(NodeViews.ColorRampNode), this));
+
+            CmdAddStop.ExecuteDelegate = (o) => {
                 var c = new ColorStopViewModel(Colors.White, 0.0, this);
                 _colorStops.Add(c);
                 SelectStop(c);
                 CalcPreview();
             };
 
-            _cmdRemoveStop.CanExecuteDelegate = (o) => SelectedColorStop != null;
-            _cmdRemoveStop.ExecuteDelegate = (o) =>
+            CmdRemoveStop.CanExecuteDelegate = (o) => SelectedColorStop != null;
+            CmdRemoveStop.ExecuteDelegate = (o) =>
             {
                 if (SelectedColorStop != null)
                 {
@@ -126,50 +130,49 @@ namespace LedMusic2.Nodes
 
             ColorStops.Sort();
 
-            var currentStopIndex = 0;
-            var colorStopCount = ColorStops.Count;
-
             for (int i = 0; i < ledCount; i++)
             {
 
                 var currentPos = (double)i / ledCount;
-                if (currentStopIndex < colorStopCount - 1 && currentPos > ColorStops[currentStopIndex + 1].Position)
-                {
-                    currentStopIndex++;
-                }
-
-                if (colorStopCount - 1 == currentStopIndex)
-                {
-                    var c = ColorStops[currentStopIndex].Color;
-                    output[i] = new LedColorRGB(c.R, c.G, c.B);
-                } else
-                {
-                    
-                    var stop1 = ColorStops[currentStopIndex];
-                    var stop2 = ColorStops[currentStopIndex + 1];
-                    var fac = 0.5;
-
-                    if (currentPos <= stop1.Position)
-                        fac = 0;
-                    else if (currentPos >= stop2.Position)
-                        fac = 1;
-                    else
-                        fac = (currentPos - stop1.Position) / (stop2.Position - stop1.Position);
-
-                    output[i] = new LedColorRGB(
-                        (byte)Math.Min(255, stop1.Color.R + fac * (stop2.Color.R - stop1.Color.R)),
-                        (byte)Math.Min(255, stop1.Color.G + fac * (stop2.Color.G - stop1.Color.G)),
-                        (byte)Math.Min(255, stop1.Color.B + fac * (stop2.Color.B - stop1.Color.B))
-                        );
-
-                }
+                output[i] = getColorAtPosition(currentPos);
 
             }
 
-            _outputs[0].SetValue(output);
+            Outputs.GetNodeInterface("Color Band").SetValue(output);
+
+            var fac = Math.Max(0.0, Math.Min(1.0, ((NodeInterface<double>)Inputs.GetNodeInterface("Factor")).Value));
+            Outputs.GetNodeInterface("Single Color").SetValue(getColorAtPosition(fac));
 
             return true;
 
+        }
+
+        private LedColorRGB getColorAtPosition(double position)
+        {
+
+            var prev = ColorStops.LastOrDefault(x => x.Position <= position);
+            var next = ColorStops.FirstOrDefault(x => x.Position > position);
+
+            if (prev == null && next == null)
+                return null;
+            else if (prev == null)
+                return colorToLedColor(next.Color);
+            else if (next == null || prev.Position == position)
+                return colorToLedColor(prev.Color);
+            else
+            {
+                var fac = (position - prev.Position) / (next.Position - prev.Position);
+                return new LedColorRGB(
+                        (byte)Math.Max(0, Math.Min(255, prev.Color.R + fac * (next.Color.R - prev.Color.R))),
+                        (byte)Math.Max(0, Math.Min(255, prev.Color.G + fac * (next.Color.G - prev.Color.G))),
+                        (byte)Math.Max(0, Math.Min(255, prev.Color.B + fac * (next.Color.B - prev.Color.B))));
+            }
+
+        }
+
+        private LedColorRGB colorToLedColor(Color c)
+        {
+            return new LedColorRGB(c.R, c.G, c.B);
         }
 
         public void SelectStop(ColorStopViewModel vm)
