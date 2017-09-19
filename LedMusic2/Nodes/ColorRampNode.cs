@@ -207,8 +207,6 @@ namespace LedMusic2.Nodes
             }
             FillBrush = new LinearGradientBrush(sc, 0);
 
-            InvokeOutputChanged();
-
         }
 
         protected override void LoadAdditionalXmlData(XElement x)

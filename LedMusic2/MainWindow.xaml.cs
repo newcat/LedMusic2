@@ -1,26 +1,10 @@
-﻿using CSCore.SoundOut;
-using LedMusic2.Helpers;
-using LedMusic2.Models;
+﻿using LedMusic2.Models;
 using LedMusic2.Nodes;
-using LedMusic2.Sound;
 using LedMusic2.ViewModels;
-using LedMusic2.Views;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace LedMusic2
 {
@@ -42,7 +26,6 @@ namespace LedMusic2
             DataContext = MainViewModel.Instance;
 
             Helpers.TypeConverter.Initialize();
-            NodeBase.FireOutputChangedEvents = true; //TODO: Change to false when playing back while settings keyframes
 
             vm.Nodes.Add(new OutputNode(new Point(200, 200)));
 
@@ -122,41 +105,6 @@ namespace LedMusic2
             if (e.Key == Key.Delete)
                 vm.DeleteSelectedNode();
 
-            if (e.Key == Key.Space)
-            {
-                if (SoundEngine.Instance.CanPlay)
-                    SoundEngine.Instance.Play();
-                else if (SoundEngine.Instance.CanPause)
-                    SoundEngine.Instance.Pause();
-            }
-
-            if (SoundEngine.Instance.PlaybackState != PlaybackState.Playing)
-            {
-                if (e.Key == Key.Left && MainViewModel.Instance.CurrentFrame > 0)
-                {
-                    MainViewModel.Instance.SetCurrentFrame(MainViewModel.Instance.CurrentFrame - 1);
-                }
-                else if (e.Key == Key.Right)
-                {
-                    MainViewModel.Instance.SetCurrentFrame(MainViewModel.Instance.CurrentFrame + 1);
-                }
-            }            
-
-            if (e.Key == Key.I)
-            {
-                if (Mouse.DirectlyOver != null && Mouse.DirectlyOver is FrameworkElement)
-                {
-
-                    var element = (FrameworkElement)Mouse.DirectlyOver;
-
-                    if (element.DataContext != null && element.DataContext is NodeOptionViewModel)
-                    {
-                        ((NodeOptionViewModel)element.DataContext).AddKeyframe();
-                    }
-
-                }
-            }
-
         }
 
         private void ListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -179,15 +127,5 @@ namespace LedMusic2
             MainViewModel.Instance.End();
         }
 
-        private void waveform_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            double width = MainViewModel.Instance.TrackWidth;
-            double trackDuration = SoundEngine.Instance.Length.TotalSeconds;
-            if (width == 0)
-                return;
-
-            double perc = e.GetPosition(waveform).X / width;
-            SoundEngine.Instance.Position = TimeSpan.FromSeconds(perc * trackDuration);
-        }
     }
 }

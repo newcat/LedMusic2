@@ -4,7 +4,6 @@ using LedMusic2.Enums;
 using LedMusic2.Helpers;
 using LedMusic2.Models;
 using LedMusic2.Nodes;
-using LedMusic2.Sound;
 using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
@@ -13,8 +12,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -31,35 +30,32 @@ namespace LedMusic2.ViewModels
         }
         private MainViewModel() {
 
-            PropertyChanged += MainViewModel_PropertyChanged;
-            SoundEngine.Instance.PropertyChanged += SoundEngine_PropertyChanged;
-            GlobalProperties.Instance.PropertyChanged += GlobalProperties_PropertyChanged;
-
-            CmdPlayPause = new SimpleCommand();
-            CmdPlayPause.ExecuteDelegate = (o) => {
-                if (SoundEngine.Instance.CanPlay)
-                    SoundEngine.Instance.Play();
-                else
-                    SoundEngine.Instance.Pause();
+            calculationTimer = new DispatcherTimer(DispatcherPriority.Normal)
+            {
+                Interval = TimeSpan.FromMilliseconds(1000 / GlobalProperties.Instance.FPS)
             };
-            CmdPlayPause.CanExecuteDelegate = (o) => SoundEngine.Instance.CanPlay || SoundEngine.Instance.CanPause;
+            calculationTimer.Tick += OnCalculationTimerTick;
 
-            CmdStop = new SimpleCommand();
-            CmdStop.ExecuteDelegate = (o) => SoundEngine.Instance.Stop();
-            CmdStop.CanExecuteDelegate = (o) => SoundEngine.Instance.CanStop;
+            CmdPlayPause = new SimpleCommand
+            {
+                ExecuteDelegate = (o) =>
+                {
+                    if (IsProcessingPaused)
+                        StartProcessing();
+                    else
+                        StopProcessing();
+                }
+            };
 
-            CmdOpenMusic = new SimpleCommand();
-            CmdOpenMusic.ExecuteDelegate = (o) => openMusic();
+            CmdSaveProject = new SimpleCommand
+            {
+                ExecuteDelegate = (o) => save()
+            };
 
-            CmdSaveProject = new SimpleCommand();
-            CmdSaveProject.ExecuteDelegate = (o) => save();
-
-            CmdOpenProject = new SimpleCommand();
-            CmdOpenProject.ExecuteDelegate = (o) => load();
-
-            var c1 = new LedColorRGB(250, 250, 0);
-            var c2 = c1.GetColorHSV();
-            var c3 = c2.GetColorRGB();
+            CmdOpenProject = new SimpleCommand
+            {
+                ExecuteDelegate = (o) => load()
+            };
 
         }
         #endregion
@@ -245,35 +241,13 @@ namespace LedMusic2.ViewModels
         }
         #endregion
 
-        private int _currentFrame = 0;
-        public int CurrentFrame
+        private bool _isProcessingPaused = true;
+        public bool IsProcessingPaused
         {
-            get { return _currentFrame; }
-            private set
-            {
-                _currentFrame = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        private double _playerPosition = 0; //IN PIXELS!!!
-        public double PlayerPosition
-        {
-            get { return _playerPosition; }
+            get { return _isProcessingPaused; }
             set
             {
-                _playerPosition = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        private double _trackWidth = 1000;
-        public double TrackWidth
-        {
-            get { return _trackWidth; }
-            set
-            {
-                _trackWidth = value;
+                _isProcessingPaused = value;
                 NotifyPropertyChanged();
             }
         }
@@ -290,9 +264,7 @@ namespace LedMusic2.ViewModels
         }
 
         #region Commands
-        public SimpleCommand CmdOpenMusic { get; private set; }
         public SimpleCommand CmdPlayPause { get; private set; }
-        public SimpleCommand CmdStop { get; private set; }
         public SimpleCommand CmdSaveProject { get; private set; }
         public SimpleCommand CmdOpenProject { get; private set; }
         #endregion
@@ -301,14 +273,13 @@ namespace LedMusic2.ViewModels
         #region Private Fields
         private NodeBase[] currentNodeCalculationOrder = new NodeBase[0];
         private NodeTreeBuilder ntb = new NodeTreeBuilder();
-        private bool calculating = false;
+        private DispatcherTimer calculationTimer;
         #endregion
 
         #region Public Methods
         public void Initialize()
         {
             NodeBase.UnselectAllNodes += NodeBase_UnselectAllNodes;
-            NodeBase.OutputChanged += NodeBase_OutputChanged;
 
             fillNodeCategories();
             calculateNodeTree();
@@ -316,19 +287,12 @@ namespace LedMusic2.ViewModels
 
         public void End()
         {
-            SoundEngine.Instance.Stop();
-            SoundEngine.Instance.CleanupPlayback();
 
             foreach (Connection c in Connections)
                 c.Dispose();
 
             Connections.Clear();
 
-        }
-
-        public void SetCurrentFrame(int n)
-        {
-            SoundEngine.Instance.Position = TimeSpan.FromSeconds((n + 0.5) / GlobalProperties.Instance.FPS);
         }
 
         #region Connections
@@ -423,7 +387,24 @@ namespace LedMusic2.ViewModels
         #endregion
 
         #region Nodes
+        public void StartProcessing()
+        {
+            calculationTimer.Start();
+            IsProcessingPaused = false;
+        }
+
+        public void StopProcessing()
+        {
+            calculationTimer.Stop();
+            IsProcessingPaused = true;
+        }
+
         public void CalculateAllNodes()
+        {
+            CalculateNodes(0);
+        }
+
+        public void OnCalculationTimerTick(object sender, EventArgs e)
         {
             CalculateNodes(0);
         }
@@ -437,14 +418,10 @@ namespace LedMusic2.ViewModels
 
         public void CalculateNodes(int startingIndex)
         {
-            calculating = true;
-            NodeBase.FireOutputChangedEvents = false;
             for (int i = startingIndex; i < currentNodeCalculationOrder.Length; i++)
             {
                 currentNodeCalculationOrder[i].Calculate();
             }
-            calculating = false;
-            NodeBase.FireOutputChangedEvents = true;
         }
 
         public void DeleteSelectedNode()
@@ -505,33 +482,6 @@ namespace LedMusic2.ViewModels
         #endregion
 
         #region PropertyChangedEvents
-        private void MainViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "TrackWidth")
-            {
-                updatePlayerPosition();
-            }
-            else if (e.PropertyName == "CurrentFrame")
-            {
-                updatePlayerPosition();
-                CalculateAllNodes();
-            }
-        }
-
-        private void SoundEngine_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "Position")
-                calculateCurrentFrame();
-            else if (e.PropertyName == "Length")
-                updatePlayerPosition();
-        }
-
-        private void GlobalProperties_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "FPS")
-                calculateCurrentFrame();
-        }
-
         private void Progress_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             NotifyPropertyChanged("ProgressText");
@@ -544,12 +494,6 @@ namespace LedMusic2.ViewModels
         {
             foreach (NodeBase n in Nodes)
                 n.IsSelected = false;
-        }
-
-        private void NodeBase_OutputChanged(object sender, EventArgs e)
-        {
-            if (!calculating && sender is NodeBase)
-                CalculateNodes((NodeBase)sender);
         }
 
         private void fillNodeCategories()
@@ -594,37 +538,6 @@ namespace LedMusic2.ViewModels
             }
             return (int)Math.Floor((double)val / _progresses.Count);
         }
-
-        private void updatePlayerPosition()
-        {
-
-            double trackDuration = SoundEngine.Instance.Length.TotalSeconds;
-            if (trackDuration == 0)
-                return;
-
-            double secondWidth = (TrackWidth / trackDuration);
-            PlayerPosition = ((double)CurrentFrame / GlobalProperties.Instance.FPS) * secondWidth;
-
-        }
-
-        private void calculateCurrentFrame()
-        {
-            int fps = GlobalProperties.Instance.FPS;
-            double time = SoundEngine.Instance.Position.TotalSeconds;
-            CurrentFrame = (int)Math.Floor(time * fps);
-        }
-
-        private async void openMusic()
-        {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Multiselect = false;
-            ofd.CheckFileExists = true;
-            ofd.Filter = "Audio files (*.wav;*.mp3)|*.wav;*mp3";
-            if (ofd.ShowDialog() == true)
-            {
-                await SoundEngine.Instance.OpenFile(ofd.FileName);
-            }
-        }
         #endregion
 
         #region Saving and Loading
@@ -650,11 +563,7 @@ namespace LedMusic2.ViewModels
             XElement translateX = new XElement("translate");
             translateX.SetAttributeValue("x", TranslateX.ToString(CultureInfo.InvariantCulture));
             translateX.SetAttributeValue("y", TranslateY.ToString(CultureInfo.InvariantCulture));
-
-            XElement currentFrameX = new XElement("currentframe", CurrentFrame);
-            XElement musicFileX = new XElement("musicfile", SoundEngine.Instance.File);
-
-            rootX.Add(translateX, currentFrameX, musicFileX);
+            rootX.Add(translateX);
 
             XElement nodesX = new XElement("nodes");
             foreach (NodeBase n in Nodes)
@@ -716,17 +625,6 @@ namespace LedMusic2.ViewModels
                             TranslateY = double.Parse(n.Attribute("y").Value, CultureInfo.InvariantCulture);
                             break;
 
-                        case "currentframe":
-                            CurrentFrame = int.Parse(n.Value);
-                            break;
-
-                        case "musicfile":
-                            if (File.Exists(n.Value))
-                                Task.Run(() => SoundEngine.Instance.OpenFile(n.Value));
-                            else
-                                MessageBox.Show("Couldn't locate music file. Please open it manually.");
-                            break;
-
                         case "nodes":
                             foreach (XElement nodeX in n.Elements())
                                 loadNode(nodeX);
@@ -780,7 +678,7 @@ namespace LedMusic2.ViewModels
                     break;
             }
 
-            nodeInstance.LoadFromXml(nodeX);
+            if (nodeInstance != null) nodeInstance.LoadFromXml(nodeX);
 
         }
 

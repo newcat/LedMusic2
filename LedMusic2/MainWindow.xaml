@@ -9,7 +9,6 @@
         xmlns:Views="clr-namespace:LedMusic2.Views"
         xmlns:Models="clr-namespace:LedMusic2.Models"
         xmlns:Converters="clr-namespace:LedMusic2.Converters"
-        xmlns:Sound="clr-namespace:LedMusic2.Sound"
         mc:Ignorable="d"
         Title="MainWindow" Height="550" Width="925"
         Loaded="Window_Loaded" KeyDown="Window_KeyDown"
@@ -115,20 +114,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition Height="30" />
-            </Grid.RowDefinitions>            
-
-            <Views:Waveform x:Name="waveform" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="75" Grid.Row="0" Background="Transparent" 
-                            WaveformModel="{Binding WaveformModel, Source={x:Static Sound:SoundEngine.Instance}}" Foreground="#222222"
-                            MouseLeftButtonDown="waveform_MouseLeftButtonDown">
-                
-                <local:DataPiping.DataPipes>
-                    <local:DataPipeCollection>
-                        <local:DataPipe Source="{Binding RelativeSource={RelativeSource AncestorType={x:Type Views:Waveform}}, Path=ActualWidth}"
-                                        Target="{Binding TrackWidth, Mode=OneWayToSource}" />
-                    </local:DataPipeCollection>
-                </local:DataPiping.DataPipes>
-                
-            </Views:Waveform>
+            </Grid.RowDefinitions>
 
             <Line X1="{Binding PlayerPosition}" X2="{Binding PlayerPosition}" Y1="0" Y2="{Binding ElementName=waveform, Path=ActualHeight}"
                   Stroke="Red" StrokeThickness="3" />
@@ -144,7 +130,7 @@
                                     </Setter.Value>
                                 </Setter>
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding CanPause, Source={x:Static Sound:SoundEngine.Instance}}" Value="True">
+                                    <DataTrigger Binding="{Binding IsProcessingPaused}" Value="False">
                                         <Setter Property="Content">
                                             <Setter.Value>
                                                 <Path Data="M2,0 L2,10 M8,0 L8,10" Stroke="Black" StrokeThickness="2" />
@@ -154,9 +140,6 @@
                                 </Style.Triggers>
                             </Style>
                         </Button.Style>
-                    </Button>
-                    <Button Width="50" VerticalAlignment="Center" Height="18" Margin="6,0,6,0" Command="{Binding CmdStop}">
-                        <Path Data="M0,0 L10,0 L10,10 L0,10 Z" Fill="Black" />
                     </Button>
                     <ProgressBar Width="100" Margin="20,0,4,0" Height="20" VerticalAlignment="Center" Value="{Binding ProgressValue, Mode=OneWay}" />
                     <TextBlock Text="{Binding ProgressText}" VerticalAlignment="Center" />

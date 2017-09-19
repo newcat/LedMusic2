@@ -12,10 +12,6 @@
 
     <UserControl.Resources>
         <converters:ColorToBrushConverter x:Key="colorToBrushConverter" />
-
-        <SolidColorBrush x:Key="HasKeyframeBrush" Color="#338833" />
-        <SolidColorBrush x:Key="IsKeyframeBrush" Color="#DDDD00" />
-
     </UserControl.Resources>
 
     <Control>
@@ -30,32 +26,16 @@
                                     <StackPanel Orientation="Vertical">
                                         <TextBlock Text="{Binding Name}" Margin="3" IsHitTestVisible="False" />
                                         <Grid>
+                                            
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="20" />
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="20" />
                                             </Grid.ColumnDefinitions>
 
-                                            <Button Width="20" Height="20" Content="&lt;" Command="{Binding CmdDecreaseValue}"
-                                                                                    Grid.Column="0"/>
-                                            
-                                            <TextBox Text="{Binding DisplayValue, Mode=TwoWay, StringFormat=N3}" Grid.Column="1">
-                                                <TextBox.Style>
-                                                    <Style TargetType="TextBox">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding HasKeyframes}" Value="True">
-                                                                <Setter Property="Background" Value="{StaticResource HasKeyframeBrush}" />
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding IsKeyframe}" Value="True">
-                                                                <Setter Property="Background" Value="{StaticResource IsKeyframeBrush}" />
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </TextBox.Style>    
-                                            </TextBox>
-                                            
-                                            <Button Width="20" Height="20" Content="&gt;" Command="{Binding CmdIncreaseValue}"
-                                                                                    Grid.Column="2"/>
+                                            <Button Width="20" Height="20" Content="&lt;" Command="{Binding CmdDecreaseValue}" Grid.Column="0"/>
+                                            <TextBox Text="{Binding DisplayValue, Mode=TwoWay, StringFormat=N3}" Grid.Column="1" />
+                                            <Button Width="20" Height="20" Content="&gt;" Command="{Binding CmdIncreaseValue}" Grid.Column="2"/>
 
                                         </Grid>
                                     </StackPanel>
@@ -73,20 +53,6 @@
                                                    Fill="{Binding DisplayValue, Converter={StaticResource colorToBrushConverter}}"
                                                    cmd:CommandBehavior.Command="{Binding CmdPickColor}"
                                                    cmd:CommandBehavior.Event="MouseLeftButtonDown"/>
-
-                                        <StackPanel.Style>
-                                            <Style TargetType="StackPanel">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding HasKeyframes}" Value="True">
-                                                        <Setter Property="Background" Value="{StaticResource HasKeyframeBrush}" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsKeyframe}" Value="True">
-                                                        <Setter Property="Background" Value="{StaticResource IsKeyframeBrush}" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </StackPanel.Style>
-                                        
                                     </StackPanel>
                                 </ControlTemplate>
                             </Setter.Value>
@@ -99,18 +65,6 @@
                                     <Grid>
                                         <CheckBox Content="{Binding Name}" IsChecked="{Binding DisplayValue}" 
                                                   HorizontalAlignment="Stretch" Margin="3" />
-                                        <Grid.Style>
-                                            <Style TargetType="Grid">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding HasKeyframes}" Value="True">
-                                                        <Setter Property="Background" Value="{StaticResource HasKeyframeBrush}" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsKeyframe}" Value="True">
-                                                        <Setter Property="Background" Value="{StaticResource IsKeyframeBrush}" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Grid.Style>
                                     </Grid>
                                 </ControlTemplate>
                             </Setter.Value>
@@ -124,20 +78,6 @@
                                         <TextBlock Text="{Binding Name}" Margin="3" IsHitTestVisible="False" />
                                         <ComboBox ItemsSource="{Binding Options}" SelectedItem="{Binding DisplayValue}"
                                                   HorizontalAlignment="Stretch" Margin="3" />
-
-                                        <StackPanel.Style>
-                                            <Style TargetType="StackPanel">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding HasKeyframes}" Value="True">
-                                                        <Setter Property="Background" Value="{StaticResource HasKeyframeBrush}" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsKeyframe}" Value="True">
-                                                        <Setter Property="Background" Value="{StaticResource IsKeyframeBrush}" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </StackPanel.Style>
-
                                     </StackPanel>
                                 </ControlTemplate>
                             </Setter.Value>

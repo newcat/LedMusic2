@@ -19,14 +19,6 @@ namespace LedMusic2.Nodes
             UnselectAllNodes?.Invoke(sender, new EventArgs());
         }
 
-        public static event EventHandler OutputChanged;
-        public static bool FireOutputChangedEvents = true;
-        public void InvokeOutputChanged()
-        {
-            if (FireOutputChangedEvents)
-                OutputChanged?.Invoke(this, EventArgs.Empty);
-        }
-
         #region ViewModel Properties
         private double _posX;
         public double PosX
@@ -111,6 +103,19 @@ namespace LedMusic2.Nodes
             PosY = initPosition.Y;
         }
 
+
+        private void MainVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "TranslateX" || e.PropertyName == "TranslateY")
+            {
+                NotifyPropertyChanged("PosX");
+                NotifyPropertyChanged("PosY");
+            }                
+        }
+
+        public abstract bool Calculate();
+
+        #region Saving and Loading
         public XElement GetXmlElement()
         {
 
@@ -220,17 +225,7 @@ namespace LedMusic2.Nodes
         {
             return;
         }
-
-        private void MainVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "TranslateX" || e.PropertyName == "TranslateY")
-            {
-                NotifyPropertyChanged("PosX");
-                NotifyPropertyChanged("PosY");
-            }                
-        }
-
-        public abstract bool Calculate();
+        #endregion
 
     }
 }

@@ -25,18 +25,11 @@ namespace LedMusic2.Nodes
 
             MinWidth = 150;
 
-            opt.PropertyChanged += Opt_PropertyChanged;
             _options.Add(opt);
 
             outputInterface = new NodeInterface<double>("Value", ConnectionType.NUMBER, this, false);
             _outputs.Add(outputInterface);            
 
-        }
-
-        private void Opt_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "Value")
-                InvokeOutputChanged();
         }
 
         public override bool Calculate()
@@ -57,18 +50,11 @@ namespace LedMusic2.Nodes
         public BoolValueNode(Point initPosition) : base(initPosition)
         {
 
-            opt.PropertyChanged += Opt_PropertyChanged;
             _options.Add(opt);
 
             outputInterface = new NodeInterface<bool>("Value", ConnectionType.BOOL, this, false);
             _outputs.Add(outputInterface);
 
-        }
-
-        private void Opt_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "Value")
-                InvokeOutputChanged();
         }
 
         public override bool Calculate()
@@ -91,18 +77,11 @@ namespace LedMusic2.Nodes
 
             MinWidth = 125;
 
-            opt.PropertyChanged += Opt_PropertyChanged;
             _options.Add(opt);
 
             outputInterface = new NodeInterface<LedColor>("Value", ConnectionType.COLOR, this, false);
             _outputs.Add(outputInterface);
 
-        }
-
-        private void Opt_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "Value")
-                InvokeOutputChanged();
         }
 
         public override bool Calculate()

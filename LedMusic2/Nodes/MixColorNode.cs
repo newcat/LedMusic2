@@ -36,17 +36,10 @@ namespace LedMusic2.Nodes
                 optMode.Options.Add(s);
             }
             optMode.DisplayValue = "Overlay";
-            optMode.PropertyChanged += OptMode_PropertyChanged;
             _options.Add(optMode);
 
             Calculate();
 
-        }
-
-        private void OptMode_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "Value")
-                InvokeOutputChanged();
         }
 
         public override bool Calculate()

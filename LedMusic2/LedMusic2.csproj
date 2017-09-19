@@ -35,10 +35,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CSCore, Version=1.1.5992.18249, Culture=neutral, PublicKeyToken=5a08f2b6f4415dea, processorArchitecture=MSIL">
-      <HintPath>..\packages\CSCore.1.1.0\lib\net35-client\CSCore.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -77,10 +73,8 @@
     <Compile Include="Helpers\ColorHelper.cs" />
     <Compile Include="Helpers\NodeConnectionHelper.cs" />
     <Compile Include="Helpers\NodeTreeBuilder.cs" />
-    <Compile Include="Models\Keyframe.cs" />
     <Compile Include="Models\NodeCategoryModel.cs" />
     <Compile Include="Models\NodeType.cs" />
-    <Compile Include="Nodes\BeatNode.cs" />
     <Compile Include="Nodes\BooleanNode.cs" />
     <Compile Include="Nodes\ColorRampNode.cs" />
     <Compile Include="Nodes\MixColorNode.cs" />
@@ -90,12 +84,7 @@
     <Compile Include="Nodes\NodeViews\ColorStopViewModel.cs" />
     <Compile Include="Nodes\OutputNode.cs" />
     <Compile Include="Nodes\ParticleNode.cs" />
-    <Compile Include="Nodes\PeakNode.cs" />
-    <Compile Include="Nodes\SpectrumNode.cs" />
     <Compile Include="Nodes\ValueNodes.cs" />
-    <Compile Include="Sound\BeatDetector.cs" />
-    <Compile Include="Sound\SoundEngine.cs" />
-    <Compile Include="Sound\WaveformModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\NodeOptionViewModel.cs" />
     <Compile Include="ViewModels\ProgressViewModel.cs" />
@@ -115,9 +104,6 @@
     </Compile>
     <Compile Include="Views\TemporaryConnectionView.xaml.cs">
       <DependentUpon>TemporaryConnectionView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Waveform.xaml.cs">
-      <DependentUpon>Waveform.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -163,10 +149,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Waveform.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\Color.cs" />
@@ -191,7 +173,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

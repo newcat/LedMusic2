@@ -33,11 +33,9 @@ namespace LedMusic2.Nodes
                 optOperation.Options.Add(s);
             }
             optOperation.DisplayValue = "Add";
-            optOperation.PropertyChanged += Option_PropertyChanged;
             _options.Add(optOperation);
 
             optClamp = new NodeOptionViewModel(NodeOptionType.BOOL, "Clamp");
-            optClamp.PropertyChanged += Option_PropertyChanged;
             _options.Add(optClamp);
 
             Calculate();
@@ -115,12 +113,6 @@ namespace LedMusic2.Nodes
             ((NodeInterface<double>)_outputs.GetNodeInterface("Output")).SetValue(outputVal);
             return true;
 
-        }
-
-        private void Option_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "Value")
-                InvokeOutputChanged();
         }
 
     }

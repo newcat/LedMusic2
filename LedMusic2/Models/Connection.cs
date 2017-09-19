@@ -1,13 +1,9 @@
-﻿using LedMusic2.Helpers;
-using LedMusic2.ViewModels;
+﻿using LedMusic2.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Xml.Linq;
 
@@ -58,6 +54,10 @@ namespace LedMusic2.Models
         public static int count = 0;
         private int id = 0;
 
+        private Canvas canvas = null;
+        private Ellipse ellInput = null;
+        private Ellipse ellOutput = null;
+
         /// <summary>
         /// Creates a connection between two node interfaces.
         /// </summary>
@@ -65,9 +65,7 @@ namespace LedMusic2.Models
         /// <param name="output">The input of another node.</param>
         public Connection(NodeInterface input, NodeInterface output)
         {
-            id = count;
-            count++;
-            System.Diagnostics.Debug.WriteLine("Created connection #" + id);
+            id = count++;
             SetInput(input);
             SetOutput(output);
             transferData();
@@ -102,28 +100,27 @@ namespace LedMusic2.Models
                 CalculatePoints();
         }
 
-        public void CalculatePoints()
+        public void CalculatePoints(bool tryAgain = true)
         {
 
             if (Input.View == null || Output.View == null)
                 return; 
 
-            var ellInput = Input.View.FindDescendent<Ellipse>().FirstOrDefault();
-            var ellOutput = Output.View.FindDescendent<Ellipse>().FirstOrDefault();
-            if (ellInput == null || ellOutput == null)
-                return;
+            if (ellInput == null) ellInput = Input.View.FindDescendent<Ellipse>().FirstOrDefault();
+            if (ellOutput == null) ellOutput = Output.View.FindDescendent<Ellipse>().FirstOrDefault();
+            if (ellInput == null || ellOutput == null) return;
 
-            var canvas = ellInput.FindParent<Canvas>();
-            if (canvas == null)
-                return;
+            if (canvas == null) canvas = ellInput.FindParent<Canvas>();
+            if (canvas == null) return;
 
             try
             {
                 Point0 = ellInput.TransformToVisual(canvas).Transform(new Point(ellInput.ActualWidth / 2, ellInput.ActualHeight / 2));
                 Point3 = ellOutput.TransformToVisual(canvas).Transform(new Point(ellOutput.ActualWidth / 2, ellOutput.ActualHeight / 2));
-            } catch (InvalidOperationException)
-            {
-                System.Diagnostics.Debug.WriteLine("Fail at connection #" + id);
+            } catch (InvalidOperationException) {
+                ellInput = null;
+                ellOutput = null;
+                if (tryAgain) CalculatePoints(false);
             }
 
         }
@@ -136,6 +133,8 @@ namespace LedMusic2.Models
                 Input.Parent.PropertyChanged -= NodeBase_PropertyChanged;
                 Input.PropertyChanged -= NodeInterface_PropertyChanged;
             }
+
+            ellInput = null;
             Input = ni;
             ni.ValueChanged += Input_ValueChanged;
             Input.Parent.PropertyChanged += NodeBase_PropertyChanged;
@@ -151,6 +150,7 @@ namespace LedMusic2.Models
                 Output.IsConnected = false;
             }
 
+            ellOutput = null;
             Output = ni;
             Output.Parent.PropertyChanged += NodeBase_PropertyChanged;
             Output.PropertyChanged += NodeInterface_PropertyChanged;
@@ -184,8 +184,6 @@ namespace LedMusic2.Models
             {
                 if (disposing)
                 {
-
-                    System.Diagnostics.Debug.WriteLine("Disposed connection #" + id);
 
                     if (Output != null)
                     {

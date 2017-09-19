@@ -140,7 +140,6 @@ namespace LedMusic2.Models
             if (!IsConnected && e.PropertyName == "RenderValue")
             {
                 SetValue(Option.RenderValue);
-                Parent.InvokeOutputChanged();
             }
         }
 

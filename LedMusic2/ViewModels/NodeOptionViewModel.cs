@@ -53,24 +53,6 @@ namespace LedMusic2.ViewModels
         {
             get { return getValue(false); }
         }
-
-        private ObservableCollection<Keyframe> _keyframes = new ObservableCollection<Keyframe>();
-        public ObservableCollection<Keyframe> Keyframes
-        {
-            get { return _keyframes; }
-            set
-            {
-                _keyframes = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        public bool HasKeyframes { get { return Keyframes.Count > 0; } }
-
-        public bool IsKeyframe
-        {
-            get { return Keyframes.FirstOrDefault(x => x.Frame == MainViewModel.Instance.CurrentFrame) != null; }
-        }
         #endregion
 
         #region OptionType == NUMBER
@@ -216,78 +198,8 @@ namespace LedMusic2.ViewModels
 
         }
 
-        public void AddKeyframe()
-        {
-            var oldKeyframe = Keyframes.FirstOrDefault(x => x.Frame == MainViewModel.Instance.CurrentFrame);
-
-            if (oldKeyframe != null)
-            {
-                oldKeyframe.Value = getValue(true);
-            } else
-            {
-                Keyframes.Add(new Keyframe(MainViewModel.Instance.CurrentFrame, getValue(true)));
-            }
-
-            Keyframes.Sort();
-            NotifyPropertyChanged("HasKeyframes");
-            NotifyPropertyChanged("IsKeyframe");
-        }
-
         private object getValue(bool ignoreKeyframes)
         {
-
-            if (!ignoreKeyframes && Keyframes.Count > 0)
-            {
-
-                var frame = MainViewModel.Instance.CurrentFrame;
-
-                if (OptionType == NodeOptionType.NUMBER)
-                {
-
-                    //Interpolate
-                    Keyframe k = Keyframes.FirstOrDefault(x => x.Frame == frame);
-                    double val = 0;
-
-                    if (k == null)
-                    {
-
-                        Keyframe previous = Keyframes.LastOrDefault(x => x.Frame < frame);
-                        Keyframe next = Keyframes.FirstOrDefault(x => x.Frame > frame);
-
-                        if (previous == null)
-                            val = (double)next.Value;
-                        else if (next == null)
-                            val = (double)previous.Value;
-                        else
-                        {
-
-                            var prevVal = (double)previous.Value;
-                            var nextVal = (double)next.Value;
-
-                            double m = (nextVal - prevVal) / (next.Frame - previous.Frame);
-                            val = prevVal + (frame - previous.Frame) * m;
-
-                        }
-                    } else
-                    {
-                        val = (double)k.Value;
-                    }
-
-                    return val;
-
-                } else
-                {
-
-                    Keyframe k = Keyframes.LastOrDefault(x => x.Frame <= frame);
-
-                    if (k != null)
-                        return k.Value;
-                    else
-                        return null;
-
-                }
-
-            }
 
             switch (OptionType)
             {
@@ -329,15 +241,6 @@ namespace LedMusic2.ViewModels
                     _valColorArray = (LedColor[])value;
                     calcPreviewBrush();
                     break;
-            }
-
-            if (byUser)
-            {
-                var keyframe = Keyframes.FirstOrDefault(x => x.Frame == MainViewModel.Instance.CurrentFrame);
-                if (keyframe != null)
-                {
-                    keyframe.Value = getValue(true);
-                }
             }
 
             NotifyPropertyChanged("RenderValue");
@@ -433,25 +336,11 @@ namespace LedMusic2.ViewModels
             nodeOptionX.SetAttributeValue("type", (int)OptionType);
             nodeOptionX.SetAttributeValue("name", Name);
 
-            if (HasKeyframes)
-            {
-                XElement keyframesX = new XElement("keyframes");
-                foreach (Keyframe k in Keyframes)
-                {
-                    XElement keyframeX = new XElement("keyframe");
-                    keyframeX.SetAttributeValue("frame", k.Frame);
-                    keyframeX.Value = k.Value.ToString();
-                    keyframesX.Add(keyframeX);
-                }
-                nodeOptionX.Add(keyframesX);
-            }
+            if (OptionType == NodeOptionType.NUMBER)
+                nodeOptionX.Add(new XElement("value", _valDouble.ToString(CultureInfo.InvariantCulture)));
             else
-            {
-                if (OptionType == NodeOptionType.NUMBER)
-                    nodeOptionX.Add(new XElement("value", _valDouble.ToString(CultureInfo.InvariantCulture)));
-                else
-                    nodeOptionX.Add(new XElement("value", DisplayValue));
-            }
+                nodeOptionX.Add(new XElement("value", DisplayValue));
+
             return nodeOptionX;
         }
 
@@ -463,13 +352,6 @@ namespace LedMusic2.ViewModels
                 {
                     case "value":
                         DisplayValue = parseValue(el.Value);
-                        break;
-                    case "keyframes":
-                        foreach (XElement keyframeX in el.Elements())
-                        {
-                            Keyframes.Add(new Keyframe(int.Parse(keyframeX.Attribute("frame").Value), parseValue(keyframeX.Value)));
-                        }
-                        Keyframes.Sort();
                         break;
                 }
             }
