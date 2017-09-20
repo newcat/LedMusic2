@@ -86,6 +86,9 @@
     <Compile Include="Nodes\OutputNode.cs" />
     <Compile Include="Nodes\ParticleNode.cs" />
     <Compile Include="Nodes\ValueNodes.cs" />
+    <Compile Include="OutputConfigurator.xaml.cs">
+      <DependentUpon>OutputConfigurator.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Outputs\TcpOutput.cs" />
     <Compile Include="Outputs\TcpOutputView.xaml.cs">
       <DependentUpon>TcpOutputView.xaml</DependentUpon>
@@ -131,6 +134,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Nodes\NodeViews\ColorRampNode.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="OutputConfigurator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
