@@ -73,6 +73,7 @@
     <Compile Include="Helpers\ColorHelper.cs" />
     <Compile Include="Helpers\NodeConnectionHelper.cs" />
     <Compile Include="Helpers\NodeTreeBuilder.cs" />
+    <Compile Include="Interfaces\IOutput.cs" />
     <Compile Include="Models\NodeCategoryModel.cs" />
     <Compile Include="Models\NodeType.cs" />
     <Compile Include="Nodes\BooleanNode.cs" />
@@ -85,6 +86,10 @@
     <Compile Include="Nodes\OutputNode.cs" />
     <Compile Include="Nodes\ParticleNode.cs" />
     <Compile Include="Nodes\ValueNodes.cs" />
+    <Compile Include="Outputs\TcpOutput.cs" />
+    <Compile Include="Outputs\TcpOutputView.xaml.cs">
+      <DependentUpon>TcpOutputView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\NodeOptionViewModel.cs" />
     <Compile Include="ViewModels\ProgressViewModel.cs" />
@@ -126,6 +131,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Nodes\NodeViews\ColorRampNode.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Outputs\TcpOutputView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -182,9 +191,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Interfaces\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
