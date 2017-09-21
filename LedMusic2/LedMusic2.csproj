@@ -57,6 +57,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Attributes\OutputAttribute.cs" />
     <Compile Include="CommandBehaviorStuff\BehaviorBinding.cs" />
     <Compile Include="CommandBehaviorStuff\CommandBehavior.cs" />
     <Compile Include="CommandBehaviorStuff\CommandBehaviorBinding.cs" />
@@ -73,9 +74,9 @@
     <Compile Include="Helpers\ColorHelper.cs" />
     <Compile Include="Helpers\NodeConnectionHelper.cs" />
     <Compile Include="Helpers\NodeTreeBuilder.cs" />
-    <Compile Include="Interfaces\IOutput.cs" />
     <Compile Include="Models\NodeCategoryModel.cs" />
     <Compile Include="Models\NodeType.cs" />
+    <Compile Include="Models\OutputType.cs" />
     <Compile Include="Nodes\BooleanNode.cs" />
     <Compile Include="Nodes\ColorRampNode.cs" />
     <Compile Include="Nodes\MixColorNode.cs" />
@@ -89,6 +90,7 @@
     <Compile Include="OutputConfigurator.xaml.cs">
       <DependentUpon>OutputConfigurator.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Outputs\OutputBase.cs" />
     <Compile Include="Outputs\TcpOutput.cs" />
     <Compile Include="Outputs\TcpOutputView.xaml.cs">
       <DependentUpon>TcpOutputView.xaml</DependentUpon>
@@ -198,7 +200,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

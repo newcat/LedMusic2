@@ -4,15 +4,32 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LedMusic2"
+        xmlns:vm="clr-namespace:LedMusic2.ViewModels"
         mc:Ignorable="d"
         Title="OutputConfigurator" Height="270" MinHeight="270" Width="400" MinWidth="400">
     <Grid>
-        <ListBox HorizontalAlignment="Left" Margin="10,35,0,10" Width="125"/>
+
+        <ListBox HorizontalAlignment="Left" Margin="10,35,0,10" Width="125"
+                 ItemsSource="{Binding Path=Outputs, Source={x:Static vm:MainViewModel.Instance}}">
+
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+
+        </ListBox>
+        
         <Button Content="Add" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="60"/>
         <Button Content="Remove" HorizontalAlignment="Left" Margin="75,10,0,0" VerticalAlignment="Top" Width="60"/>
-        <ContentControl Content="ContentControl" Margin="140,35,10,10"/>
-        <TextBlock HorizontalAlignment="Left" Margin="140,10,0,0" TextWrapping="Wrap" Text="Output Type:" VerticalAlignment="Top" Height="20" Padding="0,2,0,0"/>
-        <ComboBox Margin="220,8,10,0" VerticalAlignment="Top"/>
+        
+        <TextBlock HorizontalAlignment="Left" Margin="150,10,0,0" TextWrapping="Wrap" Text="Output Type:" VerticalAlignment="Top" Height="20" Padding="0,2,0,0"/>
+        <ComboBox Margin="230,10,10,0" Height="20" VerticalAlignment="Top"/>
+
+        <TextBlock HorizontalAlignment="Left" Margin="150,35,0,0" TextWrapping="Wrap" Text="Name:" VerticalAlignment="Top" Height="20" Padding="0,2,0,0"/>
+        <TextBox Height="20" Margin="230,35,10,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+
+        <ContentControl Content="" Margin="150,60,10,10"/>
 
     </Grid>
 </Window>

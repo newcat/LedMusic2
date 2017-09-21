@@ -2,6 +2,7 @@
 using LedMusic2.Attributes;
 using LedMusic2.Enums;
 using LedMusic2.Helpers;
+using LedMusic2.Interfaces;
 using LedMusic2.Models;
 using LedMusic2.Nodes;
 using Microsoft.Win32;
@@ -262,6 +263,20 @@ namespace LedMusic2.ViewModels
                 NotifyPropertyChanged();
             }
         }
+
+        #region Outputs
+        private ObservableCollection<IOutput> _outputs = new ObservableCollection<IOutput>();
+        public ObservableCollection<IOutput> Outputs
+        {
+            get { return _outputs; }
+        }
+
+        private ObservableCollection<OutputType> _outputTypes = new ObservableCollection<OutputType>();
+        public ObservableCollection<OutputType> OutputTypes
+        {
+            get { return _outputTypes; }
+        }
+        #endregion
 
         #region Commands
         public SimpleCommand CmdPlayPause { get; private set; }
