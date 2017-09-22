@@ -7,7 +7,7 @@ namespace LedMusic2.Outputs
     public abstract class OutputBase : VMBase
     {
 
-        public abstract string DefaultName { get; }
+        public static string DefaultName => "Undefined";
         public abstract Type ViewType { get; }
 
         private string _name;

@@ -104,8 +104,8 @@
                 <Separator />
                 <MenuItem Header="Quit" />
             </MenuItem>
-            <MenuItem Header="Track">
-                <MenuItem Header="Open" Command="{Binding CmdOpenMusic}" />
+            <MenuItem Header="Settings">
+                <MenuItem Header="Configure Outputs" Command="{Binding CmdConfigureOutputs}" />
             </MenuItem>
         </Menu>
 

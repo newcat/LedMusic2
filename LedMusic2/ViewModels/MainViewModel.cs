@@ -2,9 +2,9 @@
 using LedMusic2.Attributes;
 using LedMusic2.Enums;
 using LedMusic2.Helpers;
-using LedMusic2.Interfaces;
 using LedMusic2.Models;
 using LedMusic2.Nodes;
+using LedMusic2.Outputs;
 using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
@@ -56,6 +56,11 @@ namespace LedMusic2.ViewModels
             CmdOpenProject = new SimpleCommand
             {
                 ExecuteDelegate = (o) => load()
+            };
+
+            CmdConfigureOutputs = new SimpleCommand
+            {
+                ExecuteDelegate = (o) => new OutputConfigurator().ShowDialog()
             };
 
         }
@@ -265,8 +270,8 @@ namespace LedMusic2.ViewModels
         }
 
         #region Outputs
-        private ObservableCollection<IOutput> _outputs = new ObservableCollection<IOutput>();
-        public ObservableCollection<IOutput> Outputs
+        private ObservableCollection<OutputBase> _outputs = new ObservableCollection<OutputBase>();
+        public ObservableCollection<OutputBase> Outputs
         {
             get { return _outputs; }
         }
@@ -282,6 +287,7 @@ namespace LedMusic2.ViewModels
         public SimpleCommand CmdPlayPause { get; private set; }
         public SimpleCommand CmdSaveProject { get; private set; }
         public SimpleCommand CmdOpenProject { get; private set; }
+        public SimpleCommand CmdConfigureOutputs { get; private set; }
         #endregion
         #endregion
 
@@ -297,6 +303,7 @@ namespace LedMusic2.ViewModels
             NodeBase.UnselectAllNodes += NodeBase_UnselectAllNodes;
 
             fillNodeCategories();
+            fillOutputTypes();
             calculateNodeTree();
         }
 
@@ -530,6 +537,18 @@ namespace LedMusic2.ViewModels
                     c.NodeTypes.Add(new NodeType(((NodeAttribute)x.GetCustomAttribute(typeof(NodeAttribute))).Name, x));
 
                 NodeCategories.Add(c);
+            }
+
+        }
+
+        private void fillOutputTypes()
+        {
+
+            var outputClasses = Assembly.GetCallingAssembly().GetTypes().Where(t => t.Namespace == "LedMusic2.Outputs" && !t.IsAbstract);
+            foreach (var t in outputClasses)
+            {
+                OutputTypes.Add(new OutputType(
+                    (string)t.GetProperty("DefaultName")?.GetValue(null), t));
             }
 
         }

@@ -9,7 +9,7 @@
         Title="OutputConfigurator" Height="270" MinHeight="270" Width="400" MinWidth="400">
     <Grid>
 
-        <ListBox HorizontalAlignment="Left" Margin="10,35,0,10" Width="125"
+        <ListBox HorizontalAlignment="Left" Margin="10,35,0,10" Width="125" x:Name="outputsList"
                  ItemsSource="{Binding Path=Outputs, Source={x:Static vm:MainViewModel.Instance}}">
 
             <ListBox.ItemTemplate>
@@ -20,11 +20,18 @@
 
         </ListBox>
         
-        <Button Content="Add" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="60"/>
+        <Button Content="Add" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="60" Click="Button_Click"/>
         <Button Content="Remove" HorizontalAlignment="Left" Margin="75,10,0,0" VerticalAlignment="Top" Width="60"/>
         
         <TextBlock HorizontalAlignment="Left" Margin="150,10,0,0" TextWrapping="Wrap" Text="Output Type:" VerticalAlignment="Top" Height="20" Padding="0,2,0,0"/>
-        <ComboBox Margin="230,10,10,0" Height="20" VerticalAlignment="Top"/>
+        <ComboBox Margin="230,10,10,0" Height="20" VerticalAlignment="Top" SelectionChanged="ComboBox_SelectionChanged"
+                  ItemsSource="{Binding Path=OutputTypes, Source={x:Static vm:MainViewModel.Instance}}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}" />
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
 
         <TextBlock HorizontalAlignment="Left" Margin="150,35,0,0" TextWrapping="Wrap" Text="Name:" VerticalAlignment="Top" Height="20" Padding="0,2,0,0"/>
         <TextBox Height="20" Margin="230,35,10,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>

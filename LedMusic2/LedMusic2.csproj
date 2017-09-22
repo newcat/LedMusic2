@@ -57,7 +57,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Attributes\OutputAttribute.cs" />
     <Compile Include="CommandBehaviorStuff\BehaviorBinding.cs" />
     <Compile Include="CommandBehaviorStuff\CommandBehavior.cs" />
     <Compile Include="CommandBehaviorStuff\CommandBehaviorBinding.cs" />
@@ -90,6 +89,7 @@
     <Compile Include="OutputConfigurator.xaml.cs">
       <DependentUpon>OutputConfigurator.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Outputs\DummyOutput.cs" />
     <Compile Include="Outputs\OutputBase.cs" />
     <Compile Include="Outputs\TcpOutput.cs" />
     <Compile Include="Outputs\TcpOutputView.xaml.cs">

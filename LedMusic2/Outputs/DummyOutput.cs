@@ -3,18 +3,15 @@ using System;
 
 namespace LedMusic2.Outputs
 {
-
-    class TcpOutput : OutputBase
+    class DummyOutput : OutputBase
     {
-        public new static string DefaultName => "TCP";
-
-        public override Type ViewType => typeof(TcpOutputView);
+        public new static string DefaultName => "Dummy";
+   
+        public override Type ViewType => null;
 
         public override void CalculationDone(LedColor[] calculationResult)
         {
-            //TODO
             return;
         }
-
     }
 }

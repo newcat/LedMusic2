@@ -1,4 +1,7 @@
-﻿using System;
+﻿using LedMusic2.Models;
+using LedMusic2.Outputs;
+using LedMusic2.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,5 +26,23 @@ namespace LedMusic2
         {
             InitializeComponent();
         }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (outputsList.SelectedIndex >= 0)
+            {
+                var t = (OutputType)e.AddedItems[0];
+                var constructor = t.T.GetConstructor(Type.EmptyTypes);
+                MainViewModel.Instance.Outputs[outputsList.SelectedIndex] = (OutputBase)constructor.Invoke(null);
+            }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            MainViewModel.Instance.Outputs.Add(new DummyOutput());
+        }
+
+
+
     }
 }
