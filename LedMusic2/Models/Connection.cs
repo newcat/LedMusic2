@@ -1,4 +1,5 @@
-﻿using LedMusic2.ViewModels;
+﻿using LedMusic2.Interfaces;
+using LedMusic2.ViewModels;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Xml.Linq;
 
 namespace LedMusic2.Models
 {
-    public class Connection : VMBase, IDisposable
+    public class Connection : VMBase, IExportable, IDisposable
     {
 
         #region ViewModel Properties
@@ -84,6 +85,11 @@ namespace LedMusic2.Models
 
             connectionX.Add(inputX, outputX);
             return connectionX;
+        }
+
+        public void LoadFromXml(XElement element)
+        {
+            throw new NotImplementedException("Connections cannot be loaded directly from xml.");
         }
 
         private void NodeBase_PropertyChanged(object sender, PropertyChangedEventArgs e)

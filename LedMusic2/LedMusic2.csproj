@@ -74,6 +74,7 @@
     <Compile Include="Helpers\ColorHelper.cs" />
     <Compile Include="Helpers\NodeConnectionHelper.cs" />
     <Compile Include="Helpers\NodeTreeBuilder.cs" />
+    <Compile Include="Interfaces\IExportable.cs" />
     <Compile Include="Models\NodeCategoryModel.cs" />
     <Compile Include="Models\NodeType.cs" />
     <Compile Include="Models\OutputType.cs" />
@@ -208,9 +209,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Interfaces\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

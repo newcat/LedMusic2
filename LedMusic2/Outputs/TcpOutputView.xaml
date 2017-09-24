@@ -7,18 +7,12 @@
              mc:Ignorable="d" 
              Width="300" Height="200"
              d:DesignHeight="300" d:DesignWidth="500">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="150"/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
+    <StackPanel Orientation="Vertical" Margin="5">
 
-        <TextBlock Text="Port" Height="25" TextAlignment="Center" Grid.Column="0" Grid.Row="0" />
-        <TextBox Grid.Column="1" Grid.Row="0" Height="25" Margin="10" />
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Port: " Height="25" Padding="0,4,0,0" TextAlignment="Center" Grid.Column="0" Grid.Row="0" />
+            <TextBox Grid.Column="1" Padding="0,4,0,0" Width="75" Grid.Row="0" Height="25" Margin="10" Text="{Binding Port, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
 
-    </Grid>
+    </StackPanel>
 </UserControl>

@@ -4,12 +4,8 @@ using LedMusic2.Models;
 using LedMusic2.Nodes.NodeViews;
 using LedMusic2.Outputs;
 using LedMusic2.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
+using System.Xml.Linq;
 
 namespace LedMusic2.Nodes
 {
@@ -53,6 +49,31 @@ namespace LedMusic2.Nodes
             preview.DisplayValue = input.Value;
             SelectedOutput?.CalculationDone(input.Value);
             return true;
+        }
+
+        protected override void SaveAdditionalXmlData(XElement x)
+        {
+            x.Add(new XElement("output", SelectedOutput?.Id));
+        }
+
+        protected override void LoadAdditionalXmlData(XElement x)
+        {
+            foreach (var el in x.Elements())
+            {
+                switch (el.Name.LocalName)
+                {
+                    case "output":
+                        foreach (var o in MainViewModel.Instance.Outputs)
+                        {
+                            if (o.Id.ToString() == el.Value)
+                            {
+                                SelectedOutput = o;
+                                break;
+                            }
+                        }
+                        break;
+                }
+            }
         }
 
 

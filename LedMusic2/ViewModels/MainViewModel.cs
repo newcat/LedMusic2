@@ -2,6 +2,7 @@
 using LedMusic2.Attributes;
 using LedMusic2.Enums;
 using LedMusic2.Helpers;
+using LedMusic2.Interfaces;
 using LedMusic2.Models;
 using LedMusic2.Nodes;
 using LedMusic2.Outputs;
@@ -20,7 +21,7 @@ using System.Xml.Linq;
 
 namespace LedMusic2.ViewModels
 {
-    public class MainViewModel : VMBase
+    public class MainViewModel : VMBase, IExportable
     {
 
         #region Singleton and Constructor
@@ -580,42 +581,19 @@ namespace LedMusic2.ViewModels
         private void save()
         {
 
-            SaveFileDialog sfd = new SaveFileDialog();
-            sfd.AddExtension = true;
-            sfd.DefaultExt = "lmp";
-            sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            if (sfd.ShowDialog() != true)
+            SaveFileDialog sfd = new SaveFileDialog
             {
-                return;
-            }
+                AddExtension = true,
+                DefaultExt = "lmp",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            };
+            if (sfd.ShowDialog() != true) return;
 
             Stream s = sfd.OpenFile();
 
             XDocument doc = new XDocument();
             doc.Declaration = new XDeclaration("1.0", "UTF-8", "yes");
-
-            XElement rootX = new XElement("ledmusicproject");
-
-            XElement translateX = new XElement("translate");
-            translateX.SetAttributeValue("x", TranslateX.ToString(CultureInfo.InvariantCulture));
-            translateX.SetAttributeValue("y", TranslateY.ToString(CultureInfo.InvariantCulture));
-            rootX.Add(translateX);
-
-            XElement nodesX = new XElement("nodes");
-            foreach (NodeBase n in Nodes)
-            {
-                nodesX.Add(n.GetXmlElement());
-            }
-            rootX.Add(nodesX);
-
-            XElement connectionsX = new XElement("connections");
-            foreach (Connection c in Connections)
-            {
-                connectionsX.Add(c.GetXmlElement());
-            }
-            rootX.Add(connectionsX);
-
-            doc.Add(rootX);
+            doc.Add(GetXmlElement());
             doc.Save(s);
             s.Close();
 
@@ -630,9 +608,6 @@ namespace LedMusic2.ViewModels
             if (ofd.ShowDialog() != true)
                 return;
 
-            ProgressViewModel prg = new ProgressViewModel("Loading project");
-            AddProgress(prg);
-
             Stream s = ofd.OpenFile();
 
             try
@@ -641,47 +616,15 @@ namespace LedMusic2.ViewModels
                 XDocument doc = XDocument.Load(s);
 
                 foreach (Connection c in Connections)
-                {
                     c.Dispose();
-                }
                 Connections.Clear();
                 Nodes.Clear();
+                Outputs.Clear();
 
-                XElement rootX = (XElement)doc.FirstNode;
-                int totalElements = rootX.Elements().Count();
-                int counter = 0;
-
-                foreach (XElement n in rootX.Elements())
-                {
-                    switch (n.Name.LocalName)
-                    {
-
-                        case "translate":
-                            TranslateX = double.Parse(n.Attribute("x").Value, CultureInfo.InvariantCulture);
-                            TranslateY = double.Parse(n.Attribute("y").Value, CultureInfo.InvariantCulture);
-                            break;
-
-                        case "nodes":
-                            foreach (XElement nodeX in n.Elements())
-                                loadNode(nodeX);
-                            break;
-
-                        case "connections":
-                            foreach (XElement connectionX in n.Elements())
-                                loadConnection(connectionX);
-                            break;
-
-                    }
-
-                    counter++;
-                    prg.Progress = (int)(1.0 * counter / totalElements) * 100;
-
-                }
+                LoadFromXml((XElement)doc.FirstNode);
 
                 calculateNodeTree();
-                CalculateAllNodes();
-                //TODO: make connections draw when the nodes are displayed
-                
+                CalculateAllNodes();                
 
             } catch (XmlException e)
             {
@@ -690,7 +633,22 @@ namespace LedMusic2.ViewModels
             } finally
             {
                 s.Close();
-                RemoveProgress(prg);
+            }
+
+        }
+
+        private void loadOutput(XElement outputX)
+        {
+
+            string type = outputX.Attribute("type").Value;
+            foreach (var t in OutputTypes)
+            {
+                if (t.Name == type)
+                {
+                    OutputBase outputInstance = (OutputBase)t.T.GetConstructor(Type.EmptyTypes).Invoke(null);
+                    outputInstance.LoadFromXml(outputX);
+                    Outputs.Add(outputInstance);
+                }
             }
 
         }
@@ -761,6 +719,87 @@ namespace LedMusic2.ViewModels
                 }
             }
             return null;
+        }
+
+        public XElement GetXmlElement()
+        {
+
+            XElement rootX = new XElement("ledmusicproject");
+
+            XElement translateX = new XElement("translate");
+            translateX.SetAttributeValue("x", TranslateX.ToString(CultureInfo.InvariantCulture));
+            translateX.SetAttributeValue("y", TranslateY.ToString(CultureInfo.InvariantCulture));
+            rootX.Add(translateX);
+
+            XElement outputsX = new XElement("outputs");
+            foreach (OutputBase o in Outputs)
+            {
+                outputsX.Add(o.GetXmlElement());
+            }
+            rootX.Add(outputsX);
+
+            XElement nodesX = new XElement("nodes");
+            foreach (NodeBase n in Nodes)
+            {
+                nodesX.Add(n.GetXmlElement());
+            }
+            rootX.Add(nodesX);
+
+            XElement connectionsX = new XElement("connections");
+            foreach (Connection c in Connections)
+            {
+                connectionsX.Add(c.GetXmlElement());
+            }
+            rootX.Add(connectionsX);
+
+            return rootX;
+
+        }
+
+        public void LoadFromXml(XElement rootX)
+        {
+
+            ProgressViewModel prg = new ProgressViewModel("Loading project");
+            AddProgress(prg);
+                        
+            int totalElements = rootX.Elements().Count();
+            int counter = 0;
+
+            foreach (XElement n in rootX.Elements())
+            {
+
+                switch (n.Name.LocalName)
+                {
+
+                    case "translate":
+                        TranslateX = double.Parse(n.Attribute("x").Value, CultureInfo.InvariantCulture);
+                        TranslateY = double.Parse(n.Attribute("y").Value, CultureInfo.InvariantCulture);
+                        break;
+
+                    case "outputs":
+                        foreach (XElement outputX in n.Elements())
+                            loadOutput(outputX);
+                        break;
+
+                    case "nodes":
+                        foreach (XElement nodeX in n.Elements())
+                            loadNode(nodeX);
+                        break;
+
+                    case "connections":
+                        foreach (XElement connectionX in n.Elements())
+                            loadConnection(connectionX);
+                        break;
+
+                }
+
+                counter++;
+                prg.Progress = (int)(1.0 * counter / totalElements) * 100;
+
+            }
+
+            RemoveProgress(prg);
+
         }
         #endregion
 

@@ -1,4 +1,5 @@
 ﻿using LedMusic2.Attributes;
+using LedMusic2.Interfaces;
 using LedMusic2.Models;
 using LedMusic2.ViewModels;
 using System;
@@ -10,7 +11,7 @@ using System.Xml.Linq;
 
 namespace LedMusic2.Nodes
 {
-    public abstract class NodeBase : VMBase //TODO: Implement IDisposable
+    public abstract class NodeBase : VMBase, IExportable //TODO: Implement IDisposable
     {
 
         public static event EventHandler UnselectAllNodes;
