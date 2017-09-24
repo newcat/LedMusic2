@@ -545,11 +545,10 @@ namespace LedMusic2.ViewModels
         {
 
             var outputClasses = Assembly.GetCallingAssembly().GetTypes().Where(t => t.Namespace == "LedMusic2.Outputs" && !t.IsAbstract);
-            foreach (var t in outputClasses)
-            {
-                OutputTypes.Add(new OutputType(
-                    (string)t.GetProperty("DefaultName")?.GetValue(null), t));
-            }
+            var outputs = outputClasses.Where(t => t.GetCustomAttribute<OutputAttribute>() != null);
+
+            foreach (var t in outputs)
+                OutputTypes.Add(new OutputType(t.GetCustomAttribute<OutputAttribute>().Name, t));
 
         }
 

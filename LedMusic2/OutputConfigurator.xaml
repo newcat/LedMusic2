@@ -6,10 +6,10 @@
         xmlns:local="clr-namespace:LedMusic2"
         xmlns:vm="clr-namespace:LedMusic2.ViewModels"
         mc:Ignorable="d"
-        Title="OutputConfigurator" Height="270" MinHeight="270" Width="400" MinWidth="400">
+        Title="OutputConfigurator" Height="350" MinHeight="350" Width="500" MinWidth="500">
     <Grid>
 
-        <ListBox HorizontalAlignment="Left" Margin="10,35,0,10" Width="125" x:Name="outputsList"
+        <ListBox HorizontalAlignment="Left" Margin="10,40,0,10" Width="167" x:Name="outputsList"
                  ItemsSource="{Binding Path=Outputs, Source={x:Static vm:MainViewModel.Instance}}">
 
             <ListBox.ItemTemplate>
@@ -19,13 +19,15 @@
             </ListBox.ItemTemplate>
 
         </ListBox>
-        
-        <Button Content="Add" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="60" Click="Button_Click"/>
-        <Button Content="Remove" HorizontalAlignment="Left" Margin="75,10,0,0" VerticalAlignment="Top" Width="60"/>
-        
-        <TextBlock HorizontalAlignment="Left" Margin="150,10,0,0" TextWrapping="Wrap" Text="Output Type:" VerticalAlignment="Top" Height="20" Padding="0,2,0,0"/>
-        <ComboBox Margin="230,10,10,0" Height="20" VerticalAlignment="Top" SelectionChanged="ComboBox_SelectionChanged"
-                  ItemsSource="{Binding Path=OutputTypes, Source={x:Static vm:MainViewModel.Instance}}">
+
+        <Button Content="Add" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="81" Click="Button_Click" Height="25"/>
+        <Button Content="Remove" HorizontalAlignment="Left" Margin="96,10,0,0" VerticalAlignment="Top" Width="81" Height="25" Click="Button_Click_1"/>
+
+        <TextBlock HorizontalAlignment="Left" Margin="182,10,0,0" TextWrapping="Wrap" Text="Output Type:" VerticalAlignment="Top" Height="25" Padding="0,4,0,0" Width="85"/>
+        <ComboBox Margin="272,10,10,0" Height="25" VerticalAlignment="Top" SelectionChanged="ComboBox_SelectionChanged"
+                  ItemsSource="{Binding Path=OutputTypes, Source={x:Static vm:MainViewModel.Instance}}"
+                  SelectedValue="{Binding SelectedItem.DefaultName, ElementName=outputsList, Mode=OneWay}"
+                  SelectedValuePath="Name">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Name}" />
@@ -33,10 +35,12 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
 
-        <TextBlock HorizontalAlignment="Left" Margin="150,35,0,0" TextWrapping="Wrap" Text="Name:" VerticalAlignment="Top" Height="20" Padding="0,2,0,0"/>
-        <TextBox Height="20" Margin="230,35,10,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+        <TextBlock  HorizontalAlignment="Left" Margin="182,40,0,0" VerticalAlignment="Top" Height="25" Padding="0,4,0,0" Width="85"
+                    TextWrapping="Wrap" Text="Name:"/>
+        <TextBox    Height="25" Margin="272,40,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Padding="0,4,0,0"
+                    Text="{Binding SelectedItem.Name, ElementName=outputsList, UpdateSourceTrigger=PropertyChanged}" />
 
-        <ContentControl Content="" Margin="150,60,10,10"/>
+        <ContentControl Content="{Binding SelectedItem.SettingsView, ElementName=outputsList}" Margin="182,70,10,10"/>
 
     </Grid>
 </Window>

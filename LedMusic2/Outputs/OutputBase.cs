@@ -1,14 +1,15 @@
 ﻿using LedMusic2.Models;
 using LedMusic2.ViewModels;
-using System;
+using System.Windows;
 
 namespace LedMusic2.Outputs
 {
     public abstract class OutputBase : VMBase
     {
 
-        public static string DefaultName => "Undefined";
-        public abstract Type ViewType { get; }
+        public abstract string DefaultName { get; }
+
+        public abstract FrameworkElement SettingsView { get; }
 
         private string _name;
         public string Name

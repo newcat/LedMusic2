@@ -1,13 +1,15 @@
-﻿using LedMusic2.Models;
-using System;
+﻿using LedMusic2.Attributes;
+using LedMusic2.Models;
+using System.Windows;
 
 namespace LedMusic2.Outputs
 {
+    [Output("Dummy")]
     class DummyOutput : OutputBase
     {
-        public new static string DefaultName => "Dummy";
-   
-        public override Type ViewType => null;
+        public override string DefaultName => "Dummy";
+
+        public override FrameworkElement SettingsView => null;
 
         public override void CalculationDone(LedColor[] calculationResult)
         {
