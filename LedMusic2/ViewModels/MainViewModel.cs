@@ -305,6 +305,9 @@ namespace LedMusic2.ViewModels
             fillNodeCategories();
             fillOutputTypes();
             calculateNodeTree();
+
+            StartProcessing();
+
         }
 
         public void End()

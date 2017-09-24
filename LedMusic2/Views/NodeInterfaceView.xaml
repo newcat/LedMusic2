@@ -7,6 +7,7 @@
              xmlns:cmd="clr-namespace:AttachedCommandBehavior"
              xmlns:converters="clr-namespace:LedMusic2.Converters"
              xmlns:views="clr-namespace:LedMusic2.Views"
+             xmlns:enums="clr-namespace:LedMusic2.Enums"
              mc:Ignorable="d" 
              x:Name="uc"
              d:DesignHeight="300" d:DesignWidth="300">
@@ -75,6 +76,9 @@
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding IsConnected}" Value="False">
                                                         <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ConnectionType}" Value="{x:Static enums:ConnectionType.COLOR_ARRAY}">
+                                                        <Setter Property="Visibility" Value="Visible" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>

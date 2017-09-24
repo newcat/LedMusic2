@@ -1,5 +1,6 @@
 ﻿using LedMusic2.Models;
 using LedMusic2.Nodes;
+using LedMusic2.Outputs;
 using LedMusic2.ViewModels;
 using System.ComponentModel;
 using System.Windows;
@@ -27,6 +28,7 @@ namespace LedMusic2
 
             Helpers.TypeConverter.Initialize();
 
+            vm.Outputs.Add(new DummyOutput());
             vm.Nodes.Add(new OutputNode(new Point(200, 200)));
 
             vm.Initialize();
