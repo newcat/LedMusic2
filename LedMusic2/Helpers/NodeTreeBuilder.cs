@@ -1,9 +1,12 @@
-﻿using LedMusic2.Exceptions;
+﻿using LedMusic2.Attributes;
+using LedMusic2.Exceptions;
 using LedMusic2.Models;
 using LedMusic2.Nodes;
+using LedMusic2.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace LedMusic2.Helpers
 {
@@ -69,8 +72,8 @@ namespace LedMusic2.Helpers
 
         public NodeBase[] GetRootElements(NodeBase[] nodes)
         {
-            //TODO: Dont check for output node but for NodeCategory.OUTPUT instead.
-            return nodes.Where((x) => x is OutputNode).ToArray();
+            return nodes.Where((x) =>
+                x.GetType().GetCustomAttribute<NodeAttribute>()?.Category == NodeCategory.OUTPUT).ToArray();
         }
 
         #region Private Methods

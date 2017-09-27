@@ -13,7 +13,7 @@ using System.Xml.Linq;
 
 namespace LedMusic2.ViewModels
 {
-    public class NodeOptionViewModel : VMBase, IDisposable
+    public class NodeOptionViewModel : VMBase
     {
 
         #region ViewModel Properties
@@ -160,21 +160,6 @@ namespace LedMusic2.ViewModels
 
             if (type == NodeOptionType.PREVIEW)
                 calcPreviewBrush();
-
-            MainViewModel.Instance.PropertyChanged += MainVM_PropertyChanged;
-
-        }
-
-        
-
-        private void MainVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            
-            if (e.PropertyName == "CurrentFrame")
-            {
-                setDisplayValue(getValue(false));
-                NotifyPropertyChanged("IsKeyframe");
-            }
 
         }
 
@@ -374,28 +359,6 @@ namespace LedMusic2.ViewModels
             }
         }
 #endregion
-
-        #region IDisposable Support
-        private bool disposedValue = false;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    //TODO
-                    //MainViewModel.Instance.PropertyChanged -= MainVM_PropertyChanged;
-                }
-                disposedValue = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-        #endregion
 
     }
 }
