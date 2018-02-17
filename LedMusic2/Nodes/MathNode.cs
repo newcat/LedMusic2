@@ -16,15 +16,14 @@ namespace LedMusic2.Nodes
         NodeOptionViewModel optOperation;
         NodeOptionViewModel optClamp;
 
-        public MathNode(Point initPosition) : base(initPosition)
+        public MathNode(Point initPosition, NodeEditorViewModel parentVM) : base(initPosition, parentVM)
         {
 
             MinWidth = 150;
 
-            _inputs.Add(new NodeInterface<double>("Value 1", ConnectionType.NUMBER, this, true, 0));
-            _inputs.Add(new NodeInterface<double>("Value 2", ConnectionType.NUMBER, this, true, 0));
-
-            _outputs.Add(new NodeInterface<double>("Output", ConnectionType.NUMBER, this, false));
+            AddInput("Value 1", 0.0);
+            AddInput("Value 2", 0.0);
+            AddOutput<double>("Output");
 
             optOperation = new NodeOptionViewModel(NodeOptionType.SELECTION, "Operation");
             foreach (string s in new string[] { "Add", "Subtract", "Multiply", "Divide", "Sine", "Cosine", "Tangent", "Arcsine", "Arccosine",

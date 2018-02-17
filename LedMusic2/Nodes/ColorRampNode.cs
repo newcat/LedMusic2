@@ -74,17 +74,16 @@ namespace LedMusic2.Nodes
 
         public SimpleCommand CmdSelectColor
         {
-            get { return new SimpleCommand() { ExecuteDelegate = (o) => setColorOfSelected() }; }
+            get { return new SimpleCommand() { ExecuteDelegate = (o) => SetColorOfSelected() }; }
         }
         #endregion
 
-        public ColorRampNode(Point initPosition) : base(initPosition)
+        public ColorRampNode(Point initPosition, NodeEditorViewModel parentVM) : base(initPosition, parentVM)
         {
 
-            Inputs.Add(new NodeInterface<double>("Factor", ConnectionType.NUMBER, this, true));
-
-            Outputs.Add(new NodeInterface<LedColor[]>("Color Band", ConnectionType.COLOR_ARRAY, this, false));
-            Outputs.Add(new NodeInterface<LedColor>("Single Color", ConnectionType.COLOR, this, false));
+            AddInput("Factor", ConnectionType.NUMBER);
+            AddOutput<LedColor[]>("Color Band");
+            AddOutput<LedColor>("Single Color");
 
             Options.Add(new NodeOptionViewModel(NodeOptionType.CUSTOM, "Test", typeof(NodeViews.ColorRampNode), this));
 
@@ -134,20 +133,20 @@ namespace LedMusic2.Nodes
             {
 
                 var currentPos = (double)i / ledCount;
-                output[i] = getColorAtPosition(currentPos);
+                output[i] = GetColorAtPosition(currentPos);
 
             }
 
             Outputs.GetNodeInterface("Color Band").SetValue(output);
 
             var fac = Math.Max(0.0, Math.Min(1.0, ((NodeInterface<double>)Inputs.GetNodeInterface("Factor")).Value));
-            Outputs.GetNodeInterface("Single Color").SetValue(getColorAtPosition(fac));
+            Outputs.GetNodeInterface("Single Color").SetValue(GetColorAtPosition(fac));
 
             return true;
 
         }
 
-        private LedColorRGB getColorAtPosition(double position)
+        private LedColorRGB GetColorAtPosition(double position)
         {
 
             var prev = ColorStops.LastOrDefault(x => x.Position <= position);
@@ -156,9 +155,9 @@ namespace LedMusic2.Nodes
             if (prev == null && next == null)
                 return null;
             else if (prev == null)
-                return colorToLedColor(next.Color);
+                return ColorToLedColor(next.Color);
             else if (next == null || prev.Position == position)
-                return colorToLedColor(prev.Color);
+                return ColorToLedColor(prev.Color);
             else
             {
                 var fac = (position - prev.Position) / (next.Position - prev.Position);
@@ -170,7 +169,7 @@ namespace LedMusic2.Nodes
 
         }
 
-        private LedColorRGB colorToLedColor(Color c)
+        private LedColorRGB ColorToLedColor(Color c)
         {
             return new LedColorRGB(c.R, c.G, c.B);
         }
@@ -183,11 +182,13 @@ namespace LedMusic2.Nodes
             SelectedColorStop = vm;
         }
 
-        private void setColorOfSelected()
+        private void SetColorOfSelected()
         {
             var c = SelectedColorStop.Color;
-            var dlg = new ColorDialog();
-            dlg.Color = System.Drawing.Color.FromArgb(255, c.R, c.G, c.B);
+            var dlg = new ColorDialog
+            {
+                Color = System.Drawing.Color.FromArgb(255, c.R, c.G, c.B)
+            };
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 var resultColor = dlg.Color;

@@ -17,8 +17,8 @@ namespace LedMusic2.Nodes
         public BooleanNode(Point initPosition, NodeEditorViewModel parentVM) : base(initPosition, parentVM)
         {
 
-            AddInput("Value 1", ConnectionType.NUMBER);
-            AddInput("Value 2", ConnectionType.NUMBER);
+            AddInput("Value 1", 0.0);
+            AddInput("Value 2", 0.0);
 
             foreach (string s in new string[] { "==", ">", "<", ">=", "<=" })
             {
@@ -29,7 +29,7 @@ namespace LedMusic2.Nodes
             Options.Add(optInteger);
             Options.Add(optInvert);
 
-            AddOutput("Output", ConnectionType.BOOL);
+            AddOutput<bool>("Output");
 
         }
 

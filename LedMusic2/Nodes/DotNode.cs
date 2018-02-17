@@ -12,16 +12,16 @@ namespace LedMusic2.Nodes
     public class DotNode : NodeBase
     {
 
-        public DotNode(Point initPosition) : base(initPosition)
+        public DotNode(Point initPosition, NodeEditorViewModel parentVM) : base(initPosition, parentVM)
         {
 
-            Inputs.Add(new NodeInterface<double>("Center Position", ConnectionType.NUMBER, this, true, 0));
-            Inputs.Add(new NodeInterface<double>("Alpha", ConnectionType.NUMBER, this, true, 1));
-            Inputs.Add(new NodeInterface<LedColor>("Color", ConnectionType.COLOR, this, true, new LedColorRGB(0, 0, 0)));
-            Inputs.Add(new NodeInterface<double>("Glow", ConnectionType.NUMBER, this, true, 0));
-            Inputs.Add(new NodeInterface<bool>("Symmetric", ConnectionType.BOOL, this, true, false));
+            AddInput("Center Position", 0.0);
+            AddInput("Alpha", 1.0);
+            AddInput<LedColor>("Color", new LedColorRGB(0, 0, 0));
+            AddInput("Glow", 0.0);
+            AddInput("Symmetric", false);
 
-            Outputs.Add(new NodeInterface<LedColor[]>("Colors", ConnectionType.COLOR_ARRAY, this, false));
+            AddOutput<LedColor[]>("Colors");
 
             Calculate();
 
@@ -32,13 +32,13 @@ namespace LedMusic2.Nodes
 
             int ledCount = GlobalProperties.Instance.LedCount;
 
-            int centerPosition = (int)clamp(
+            int centerPosition = (int)Clamp(
                 ((NodeInterface<double>)Inputs.GetNodeInterface("Center Position")).Value, 0, ledCount);
 
-            double alpha = clamp(
+            double alpha = Clamp(
                 ((NodeInterface<double>)Inputs.GetNodeInterface("Alpha")).Value, 0, 1);
 
-            double glow = clamp(
+            double glow = Clamp(
                 ((NodeInterface<double>)Inputs.GetNodeInterface("Glow")).Value, 0, ledCount);
 
             LedColorHSV color = ((NodeInterface<LedColor>)Inputs.GetNodeInterface("Color")).Value.GetColorHSV();
@@ -75,7 +75,7 @@ namespace LedMusic2.Nodes
 
         }
 
-        private double clamp(double value, double min, double max)
+        private double Clamp(double value, double min, double max)
         {
             return Math.Max(min, Math.Min(max, value));
         }

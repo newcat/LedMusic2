@@ -5,9 +5,6 @@ using LedMusic2.Models;
 using LedMusic2.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace LedMusic2.Nodes
@@ -20,20 +17,20 @@ namespace LedMusic2.Nodes
         private bool direction = false; //false = left; true = right
         private double particlesToSpawn = 0.0;
 
-        public ParticleNode(Point initPosition) : base(initPosition)
+        public ParticleNode(Point initPosition, NodeEditorViewModel parentVM) : base(initPosition, parentVM)
         {
 
-            Inputs.Add(new NodeInterface<bool>("Emit", ConnectionType.BOOL, this, true));
-            Inputs.Add(new NodeInterface<double>("Rate", ConnectionType.NUMBER, this, true));
-            Inputs.Add(new NodeInterface<double>("Start Velocity", ConnectionType.NUMBER, this, true));
-            Inputs.Add(new NodeInterface<double>("End Velocity", ConnectionType.NUMBER, this, true));
-            Inputs.Add(new NodeInterface<double>("Emitter Position", ConnectionType.NUMBER, this, true));
-            Inputs.Add(new NodeInterface<bool>("Symmetric", ConnectionType.BOOL, this, true));
-            Inputs.Add(new NodeInterface<double>("Lifetime", ConnectionType.NUMBER, this, true));
-            Inputs.Add(new NodeInterface<LedColor>("Start Color", ConnectionType.COLOR, this, true));
-            Inputs.Add(new NodeInterface<LedColor>("End Color", ConnectionType.COLOR, this, true));
+            AddInput("Emit", false);
+            AddInput("Rate", 10.0);
+            AddInput("Start Velocity", 0.1);
+            AddInput("End Velocity", 0.05);
+            AddInput("Emitter Position", 0.0);
+            AddInput("Symmetric", true);
+            AddInput("Lifetime", 30.0);
+            AddInput<LedColor>("Start Color");
+            AddInput<LedColor>("End Color");
 
-            Outputs.Add(new NodeInterface<LedColor[]>("Output", ConnectionType.COLOR_ARRAY, this, false));
+            AddOutput<LedColor[]>("Output");
 
         }
 

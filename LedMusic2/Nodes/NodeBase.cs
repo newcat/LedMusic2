@@ -121,42 +121,39 @@ namespace LedMusic2.Nodes
 
         public abstract bool Calculate();
 
-        protected NodeInterface AddInput(string name, ConnectionType type)
+        protected NodeInterface<T> AddInput<T>(string name)
         {
-            var ni = CreateInterface(name, type, true);
+            var ni = new NodeInterface<T>(name, InferConnectionType<T>(), this, true, NodeEditorVM);
+            Inputs.Add(ni);
+            return ni;
+        }
+        protected NodeInterface<T> AddInput<T>(string name, T initialValue)
+        {
+            var ni = new NodeInterface<T>(name, InferConnectionType<T>(), this, true, NodeEditorVM, initialValue);
             Inputs.Add(ni);
             return ni;
         }
 
-        protected NodeInterface AddOutput(string name, ConnectionType type)
+        protected NodeInterface<T> AddOutput<T>(string name)
         {
-            var ni = CreateInterface(name, type, false);
+            var ni = new NodeInterface<T>(name, InferConnectionType<T>(), this, false, NodeEditorVM);
             Outputs.Add(ni);
             return ni;
         }
 
-        private NodeInterface CreateInterface(string name, ConnectionType type, bool isInput)
+        private ConnectionType InferConnectionType<T>()
         {
 
-            Type t = null;
-            switch (type)
-            {
-                case ConnectionType.BOOL:
-                    t = typeof(bool);
-                    break;
-                case ConnectionType.COLOR:
-                    t = typeof(LedColor);
-                    break;
-                case ConnectionType.COLOR_ARRAY:
-                    t = typeof(LedColor[]);
-                    break;
-                case ConnectionType.NUMBER:
-                    t = typeof(double);
-                    break;
-            }
-
-            var niType = typeof(NodeInterface<>).MakeGenericType(t);
-            return (NodeInterface)Activator.CreateInstance(niType, new object[] { name, type, this, isInput, NodeEditorVM });
+            if (typeof(T) == typeof(double))
+                return ConnectionType.NUMBER;
+            else if (typeof(T) == typeof(LedColor))
+                return ConnectionType.COLOR;
+            else if (typeof(T) == typeof(LedColor[]))
+                return ConnectionType.COLOR_ARRAY;
+            else if (typeof(T) == typeof(bool))
+                return ConnectionType.BOOL;
+            else
+                throw new ArgumentException("Invalid type: " + typeof(T).ToString());
 
         }
 

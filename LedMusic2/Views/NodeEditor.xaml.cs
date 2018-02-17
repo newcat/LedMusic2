@@ -1,19 +1,8 @@
 ﻿using LedMusic2.Nodes;
 using LedMusic2.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace LedMusic2.Views
 {
@@ -23,18 +12,29 @@ namespace LedMusic2.Views
     public partial class NodeEditor : UserControl
     {
 
-        private NodeEditorViewModel vm = null; //TODO
+        private NodeEditorViewModel vm = null;
         private Point oldMousePosition = new Point();
         private bool isDragging = false;
         private bool wasDragged = false;
 
         public NodeEditor()
         {
+            DataContextChanged += NodeEditor_DataContextChanged;
             InitializeComponent();
+        }
+
+        private void NodeEditor_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.NewValue != null && e.NewValue is NodeEditorViewModel)
+                vm = (NodeEditorViewModel)e.NewValue;
         }
 
         private void nodePanel_MouseWheel(object sender, MouseWheelEventArgs e)
         {
+
+            if (vm == null)
+                return;
+
             vm.Scale += e.Delta > 0 ? 0.1 : -0.1;
             vm.ScaleCenterX = e.GetPosition(nodeIC).X;
             vm.ScaleCenterY = e.GetPosition(nodeIC).Y;
@@ -42,6 +42,10 @@ namespace LedMusic2.Views
 
         private void nodePanel_MouseMove(object sender, MouseEventArgs e)
         {
+
+            if (vm == null)
+                return;
+
             Point newPos = e.GetPosition(nodeIC);
             vm.MousePosX = newPos.X;
             vm.MousePosY = newPos.Y;
@@ -81,6 +85,9 @@ namespace LedMusic2.Views
         private void nodePanel_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
 
+            if (vm == null)
+                return;
+
             if (!wasDragged)
                 NodeBase.InvokeUnselectAllNodes(this);
 
@@ -96,8 +103,13 @@ namespace LedMusic2.Views
 
         private void nodePanel_KeyDown(object sender, KeyEventArgs e)
         {
+
+            if (vm == null)
+                return;
+
             if (e.Key == Key.Delete)
                 vm.DeleteSelectedNode();
+
         }
 
     }

@@ -3,10 +3,6 @@ using LedMusic2.Enums;
 using LedMusic2.Models;
 using LedMusic2.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace LedMusic2.Nodes
@@ -18,16 +14,15 @@ namespace LedMusic2.Nodes
         private float factor = 0.5f;
         private NodeOptionViewModel optMode;
 
-        public MixColorNode(Point initPosition) : base(initPosition)
+        public MixColorNode(Point initPosition, NodeEditorViewModel parentVM) : base(initPosition, parentVM)
         {
 
             MinWidth = 170;
 
-            _inputs.Add(new NodeInterface<double>("Factor", ConnectionType.NUMBER, this, true));
-            _inputs.Add(new NodeInterface<LedColor[]>("Color 1", ConnectionType.COLOR_ARRAY, this, true));
-            _inputs.Add(new NodeInterface<LedColor[]>("Color 2", ConnectionType.COLOR_ARRAY, this, true));
-
-            _outputs.Add(new NodeInterface<LedColor[]>("Output", ConnectionType.COLOR_ARRAY, this, false));
+            AddInput("Factor", 0.5);
+            AddInput<LedColor[]>("Color 1");
+            AddInput<LedColor[]>("Color 2");
+            AddOutput<LedColor[]>("Output");
 
             optMode = new NodeOptionViewModel(NodeOptionType.SELECTION, "Mode");
             foreach (string s in new string[] { "Mix", "Add", "Multiply", "Subtract", "Screen", "Divide", "Difference", "Darken", "Lighten",
@@ -36,7 +31,7 @@ namespace LedMusic2.Nodes
                 optMode.Options.Add(s);
             }
             optMode.DisplayValue = "Overlay";
-            _options.Add(optMode);
+            Options.Add(optMode);
 
             Calculate();
 
@@ -45,13 +40,13 @@ namespace LedMusic2.Nodes
         public override bool Calculate()
         {
 
-            LedColor[] colorsA = (LedColor[])_inputs.GetNodeInterface("Color 1").GetValue();
-            LedColor[] colorsB = (LedColor[])_inputs.GetNodeInterface("Color 2").GetValue();
+            LedColor[] colorsA = (LedColor[])Inputs.GetNodeInterface("Color 1").GetValue();
+            LedColor[] colorsB = (LedColor[])Inputs.GetNodeInterface("Color 2").GetValue();
 
             if (colorsA == null || colorsB == null)
                 return false;
 
-            factor = (float)(double)_inputs.GetNodeInterface("Factor").GetValue();
+            factor = (float)(double)Inputs.GetNodeInterface("Factor").GetValue();
             string mode = (string)optMode.RenderValue;
 
             int length = Math.Max(colorsA.Length, colorsB.Length);
@@ -71,142 +66,142 @@ namespace LedMusic2.Nodes
                 switch (mode)
                 {
                     case "Mix":
-                        result[i] = mix(a, b);
+                        result[i] = Mix(a, b);
                         break;
                     case "Add":
-                        result[i] = add(a, b);
+                        result[i] = Add(a, b);
                         break;
                     case "Multiply":
-                        result[i] = multiply(a, b);
+                        result[i] = Multiply(a, b);
                         break;
                     case "Subtract":
-                        result[i] = subtract(a, b);
+                        result[i] = Subtract(a, b);
                         break;
                     case "Screen":
-                        result[i] = screen(a, b);
+                        result[i] = Screen(a, b);
                         break;
                     case "Divide":
-                        result[i] = divide(a, b);
+                        result[i] = Divide(a, b);
                         break;
                     case "Difference":
-                        result[i] = difference(a, b);
+                        result[i] = Difference(a, b);
                         break;
                     case "Darken":
-                        result[i] = darken(a, b);
+                        result[i] = Darken(a, b);
                         break;
                     case "Lighten":
-                        result[i] = lighten(a, b);
+                        result[i] = Lighten(a, b);
                         break;
                     case "Overlay":
-                        result[i] = overlay(a, b);
+                        result[i] = Overlay(a, b);
                         break;
 
                     default:
-                        result[i] = overlay(a, b);
+                        result[i] = Overlay(a, b);
                         break;
                 }
 
             }
 
-            _outputs[0].SetValue(result);
+            Outputs[0].SetValue(result);
             return true;
 
         }
 
-        private LedColorRGB mix(LedColorRGBf a, LedColorRGBf b)
+        private LedColorRGB Mix(LedColorRGBf a, LedColorRGBf b)
         {
             float factorm = 1.0f - factor;
             float red = factorm * a.R + factor * b.R;
             float green = factorm * a.G + factor * b.G;
             float blue = factorm * a.B + factor * b.B;
-            return clamp(red, green, blue);
+            return Clamp(red, green, blue);
         }
 
-        private LedColorRGB add(LedColorRGBf a, LedColorRGBf b)
+        private LedColorRGB Add(LedColorRGBf a, LedColorRGBf b)
         {
             float red = a.R + factor * b.R;
             float green = a.G + factor * b.G;
             float blue = a.B + factor * b.B;
-            return clamp(red, green, blue);
+            return Clamp(red, green, blue);
         }
 
-        private LedColorRGB multiply(LedColorRGBf a, LedColorRGBf b)
+        private LedColorRGB Multiply(LedColorRGBf a, LedColorRGBf b)
         {
             float facm = 1.0f - factor;
             float red = a.R * (facm + factor * b.R);
             float green = a.G * (facm + factor * b.G);
             float blue = a.B * (facm + factor * b.B);
-            return clamp(red, green, blue);
+            return Clamp(red, green, blue);
         }
 
-        private LedColorRGB subtract(LedColorRGBf a, LedColorRGBf b)
+        private LedColorRGB Subtract(LedColorRGBf a, LedColorRGBf b)
         {
             float red = a.R - factor * b.R;
             float green = a.G - factor * b.G;
             float blue = a.B - factor * b.B;
-            return clamp(red, green, blue);
+            return Clamp(red, green, blue);
         }
 
-        private LedColorRGB screen(LedColorRGBf a, LedColorRGBf b)
+        private LedColorRGB Screen(LedColorRGBf a, LedColorRGBf b)
         {
             float facm = 1.0f - factor;
             float red = 1.0f - (facm + factor * (1.0f - b.R)) * (1.0f - a.R);
             float green = 1.0f - (facm + factor * (1.0f - b.G)) * (1.0f - a.G);
             float blue = 1.0f - (facm + factor * (1.0f - b.B)) * (1.0f - a.B);
-            return clamp(red, green, blue);
+            return Clamp(red, green, blue);
         }
 
-        private LedColorRGB divide(LedColorRGBf a, LedColorRGBf b)
+        private LedColorRGB Divide(LedColorRGBf a, LedColorRGBf b)
         {
             float facm = 1.0f - factor;
             float red = b.R != 0.0f ? (facm * a.R + factor * a.R / b.R) : 0f;
             float green = b.G != 0.0f ? (facm * a.G + factor * a.G / b.G) : 0f;
             float blue = b.B != 0.0f ? (facm * a.B + factor * a.B / b.B) : 0f;
-            return clamp(red, green, blue);
+            return Clamp(red, green, blue);
         }
 
-        private LedColorRGB difference(LedColorRGBf a, LedColorRGBf b)
+        private LedColorRGB Difference(LedColorRGBf a, LedColorRGBf b)
         {
             float facm = 1.0f - factor;
             float red = facm * a.R + factor * Math.Abs(a.R - b.R);
             float green = facm * a.G + factor * Math.Abs(a.G - b.G);
             float blue = facm * a.B + factor * Math.Abs(a.B - b.B);
-            return clamp(red, green, blue);
+            return Clamp(red, green, blue);
         }
 
-        private LedColorRGB darken(LedColorRGBf a, LedColorRGBf b)
+        private LedColorRGB Darken(LedColorRGBf a, LedColorRGBf b)
         {
             float facm = 1.0f - factor;
             float red = Math.Min(a.R, b.R) * factor + a.R * facm;
             float green = Math.Min(a.G, b.G) * factor + a.G * facm;
             float blue = Math.Min(a.B, b.B) * factor + a.B * facm;
-            return clamp(red, green, blue);
+            return Clamp(red, green, blue);
         }
 
-        private LedColorRGB lighten(LedColorRGBf a, LedColorRGBf b)
+        private LedColorRGB Lighten(LedColorRGBf a, LedColorRGBf b)
         {
             float red = Math.Max(factor * b.R, a.R);
             float green = Math.Max(factor * b.G, a.G);
             float blue = Math.Max(factor * b.B, a.B);
-            return clamp(red, green, blue);
+            return Clamp(red, green, blue);
         }
 
-        private LedColorRGB overlay(LedColorRGBf a, LedColorRGBf b)
+        private LedColorRGB Overlay(LedColorRGBf a, LedColorRGBf b)
         {
             return a.GetColorRGB().Overlay(b.GetColorRGB());
         }
 
-        private float clamp(float f)
+        private float Clamp(float f)
         {
             return Math.Max(0, Math.Min(1, f));
         }
 
-        private LedColorRGB clamp(float r, float g, float b)
+        private LedColorRGB Clamp(float r, float g, float b)
         {
-            return new LedColorRGBf(clamp(r), clamp(g), clamp(b)).GetColorRGB();
+            return new LedColorRGBf(Clamp(r), Clamp(g), Clamp(b)).GetColorRGB();
         }
 
-        private float getValue(LedColorRGBf c)
+        private float GetValue(LedColorRGBf c)
         {
             return Math.Max(Math.Max(c.R, c.G), c.B);
         }

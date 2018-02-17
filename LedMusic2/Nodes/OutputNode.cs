@@ -29,13 +29,12 @@ namespace LedMusic2.Nodes
             }
         }
 
-        public OutputNode(Point initPosition) : base(initPosition)
+        public OutputNode(Point initPosition, NodeEditorViewModel parentVM) : base(initPosition, parentVM)
         {
 
             MinWidth = 175;
 
-            input = new NodeInterface<LedColor[]>("Color", ConnectionType.COLOR_ARRAY, this, true);
-            Inputs.Add(input);
+            input = AddInput<LedColor[]>("Color");
 
             Options.Add(preview);
 
