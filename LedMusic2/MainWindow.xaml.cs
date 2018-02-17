@@ -16,9 +16,6 @@ namespace LedMusic2
     {
 
         private MainViewModel vm = MainViewModel.Instance;
-        private Point oldMousePosition = new Point();
-        private bool isDragging = false;
-        private bool wasDragged = false;
 
         public MainWindow()
         {
@@ -29,83 +26,27 @@ namespace LedMusic2
             Helpers.TypeConverter.Initialize();
 
             vm.Outputs.Add(new DummyOutput());
-            vm.Nodes.Add(new OutputNode(new Point(200, 200)));
+            //TODO: vm.Nodes.Add(new OutputNode(new Point(200, 200)));
 
             vm.Initialize();
 
         }
 
-        private void nodePanel_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            vm.Scale += e.Delta > 0 ? 0.1 : -0.1;
-            vm.ScaleCenterX = e.GetPosition(nodeIC).X;
-            vm.ScaleCenterY = e.GetPosition(nodeIC).Y;
-        }
-
-        private void nodePanel_MouseMove(object sender, MouseEventArgs e)
-        {
-            Point newPos = e.GetPosition(nodeIC);
-            MainViewModel.Instance.MousePosX = newPos.X;
-            MainViewModel.Instance.MousePosY = newPos.Y;
-
-            if (e.LeftButton == MouseButtonState.Pressed && isDragging)
-            {                
-                vm.TranslateX += newPos.X - oldMousePosition.X;
-                vm.TranslateY += newPos.Y - oldMousePosition.Y;
-                oldMousePosition = newPos;
-                wasDragged = true;
-            } else
-            {
-                isDragging = false;
-            }
-
-        }
-
-        private void nodePanel_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (vm.IsAddNodePanelOpen) {
-                if (addNodePanel.IsMouseOver)
-                    return;
-                else
-                    vm.IsAddNodePanelOpen = false;
-            }
-
-            FocusManager.SetFocusedElement(this, this);
-
-            oldMousePosition = e.GetPosition(nodeIC);
-            isDragging = true;
-        }
-
-        private void nodePanel_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            if (!wasDragged)
-                NodeBase.InvokeUnselectAllNodes(this);
-
-            if (vm.TemporaryConnection != null)
-                vm.FinalizeTemporaryConnection();
-
-            wasDragged = false;
-            isDragging = false;
-
-            vm.RecalculateAllConnectionPoints();
-
-        }
+        
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            foreach (Connection c in MainViewModel.Instance.Connections)
+            //TODO
+            /*foreach (Connection c in MainViewModel.Instance.Connections)
             {
                 c.CalculatePoints();
-            }
+            }*/
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.A && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
                 vm.IsAddNodePanelOpen = !vm.IsAddNodePanelOpen;
-
-            if (e.Key == Key.Delete)
-                vm.DeleteSelectedNode();
 
         }
 
@@ -119,7 +60,8 @@ namespace LedMusic2
             if (!(lb.SelectedItem is NodeType))
                 return;
 
-            MainViewModel.Instance.AddNode((NodeType)lb.SelectedItem);
+            //TODO
+            //MainViewModel.Instance.AddNode((NodeType)lb.SelectedItem);
             MainViewModel.Instance.IsAddNodePanelOpen = false;
 
         }

@@ -1,0 +1,102 @@
+﻿<UserControl x:Class="LedMusic2.Views.NodeEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ViewModels="clr-namespace:LedMusic2.ViewModels"
+             xmlns:Nodes="clr-namespace:LedMusic2.Nodes"
+             xmlns:Models="clr-namespace:LedMusic2.Models"
+             xmlns:Views="clr-namespace:LedMusic2.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+
+    <UserControl.Resources>
+        
+        <SolidColorBrush x:Key="DarkSquareColor" Color="#1A1A1A" />
+        <SolidColorBrush x:Key="LightSquareColor" Color="#1C1C1C" />
+
+        <DataTemplate DataType="{x:Type Nodes:NodeBase}">
+            <Views:NodeView>
+                <Views:NodeView.RenderTransform>
+                    <TranslateTransform X="{Binding PosX}" Y="{Binding PosY}" />
+                </Views:NodeView.RenderTransform>
+            </Views:NodeView>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type Models:Connection}">
+            <Views:ConnectionView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type ViewModels:TemporaryConnectionViewModel}">
+            <Views:TemporaryConnectionView />
+        </DataTemplate>
+
+        <CollectionViewSource x:Key="NodesSource" Source="{Binding Nodes}" />
+        <CollectionViewSource x:Key="ConnectionsSource" Source="{Binding Connections}" />
+        <CollectionViewSource x:Key="TemporaryConnectionSource" Source="{Binding TemporaryConnectionOC}" />
+
+    </UserControl.Resources>
+
+    <UserControl.Background>
+        <DrawingBrush Viewport="0,0,20,20" ViewportUnits="Absolute" Stretch="None" TileMode="Tile">
+            <DrawingBrush.Drawing>
+                <DrawingGroup>
+                    <GeometryDrawing Brush="{DynamicResource DarkSquareColor}">
+                        <GeometryDrawing.Geometry>
+                            <GeometryGroup>
+                                <RectangleGeometry Rect="0,0,10,10"/>
+                                <RectangleGeometry Rect="10,10,10,10"/>
+                            </GeometryGroup>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                    <GeometryDrawing Brush="{DynamicResource LightSquareColor}">
+                        <GeometryDrawing.Geometry>
+                            <GeometryGroup>
+                                <RectangleGeometry Rect="10,0,10,10"/>
+                                <RectangleGeometry Rect="0,10,10,10"/>
+                            </GeometryGroup>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </DrawingBrush.Drawing>
+        </DrawingBrush>
+    </UserControl.Background>
+
+    <ItemsControl x:Name="nodeIC">
+
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <Canvas x:Name="canvas"
+                        Background="Transparent"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        MouseLeftButtonDown="nodePanel_MouseLeftButtonDown"
+                        MouseLeftButtonUp="nodePanel_MouseLeftButtonUp"
+                        MouseWheel="nodePanel_MouseWheel"
+                        MouseMove="nodePanel_MouseMove"
+                        KeyDown="nodePanel_KeyDown">
+
+                    <!-- TODO: Implement Zooming -->
+                    <!--<Canvas.LayoutTransform>
+                        <ScaleTransform ScaleX="{Binding Scale}" ScaleY="{Binding Scale}" CenterX="{Binding ScaleCenterX}" CenterY="{Binding ScaleCenterY}" />
+                    </Canvas.LayoutTransform>-->
+
+                </Canvas>
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+
+        <ItemsControl.ItemsSource>
+            <CompositeCollection>
+                <CollectionContainer Collection="{Binding Source={StaticResource NodesSource}}" />
+                <CollectionContainer Collection="{Binding Source={StaticResource ConnectionsSource}}" />
+                <CollectionContainer Collection="{Binding Source={StaticResource TemporaryConnectionSource}}" />
+            </CompositeCollection>
+        </ItemsControl.ItemsSource>
+
+        <ItemsControl.ItemContainerStyle>
+            <Style TargetType="ContentPresenter">
+                <Setter Property="Panel.ZIndex" Value="{Binding ZIndex}" />
+            </Style>
+        </ItemsControl.ItemContainerStyle>
+
+    </ItemsControl>
+
+</UserControl>

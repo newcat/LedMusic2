@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -91,7 +94,7 @@
     <Compile Include="Nodes\OutputNode.cs" />
     <Compile Include="Nodes\ParticleNode.cs" />
     <Compile Include="Nodes\ValueNodes.cs" />
-    <Compile Include="OutputConfigurator.xaml.cs">
+    <Compile Include="Outputs\OutputConfigurator.xaml.cs">
       <DependentUpon>OutputConfigurator.xaml</DependentUpon>
     </Compile>
     <Compile Include="Outputs\DummyOutput.cs" />
@@ -101,12 +104,16 @@
       <DependentUpon>TcpOutputView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\NodeEditorViewModel.cs" />
     <Compile Include="ViewModels\NodeOptionViewModel.cs" />
     <Compile Include="ViewModels\ProgressViewModel.cs" />
     <Compile Include="ViewModels\TemporaryConnectionViewModel.cs" />
     <Compile Include="ViewModels\VMBase.cs" />
     <Compile Include="Views\ConnectionView.xaml.cs">
       <DependentUpon>ConnectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\NodeEditor.xaml.cs">
+      <DependentUpon>NodeEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\NodeInterfaceView.xaml.cs">
       <DependentUpon>NodeInterfaceView.xaml</DependentUpon>
@@ -120,6 +127,8 @@
     <Compile Include="Views\TemporaryConnectionView.xaml.cs">
       <DependentUpon>TemporaryConnectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="VstInterop\VstChannel.cs" />
+    <Compile Include="VstInterop\VstInputManager.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -148,7 +157,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="OutputConfigurator.xaml">
+    <Page Include="Outputs\OutputConfigurator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -157,6 +166,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ConnectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\NodeEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -200,6 +213,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -209,7 +223,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="VstInterop\Messages.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

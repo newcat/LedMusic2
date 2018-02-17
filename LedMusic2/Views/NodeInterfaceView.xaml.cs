@@ -50,12 +50,14 @@ namespace LedMusic2.Views
             if (DataContext == null || !(DataContext is NodeInterface) || ell == null)
                 return;
 
+            var ni = (NodeInterface)DataContext;
+
             if (ell.IsMouseDirectlyOver)
             {
-                MainViewModel.Instance.MouseOverInterface((NodeInterface)DataContext);
+                ni.NodeEditorVM.MouseOverInterface(ni);
             } else
             {
-                MainViewModel.Instance.MouseLeftInterface();
+                ni.NodeEditorVM.MouseLeftInterface();
             }
             
         }

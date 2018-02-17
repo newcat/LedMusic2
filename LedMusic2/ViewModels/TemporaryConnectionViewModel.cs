@@ -59,14 +59,17 @@ namespace LedMusic2.ViewModels
 
         public int ZIndex { get { return 3; } }
 
-        public TemporaryConnectionViewModel(NodeInterface originInterface)
+        private NodeEditorViewModel nodeEditorVM;
+
+        public TemporaryConnectionViewModel(NodeInterface originInterface, NodeEditorViewModel parentVM)
         {
-            setOriginInterface(originInterface);
+            nodeEditorVM = parentVM;
+            nodeEditorVM.PropertyChanged += NodeEditorVM_PropertyChanged;
+            SetOriginInterface(originInterface);
             Point3 = Point0;
-            MainViewModel.Instance.PropertyChanged += Instance_PropertyChanged;
         }
 
-        private void setOriginInterface(NodeInterface oi)
+        private void SetOriginInterface(NodeInterface oi)
         {
             OriginInterface = oi;
             if (oi != null && oi.View != null)
@@ -100,10 +103,10 @@ namespace LedMusic2.ViewModels
             }
         }
 
-        private void Instance_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void NodeEditorVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (TargetInterface == null && (e.PropertyName == "MousePosX" || e.PropertyName == "MousePosY"))
-                Point3 = new Point(MainViewModel.Instance.MousePosX, MainViewModel.Instance.MousePosY);
+                Point3 = new Point(nodeEditorVM.MousePosX, nodeEditorVM.MousePosY);
         }
 
         private void NotifyPointsChanged()
@@ -123,7 +126,7 @@ namespace LedMusic2.ViewModels
             {
                 if (disposing)
                 {
-                    MainViewModel.Instance.PropertyChanged -= Instance_PropertyChanged;
+                    nodeEditorVM.PropertyChanged -= NodeEditorVM_PropertyChanged;
                 }
 
                 disposedValue = true;

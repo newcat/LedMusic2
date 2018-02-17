@@ -1,4 +1,5 @@
 ﻿using LedMusic2.Attributes;
+using LedMusic2.Enums;
 using LedMusic2.Interfaces;
 using LedMusic2.Models;
 using LedMusic2.ViewModels;
@@ -11,7 +12,7 @@ using System.Xml.Linq;
 
 namespace LedMusic2.Nodes
 {
-    public abstract class NodeBase : VMBase, IExportable //TODO: Implement IDisposable
+    public abstract class NodeBase : VMBase, IExportable, IDisposable
     {
 
         public static event EventHandler UnselectAllNodes;
@@ -24,7 +25,7 @@ namespace LedMusic2.Nodes
         private double _posX;
         public double PosX
         {
-            get { return _posX + MainViewModel.Instance.TranslateX; }
+            get { return _posX + NodeEditorVM.TranslateX; }
             set
             {
                 _posX = value;
@@ -35,7 +36,7 @@ namespace LedMusic2.Nodes
         private double _posY;
         public double PosY
         {
-            get { return _posY + MainViewModel.Instance.TranslateY; }
+            get { return _posY + NodeEditorVM.TranslateY; }
             set
             {
                 _posY = value;
@@ -96,16 +97,20 @@ namespace LedMusic2.Nodes
         private Guid _id = Guid.NewGuid();
         public Guid Id { get { return _id; } set { _id = value; } }
 
-        public NodeBase(Point initPosition)
+        public NodeEditorViewModel NodeEditorVM { get; private set; }
+
+        public NodeBase(Point initPosition, NodeEditorViewModel parentVM)
         {
-            MainViewModel.Instance.PropertyChanged += MainVM_PropertyChanged;
+
+            NodeEditorVM = parentVM;
+            NodeEditorVM.PropertyChanged += NodeEditorVM_PropertyChanged;
 
             PosX = initPosition.X;
             PosY = initPosition.Y;
+
         }
 
-
-        private void MainVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void NodeEditorVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "TranslateX" || e.PropertyName == "TranslateY")
             {
@@ -115,6 +120,45 @@ namespace LedMusic2.Nodes
         }
 
         public abstract bool Calculate();
+
+        protected NodeInterface AddInput(string name, ConnectionType type)
+        {
+            var ni = CreateInterface(name, type, true);
+            Inputs.Add(ni);
+            return ni;
+        }
+
+        protected NodeInterface AddOutput(string name, ConnectionType type)
+        {
+            var ni = CreateInterface(name, type, false);
+            Outputs.Add(ni);
+            return ni;
+        }
+
+        private NodeInterface CreateInterface(string name, ConnectionType type, bool isInput)
+        {
+
+            Type t = null;
+            switch (type)
+            {
+                case ConnectionType.BOOL:
+                    t = typeof(bool);
+                    break;
+                case ConnectionType.COLOR:
+                    t = typeof(LedColor);
+                    break;
+                case ConnectionType.COLOR_ARRAY:
+                    t = typeof(LedColor[]);
+                    break;
+                case ConnectionType.NUMBER:
+                    t = typeof(double);
+                    break;
+            }
+
+            var niType = typeof(NodeInterface<>).MakeGenericType(t);
+            return (NodeInterface)Activator.CreateInstance(niType, new object[] { name, type, this, isInput, NodeEditorVM });
+
+        }
 
         #region Saving and Loading
         public XElement GetXmlElement()
@@ -195,7 +239,7 @@ namespace LedMusic2.Nodes
 
                     case "options":
                         foreach (XElement nodeOptionX in el.Elements())
-                            loadOption(nodeOptionX);
+                            LoadOption(nodeOptionX);
                         break;
 
                     case "customdata":
@@ -207,7 +251,7 @@ namespace LedMusic2.Nodes
 
         }
 
-        private void loadOption(XElement nodeOptionX)
+        private void LoadOption(XElement nodeOptionX)
         {
             string name = nodeOptionX.Attribute("name").Value;
             foreach (NodeOptionViewModel opt in Options)
@@ -225,6 +269,28 @@ namespace LedMusic2.Nodes
         protected virtual void LoadAdditionalXmlData(XElement x)
         {
             return;
+        }
+        #endregion
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    NodeEditorVM.PropertyChanged -= NodeEditorVM_PropertyChanged;
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
         }
         #endregion
 

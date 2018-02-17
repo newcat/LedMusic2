@@ -17,6 +17,7 @@ namespace LedMusic2.Models
         public ConnectionType ConnectionType { get; private set; }
         public abstract Type NodeType { get; }
         public NodeBase Parent { get; private set; }
+        public NodeEditorViewModel NodeEditorVM { get; private set; }
 
         #region ViewModel Properties
         private NodeInterfaceView _view = null;
@@ -82,13 +83,14 @@ namespace LedMusic2.Models
         private Guid _id = Guid.NewGuid();
         public Guid Id { get { return _id; } set { _id = value; } }
 
-        public NodeInterface(string name, ConnectionType ctype, NodeBase parent, bool isInput)
+        public NodeInterface(string name, ConnectionType ctype, NodeBase parent, bool isInput, NodeEditorViewModel nevm)
         {
             Name = name;
             ConnectionType = ctype;
             Parent = parent;
             IsInput = isInput;
-            _cmdEllipseClicked.ExecuteDelegate = (o) => MainViewModel.Instance.CreateTemporaryConnection(this);
+            NodeEditorVM = nevm;
+            _cmdEllipseClicked.ExecuteDelegate = (o) => NodeEditorVM.CreateTemporaryConnection(this);
 
             if (isInput)
             {
@@ -163,12 +165,12 @@ namespace LedMusic2.Models
         public override Type NodeType { get { return typeof(T); } }
         public T Value { get; private set; }
 
-        public NodeInterface(string name, ConnectionType cType, NodeBase parent, bool isInput) :
-            base(name, cType, parent, isInput)
+        public NodeInterface(string name, ConnectionType cType, NodeBase parent, bool isInput, NodeEditorViewModel nevm) :
+            base(name, cType, parent, isInput, nevm)
         { }
 
-        public NodeInterface(string name, ConnectionType cType, NodeBase parent, bool isInput, T initialValue) :
-            base(name, cType, parent, isInput)
+        public NodeInterface(string name, ConnectionType cType, NodeBase parent, bool isInput, NodeEditorViewModel nevm, T initialValue) :
+            base(name, cType, parent, isInput, nevm)
         {
             SetValue(initialValue);
         }

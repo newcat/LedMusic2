@@ -1,0 +1,17 @@
+﻿{
+	"type": "name",
+	"uuid": "...",
+	"name": "myNewName"
+}
+
+{
+	"type": "value",
+	"uuid": "...",
+	"value": 0.52
+}
+
+{
+	"type": "midi",
+	"uuid": "...",
+	"event": "noteOn"
+}

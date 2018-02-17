@@ -1,21 +1,8 @@
-﻿using LedMusic2.Helpers;
-using LedMusic2.Models;
+﻿using LedMusic2.Models;
 using LedMusic2.Nodes;
-using LedMusic2.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace LedMusic2.Views
@@ -27,9 +14,7 @@ namespace LedMusic2.Views
     {
 
         private NodeBase _vm;
-        private NodeBase vm {
-            get { return _vm ?? (DataContext is NodeBase ? (_vm = (NodeBase)DataContext) : null); }
-        }
+        private NodeBase vm => _vm ?? (DataContext is NodeBase ? (_vm = (NodeBase)DataContext) : null);
 
         public NodeView()
         {
@@ -41,15 +26,14 @@ namespace LedMusic2.Views
             if (vm == null)
                 return;
 
-            if (e.OriginalSource is Thumb)
+            if (e.OriginalSource is Thumb t)
             {
-                var t = (Thumb)e.OriginalSource;
                 if (t.Tag != null && t.Tag is string && (string)t.Tag == "MainThumb")
                 {
-                    vm.PosX += e.HorizontalChange - MainViewModel.Instance.TranslateX;
-                    vm.PosY += e.VerticalChange - MainViewModel.Instance.TranslateY;
+                    vm.PosX += e.HorizontalChange - vm.NodeEditorVM.TranslateX;
+                    vm.PosY += e.VerticalChange - vm.NodeEditorVM.TranslateY;
                 }
-            }            
+            }
         }
 
         private void Thumb_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -63,12 +47,12 @@ namespace LedMusic2.Views
 
         private void NodeInterface_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (!(sender is Ellipse))
+            if (!(sender is Ellipse) || vm == null)
                 return;
 
             var ellipse = (Ellipse)sender;
             var nodeInterface = (NodeInterface)ellipse.DataContext;
-            MainViewModel.Instance.CreateTemporaryConnection(nodeInterface);
+            vm.NodeEditorVM.CreateTemporaryConnection(nodeInterface);
         }
     }
 }

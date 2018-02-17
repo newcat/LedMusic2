@@ -1,6 +1,8 @@
 ﻿using LedMusic2.Exceptions;
 using LedMusic2.Models;
+using LedMusic2.Nodes;
 using LedMusic2.ViewModels;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace LedMusic2.Helpers
@@ -29,7 +31,7 @@ namespace LedMusic2.Helpers
             }
         }
 
-        public bool CanConnect(NodeInterface ni)
+        public bool CanConnect(NodeInterface ni, NodeBase[] nodes, Connection[] connections)
         {
 
             if (ConnectionOrigin == null)
@@ -57,8 +59,7 @@ namespace LedMusic2.Helpers
             //lead to a recursion in the tree.
             //Using the ToList()-Method for creating a shallow copy, since we dont want to add
             //the temporary connection to the real node tree.
-            var nodes = MainViewModel.Instance.Nodes.ToArray();
-            var tempConnections = MainViewModel.Instance.Connections.ToList();
+            var tempConnections = connections.ToList();
             var connectionToTest = new Connection(output, input);
             tempConnections.Add(connectionToTest);
             try

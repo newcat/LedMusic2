@@ -2,11 +2,6 @@
 using LedMusic2.Enums;
 using LedMusic2.Models;
 using LedMusic2.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace LedMusic2.Nodes
@@ -19,11 +14,11 @@ namespace LedMusic2.Nodes
         NodeOptionViewModel optInteger = new NodeOptionViewModel(NodeOptionType.BOOL, "Use integer values");
         NodeOptionViewModel optInvert = new NodeOptionViewModel(NodeOptionType.BOOL, "Invert output");
 
-        public BooleanNode(Point initPosition) : base(initPosition)
+        public BooleanNode(Point initPosition, NodeEditorViewModel parentVM) : base(initPosition, parentVM)
         {
 
-            Inputs.Add(new NodeInterface<double>("Value 1", ConnectionType.NUMBER, this, true));
-            Inputs.Add(new NodeInterface<double>("Value 2", ConnectionType.NUMBER, this, true));
+            AddInput("Value 1", ConnectionType.NUMBER);
+            AddInput("Value 2", ConnectionType.NUMBER);
 
             foreach (string s in new string[] { "==", ">", "<", ">=", "<=" })
             {
@@ -34,7 +29,7 @@ namespace LedMusic2.Nodes
             Options.Add(optInteger);
             Options.Add(optInvert);
 
-            Outputs.Add(new NodeInterface<bool>("Output", ConnectionType.BOOL, this, false));
+            AddOutput("Output", ConnectionType.BOOL);
 
         }
 
