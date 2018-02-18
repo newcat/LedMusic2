@@ -1,4 +1,5 @@
-﻿using LedMusic2.Nodes;
+﻿using LedMusic2.Models;
+using LedMusic2.Nodes;
 using LedMusic2.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
@@ -29,7 +30,7 @@ namespace LedMusic2.Views
                 vm = (NodeEditorViewModel)e.NewValue;
         }
 
-        private void nodePanel_MouseWheel(object sender, MouseWheelEventArgs e)
+        private void NodePanel_MouseWheel(object sender, MouseWheelEventArgs e)
         {
 
             if (vm == null)
@@ -40,7 +41,7 @@ namespace LedMusic2.Views
             vm.ScaleCenterY = e.GetPosition(nodeIC).Y;
         }
 
-        private void nodePanel_MouseMove(object sender, MouseEventArgs e)
+        private void NodePanel_MouseMove(object sender, MouseEventArgs e)
         {
 
             if (vm == null)
@@ -64,25 +65,25 @@ namespace LedMusic2.Views
 
         }
 
-        private void nodePanel_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void NodePanel_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
 
-            //TODO
-            /*if (vm.IsAddNodePanelOpen)
+            if (vm.IsAddNodePanelOpen)
             {
                 if (addNodePanel.IsMouseOver)
                     return;
                 else
                     vm.IsAddNodePanelOpen = false;
-            }*/
+            }
 
             FocusManager.SetFocusedElement(this, this);
 
             oldMousePosition = e.GetPosition(nodeIC);
             isDragging = true;
+
         }
 
-        private void nodePanel_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void NodePanel_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
 
             if (vm == null)
@@ -101,7 +102,7 @@ namespace LedMusic2.Views
 
         }
 
-        private void nodePanel_KeyDown(object sender, KeyEventArgs e)
+        private void NodePanel_KeyDown(object sender, KeyEventArgs e)
         {
 
             if (vm == null)
@@ -109,6 +110,24 @@ namespace LedMusic2.Views
 
             if (e.Key == Key.Delete)
                 vm.DeleteSelectedNode();
+
+            if (e.Key == Key.A && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
+                vm.IsAddNodePanelOpen = !vm.IsAddNodePanelOpen;
+
+        }
+
+        private void ListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (vm == null || !(sender is ListBox))
+                return;
+
+            var lb = (ListBox)sender;
+
+            if (!(lb.SelectedItem is NodeType))
+                return;
+
+            vm.AddNode((NodeType)lb.SelectedItem);
+            vm.IsAddNodePanelOpen = false;
 
         }
 

@@ -25,47 +25,10 @@ namespace LedMusic2
 
             Helpers.TypeConverter.Initialize();
 
-            vm.Outputs.Add(new DummyOutput());
-            //TODO: vm.Nodes.Add(new OutputNode(new Point(200, 200)));
-
             vm.Initialize();
 
         }
-
         
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            //TODO
-            /*foreach (Connection c in MainViewModel.Instance.Connections)
-            {
-                c.CalculatePoints();
-            }*/
-        }
-
-        private void Window_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.A && Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
-                vm.IsAddNodePanelOpen = !vm.IsAddNodePanelOpen;
-
-        }
-
-        private void ListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            if (!(sender is ListBox))
-                return;
-
-            var lb = (ListBox)sender;
-
-            if (!(lb.SelectedItem is NodeType))
-                return;
-
-            //TODO
-            //MainViewModel.Instance.AddNode((NodeType)lb.SelectedItem);
-            MainViewModel.Instance.IsAddNodePanelOpen = false;
-
-        }
-
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             MainViewModel.Instance.End();

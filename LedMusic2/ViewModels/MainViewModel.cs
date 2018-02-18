@@ -1,17 +1,13 @@
 ﻿using AttachedCommandBehavior;
 using LedMusic2.Attributes;
-using LedMusic2.Enums;
-using LedMusic2.Helpers;
 using LedMusic2.Interfaces;
 using LedMusic2.Models;
 using LedMusic2.Nodes;
 using LedMusic2.Outputs;
-using LedMusic2.VstInterop;
 using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -68,29 +64,25 @@ namespace LedMusic2.ViewModels
         }
         #endregion
 
-        #region Properties        
-
-        private bool _isAddNodePanelOpen = false;
-        public bool IsAddNodePanelOpen
+        #region Properties
+        public NodeEditorViewModel ActiveScene
         {
-            get { return _isAddNodePanelOpen; }
+            get { return activeSceneIndex == -1 ? GlobalScene : Scenes[activeSceneIndex]; }
+        }
+
+        private NodeEditorViewModel _globalScene = new NodeEditorViewModel();
+        public NodeEditorViewModel GlobalScene
+        {
+            get { return _globalScene; }
             set
             {
-                _isAddNodePanelOpen = value;
+                _globalScene = value;
                 NotifyPropertyChanged();
             }
         }
 
-        private ObservableCollection<NodeCategoryModel> _nodeCategories = new ObservableCollection<NodeCategoryModel>();
-        public ObservableCollection<NodeCategoryModel> NodeCategories
-        {
-            get { return _nodeCategories; }
-            set
-            {
-                _nodeCategories = value;
-                NotifyPropertyChanged();
-            }
-        }
+        public ObservableCollection<NodeEditorViewModel> Scenes { get; } =
+            new ObservableCollection<NodeEditorViewModel>();
 
         #region Progress
         private ObservableCollection<ProgressViewModel> _progresses = new ObservableCollection<ProgressViewModel>();
@@ -177,14 +169,17 @@ namespace LedMusic2.ViewModels
 
         #region Private Fields
         private DispatcherTimer calculationTimer;
+        private int activeSceneIndex = -1;
         #endregion
 
         #region Public Methods
         public void Initialize()
         {
 
-            FillNodeCategories();
             FillOutputTypes();
+
+            Outputs.Add(new DummyOutput());
+            GlobalScene.Nodes.Add(new OutputNode(new Point(600.0, 150.0), GlobalScene));
 
             StartProcessing();
 
@@ -192,7 +187,7 @@ namespace LedMusic2.ViewModels
 
         public void End()
         {
-            //TODO: Dispose of every scenery
+            //TODO: Dispose of everything
         }
 
         #region Nodes
@@ -210,7 +205,8 @@ namespace LedMusic2.ViewModels
 
         public void CalculateAllNodes()
         {
-            //TODO: Calculate nodes of global scenery and then currently active scenery
+            GlobalScene.CalculateAllNodes();
+            ActiveScene.CalculateAllNodes();
         }
 
         public void OnCalculationTimerTick(object sender, EventArgs e)
@@ -247,27 +243,14 @@ namespace LedMusic2.ViewModels
         #endregion
 
         #region Private Methods
-        private void FillNodeCategories()
+        private int CalcTotalProgressValue()
         {
-
-            //Get all node classes
-            var nodeClasses = Assembly.GetCallingAssembly().GetTypes().Where((t) => string.Equals(t.Namespace, "LedMusic2.Nodes") && !t.IsAbstract);
-            foreach (NodeCategory category in Enum.GetValues(typeof(NodeCategory)))
+            var val = 0;
+            foreach (var x in _progresses)
             {
-                var c = new NodeCategoryModel(Enum.GetName(typeof(NodeCategory), category));
-                var n = nodeClasses.Where((t) => {
-                        var x = t.GetCustomAttribute(typeof(NodeAttribute));
-                        if (x == null)
-                            return false;
-                        return ((NodeAttribute)x).Category == category;
-                    });
-
-                foreach (var x in n)
-                    c.NodeTypes.Add(new NodeType(((NodeAttribute)x.GetCustomAttribute(typeof(NodeAttribute))).Name, x));
-
-                NodeCategories.Add(c);
+                val += x.Progress;
             }
-
+            return (int)Math.Floor((double)val / _progresses.Count);
         }
 
         private void FillOutputTypes()
@@ -279,16 +262,6 @@ namespace LedMusic2.ViewModels
             foreach (var t in outputs)
                 OutputTypes.Add(new OutputType(t.GetCustomAttribute<OutputAttribute>().Name, t));
 
-        }
-
-        private int CalcTotalProgressValue()
-        {
-            var val = 0;
-            foreach (var x in _progresses)
-            {
-                val += x.Progress;
-            }
-            return (int)Math.Floor((double)val / _progresses.Count);
         }
         #endregion
 

@@ -5,47 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LedMusic2"
         xmlns:Views="clr-namespace:LedMusic2.Views"
-        xmlns:Models="clr-namespace:LedMusic2.Models"
-        xmlns:Converters="clr-namespace:LedMusic2.Converters"
         mc:Ignorable="d"
         Title="MainWindow" Height="550" Width="925"
-        Loaded="Window_Loaded" KeyDown="Window_KeyDown"
         Closing="Window_Closing">
 
     <Window.Resources>
-        
         <SolidColorBrush x:Key="PanelBackground" Color="#CCCCCC" />
-
-        <DataTemplate DataType="{x:Type Models:NodeCategoryModel}">
-
-            <Grid>
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="25" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-
-                <TextBlock Background="White" Foreground="Black" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                           Grid.Row="0" Text="{Binding Name}" Padding="5" />
-
-                <ListBox Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsHitTestVisible="True"
-                                              ItemsSource="{Binding NodeTypes}" BorderBrush="Transparent" Grid.Row="1"
-                         MouseDoubleClick="ListBox_MouseDoubleClick">
-
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Foreground="White" Background="Transparent" Text="{Binding Name}" Margin="5"/>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-
-                </ListBox>
-
-            </Grid>
-
-        </DataTemplate>
-
-        <Converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter" />
-
     </Window.Resources>
 
     <DockPanel>
@@ -102,21 +67,7 @@
         </Grid>
 
         <Grid>
-
-            <Views:NodeEditor DataContext="CurrentScene" />
-
-            <ItemsControl x:Name="addNodePanel" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="50" MaxWidth="1200" MaxHeight="600"
-                      Background="#EE000000" BorderBrush="Transparent" ItemsSource="{Binding NodeCategories}" IsHitTestVisible="True"
-                          Visibility="{Binding IsAddNodePanelOpen, Converter={StaticResource boolToVisibilityConverter}}" Panel.ZIndex="20000">
-
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid Rows="1"></UniformGrid>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-
-            </ItemsControl>
-        
+            <Views:NodeEditor DataContext="{Binding ActiveScene}" />
         </Grid>
 
     </DockPanel>

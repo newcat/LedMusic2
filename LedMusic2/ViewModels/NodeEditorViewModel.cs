@@ -1,14 +1,14 @@
-﻿using LedMusic2.Helpers;
+﻿using LedMusic2.Attributes;
+using LedMusic2.Enums;
+using LedMusic2.Helpers;
 using LedMusic2.Interfaces;
 using LedMusic2.Models;
 using LedMusic2.Nodes;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 using System.Windows;
 using System.Xml.Linq;
 
@@ -20,6 +20,7 @@ namespace LedMusic2.ViewModels
         public NodeEditorViewModel()
         {
             NodeBase.UnselectAllNodes += NodeBase_UnselectAllNodes;
+            FillNodeCategories();
         }
 
         #region Private fields
@@ -28,6 +29,17 @@ namespace LedMusic2.ViewModels
         #endregion
 
         #region Properties
+        private bool _isActive = false;
+        public bool IsActive
+        {
+            get { return _isActive; }
+            set
+            {
+                _isActive = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         private double _scale = 1.0;
         public double Scale
         {
@@ -144,6 +156,28 @@ namespace LedMusic2.ViewModels
                 NotifyPropertyChanged();
             }
         }
+
+        private bool _isAddNodePanelOpen = false;
+        public bool IsAddNodePanelOpen
+        {
+            get { return _isAddNodePanelOpen; }
+            set
+            {
+                _isAddNodePanelOpen = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private ObservableCollection<NodeCategoryModel> _nodeCategories = new ObservableCollection<NodeCategoryModel>();
+        public ObservableCollection<NodeCategoryModel> NodeCategories
+        {
+            get { return _nodeCategories; }
+            set
+            {
+                _nodeCategories = value;
+                NotifyPropertyChanged();
+            }
+        }
         #endregion
 
         #region Connections
@@ -222,9 +256,8 @@ namespace LedMusic2.ViewModels
                 var c = new Connection(input, output);
                 Connections.Add(c);
 
-                //TODO
-                //calculateNodeTree();
-                //CalculateNodes(input.Parent);
+                CalculateNodeTree();
+                CalculateNodes(input.Parent);
 
             }
 
@@ -272,8 +305,8 @@ namespace LedMusic2.ViewModels
             if (t == null)
                 return null;
 
-            var constructor = t.T.GetConstructor(new Type[] { typeof(Point) });
-            var node = (NodeBase)constructor.Invoke(new object[] { new Point(MousePosX - TranslateX, MousePosY - TranslateY) });
+            var constructor = t.T.GetConstructor(new Type[] { typeof(Point), typeof(NodeEditorViewModel) });
+            var node = (NodeBase)constructor.Invoke(new object[] { new Point(MousePosX - TranslateX, MousePosY - TranslateY), this });
             Nodes.Add(node);
             return node;
 
@@ -311,6 +344,31 @@ namespace LedMusic2.ViewModels
         {
             foreach (NodeBase n in Nodes)
                 n.IsSelected = false;
+        }
+        #endregion
+
+        #region Node Categories
+        private void FillNodeCategories()
+        {
+
+            //Get all node classes
+            var nodeClasses = Assembly.GetCallingAssembly().GetTypes().Where((t) => string.Equals(t.Namespace, "LedMusic2.Nodes") && !t.IsAbstract);
+            foreach (NodeCategory category in Enum.GetValues(typeof(NodeCategory)))
+            {
+                var c = new NodeCategoryModel(Enum.GetName(typeof(NodeCategory), category));
+                var n = nodeClasses.Where((t) => {
+                    var x = t.GetCustomAttribute(typeof(NodeAttribute));
+                    if (x == null)
+                        return false;
+                    return ((NodeAttribute)x).Category == category;
+                });
+
+                foreach (var x in n)
+                    c.NodeTypes.Add(new NodeType(((NodeAttribute)x.GetCustomAttribute(typeof(NodeAttribute))).Name, x));
+
+                NodeCategories.Add(c);
+            }
+
         }
         #endregion
 
@@ -376,7 +434,7 @@ namespace LedMusic2.ViewModels
 
             string type = nodeX.Attribute("type").Value;
             NodeBase nodeInstance = null;
-            foreach (NodeCategoryModel ncm in MainViewModel.Instance.NodeCategories)
+            foreach (NodeCategoryModel ncm in NodeCategories)
             {
                 foreach (NodeType n in ncm.NodeTypes)
                 {
