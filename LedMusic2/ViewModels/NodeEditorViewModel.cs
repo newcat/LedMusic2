@@ -29,13 +29,13 @@ namespace LedMusic2.ViewModels
         #endregion
 
         #region Properties
-        private bool _isActive = false;
-        public bool IsActive
+        private bool _isDisplayed = false;
+        public bool IsDisplayed
         {
-            get { return _isActive; }
+            get { return _isDisplayed; }
             set
             {
-                _isActive = value;
+                _isDisplayed = value;
                 NotifyPropertyChanged();
             }
         }

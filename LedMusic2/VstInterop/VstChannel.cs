@@ -1,30 +1,16 @@
-﻿using LedMusic2.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.IO.MemoryMappedFiles;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices;
+﻿using System;
 using Newtonsoft.Json.Linq;
 
 namespace LedMusic2.VstInterop
 {
 
-    public class VstChannel : VMBase
+    public class VstChannel
     {
 
-        private string _name;
-        public string Name
-        {
-            get { return _name; }
-            private set
-            {
-                _name = value;
-            }
-        }
-
-        public Guid Id { get; set; }
+        public Guid Id { get; }
+        public string Name { get; private set; }
+        public double Value { get; private set; }
+        public int Note { get; private set; }
 
         public VstChannel(Guid id)
         {
@@ -34,7 +20,24 @@ namespace LedMusic2.VstInterop
         public void ExecuteMessage(JObject message)
         {
 
+            try
+            {
 
+                string type = message.Value<string>("type");
+                
+                if (type == "name")
+                {
+                    Name = message.Value<string>("name");
+                } else if (type == "value")
+                {
+                    Value = message.Value<double>("value");
+                } else if (type == "midi" && message.Value<string>("event") == "noteOn")
+                {
+                    Value = message.Value<double>("velocity");
+                    Note = message.Value<int>("note");
+                }
+
+            } catch (Exception) { }
 
         }
 

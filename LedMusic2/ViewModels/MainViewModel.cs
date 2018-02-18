@@ -70,9 +70,44 @@ namespace LedMusic2.ViewModels
         #endregion
 
         #region Properties
-        public NodeEditorViewModel ActiveScene
+        private int _activeSceneIndex = -1;
+        public int ActiveSceneIndex
         {
-            get { return activeSceneIndex == -1 ? GlobalScene : Scenes[activeSceneIndex]; }
+            get { return _activeSceneIndex; }
+            set
+            {
+                if (value < -1 || value >= Scenes.Count)
+                    _activeSceneIndex = -1;
+                else
+                    _activeSceneIndex = value;
+            }
+        }
+
+        private int _displayedSceneIndex = -1;
+        public int DisplayedSceneIndex
+        {
+            get { return _displayedSceneIndex; }
+            set
+            {
+
+                _displayedSceneIndex = value;
+                NotifyPropertyChanged();
+                NotifyPropertyChanged("DisplayedScene");
+
+                GlobalScene.IsDisplayed = false;
+                foreach (var s in Scenes) s.IsDisplayed = false;
+
+                if (_activeSceneIndex == -1)
+                    GlobalScene.IsDisplayed = true;
+                else
+                    Scenes[_activeSceneIndex].IsDisplayed = true;
+
+            }
+        }
+
+        public NodeEditorViewModel DisplayedScene
+        {
+            get { return ActiveSceneIndex == -1 ? GlobalScene : Scenes[ActiveSceneIndex]; }
         }
 
         private NodeEditorViewModel _globalScene = new NodeEditorViewModel();
@@ -174,7 +209,6 @@ namespace LedMusic2.ViewModels
 
         #region Private Fields
         private DispatcherTimer calculationTimer;
-        private int activeSceneIndex = -1;
         #endregion
 
         #region Public Methods
@@ -185,6 +219,7 @@ namespace LedMusic2.ViewModels
 
             Outputs.Add(new DummyOutput());
             GlobalScene.Nodes.Add(new OutputNode(new Point(600.0, 150.0), GlobalScene));
+            DisplayedSceneIndex = -1;
 
             StartProcessing();
 
@@ -211,7 +246,8 @@ namespace LedMusic2.ViewModels
         public void CalculateAllNodes()
         {
             GlobalScene.CalculateAllNodes();
-            ActiveScene.CalculateAllNodes();
+            if (ActiveSceneIndex > -1)
+                Scenes[ActiveSceneIndex].CalculateAllNodes();
         }
 
         public void OnCalculationTimerTick(object sender, EventArgs e)

@@ -60,8 +60,7 @@ namespace LedMusic2.VstInterop
                     var type = message.Value<string>("type");
 
                     var guid = Guid.Parse(uuid);
-                    VstChannel channel;
-                    if (!channelDictionary.TryGetValue(guid, out channel))
+                    if (!channelDictionary.TryGetValue(guid, out VstChannel channel))
                     {
                         channel = new VstChannel(guid);
                         channelDictionary.Add(guid, channel);

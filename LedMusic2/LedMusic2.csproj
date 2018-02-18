@@ -94,6 +94,7 @@
     <Compile Include="Nodes\OutputNode.cs" />
     <Compile Include="Nodes\ParticleNode.cs" />
     <Compile Include="Nodes\ValueNodes.cs" />
+    <Compile Include="Nodes\VstNode.cs" />
     <Compile Include="Outputs\OutputConfigurator.xaml.cs">
       <DependentUpon>OutputConfigurator.xaml</DependentUpon>
     </Compile>

@@ -13,5 +13,7 @@
 {
 	"type": "midi",
 	"uuid": "...",
-	"event": "noteOn"
+	"event": "noteOn",
+	"note": "54",
+	"velocity": "120"
 }

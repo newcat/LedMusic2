@@ -25,6 +25,14 @@
             <MenuItem Header="Settings">
                 <MenuItem Header="Configure Outputs" Command="{Binding CmdConfigureOutputs}" />
             </MenuItem>
+            <MenuItem Header="Scenes">
+                <MenuItem Header="Add Scene" />
+                <MenuItem Header="Delete Scene" />
+                <Separator />
+                <MenuItem Header="Global Scene" IsChecked="{Binding GlobalScene.IsDisplayed}" />
+                <MenuItem Header="Scenes" ItemsSource="{Binding Scenes}">
+                </MenuItem>
+            </MenuItem>
         </Menu>
 
         <Grid DockPanel.Dock="Bottom" Panel.ZIndex="10" Background="{StaticResource PanelBackground}">
@@ -67,7 +75,7 @@
         </Grid>
 
         <Grid>
-            <Views:NodeEditor DataContext="{Binding ActiveScene}" />
+            <Views:NodeEditor DataContext="{Binding DisplayedScene}" />
         </Grid>
 
     </DockPanel>
