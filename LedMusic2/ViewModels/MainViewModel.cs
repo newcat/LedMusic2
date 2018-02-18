@@ -16,6 +16,11 @@ using System.Windows.Threading;
 using System.Xml;
 using System.Xml.Linq;
 
+// TODO: Try to find out, why we have so many exceptions
+// TODO: Add scene switching by menu
+// TODO: Add scene switching node
+// TODO: Make VST Interop functional
+
 namespace LedMusic2.ViewModels
 {
     public class MainViewModel : VMBase, IExportable
