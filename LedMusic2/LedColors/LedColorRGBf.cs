@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LedMusic2.Color
+namespace LedMusic2.LedColors
 {
 
     public class LedColorRGBf : LedColor

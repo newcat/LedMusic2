@@ -1,4 +1,4 @@
-﻿using LedMusic2.Color;
+﻿using LedMusic2.LedColors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,7 +59,7 @@ namespace LedMusic2.NodeConnection
             converters.Add(boolToDouble);
 
             //Colors
-            var doubleToColor = new SingleTypeConverter(typeof(double), typeof(LedColor),
+            var doubleToColor = new SingleTypeConverter(typeof(double), typeof(LedColors.LedColor),
                 (x) =>
                 {
                     byte v = (byte)Math.Max(0, Math.Min(255, (double)x * 255));
@@ -67,14 +67,14 @@ namespace LedMusic2.NodeConnection
                 });
             converters.Add(doubleToColor);
 
-            var colorArrayToColor = new SingleTypeConverter(typeof(LedColor[]), typeof(LedColor),
+            var colorArrayToColor = new SingleTypeConverter(typeof(LedColors.LedColor[]), typeof(LedColors.LedColor),
                 (x) =>
                 {
 
                     if (x == null)
                         return new LedColorRGB(0, 0, 0);
 
-                    var arr = (LedColor[])x;
+                    var arr = (LedColors.LedColor[])x;
                     if (arr.Length > 0)
                         return arr[0];
                     else
@@ -83,11 +83,11 @@ namespace LedMusic2.NodeConnection
             converters.Add(colorArrayToColor);
 
             //Color Array
-            var colorToColorArray = new SingleTypeConverter(typeof(LedColor), typeof(LedColor[]),
-                (x) => new LedColor[] { (LedColor)x });
+            var colorToColorArray = new SingleTypeConverter(typeof(LedColors.LedColor), typeof(LedColors.LedColor[]),
+                (x) => (new LedColors.LedColor[] { (LedColors.LedColor)x }));
             converters.Add(colorToColorArray);
 
-            var doubleToColorArray = new ConverterCombination(typeof(double), typeof(LedColor[]));
+            var doubleToColorArray = new ConverterCombination(typeof(double), typeof(LedColors.LedColor[]));
             doubleToColorArray.Converters.Add(doubleToColor);
             doubleToColorArray.Converters.Add(colorToColorArray);
             combinations.Add(doubleToColorArray);

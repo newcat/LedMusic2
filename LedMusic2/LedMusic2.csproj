@@ -60,9 +60,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Color\LedColorHSV.cs" />
-    <Compile Include="Color\LedColorRGB.cs" />
-    <Compile Include="Color\LedColorRGBf.cs" />
+    <Compile Include="LedColors\LedColorHSV.cs" />
+    <Compile Include="LedColors\LedColorRGB.cs" />
+    <Compile Include="LedColors\LedColorRGBf.cs" />
     <Compile Include="Outputs\OutputAttribute.cs" />
     <Compile Include="CommandBehaviorStuff\BehaviorBinding.cs" />
     <Compile Include="CommandBehaviorStuff\CommandBehavior.cs" />
@@ -201,7 +201,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Color\LedColor.cs" />
+    <Compile Include="LedColors\LedColor.cs" />
     <Compile Include="Nodes\NodeInterface.cs" />
     <Compile Include="Nodes\NodeInterfaceList.cs" />
     <Compile Include="Nodes\NodeModels\MathNode.cs" />

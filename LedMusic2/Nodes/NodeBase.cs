@@ -1,4 +1,4 @@
-﻿using LedMusic2.Color;
+﻿using LedMusic2.LedColors;
 using LedMusic2.NodeConnection;
 using LedMusic2.NodeEditor;
 using LedMusic2.ViewModels;
@@ -145,9 +145,9 @@ namespace LedMusic2.Nodes
 
             if (typeof(T) == typeof(double))
                 return ConnectionType.NUMBER;
-            else if (typeof(T) == typeof(LedColor))
+            else if (typeof(T) == typeof(LedColors.LedColor))
                 return ConnectionType.COLOR;
-            else if (typeof(T) == typeof(LedColor[]))
+            else if (typeof(T) == typeof(LedColors.LedColor[]))
                 return ConnectionType.COLOR_ARRAY;
             else if (typeof(T) == typeof(bool))
                 return ConnectionType.BOOL;

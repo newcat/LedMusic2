@@ -1,4 +1,4 @@
-﻿using LedMusic2.Color;
+﻿using LedMusic2.LedColors;
 using System;
 using System.Globalization;
 using System.Windows.Data;
@@ -10,9 +10,9 @@ namespace LedMusic2.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is LedColor)
+            if (value is LedColors.LedColor)
             {
-                var c = ((LedColor)value).GetColorRGB();
+                var c = ((LedColors.LedColor)value).GetColorRGB();
                 return new SolidColorBrush(System.Windows.Media.Color.FromRgb(c.R, c.G, c.B));
             } else
             {

@@ -1,4 +1,4 @@
-﻿using LedMusic2.Color;
+﻿using LedMusic2.LedColors;
 using LedMusic2.NodeEditor;
 using System;
 using System.Windows;
@@ -15,11 +15,11 @@ namespace LedMusic2.Nodes.NodeModels
 
             AddInput("Center Position", 0.0);
             AddInput("Alpha", 1.0);
-            AddInput<LedColor>("Color", new LedColorRGB(0, 0, 0));
+            AddInput<LedColors.LedColor>("Color", new LedColorRGB(0, 0, 0));
             AddInput("Glow", 0.0);
             AddInput("Symmetric", false);
 
-            AddOutput<LedColor[]>("Colors");
+            AddOutput<LedColors.LedColor[]>("Colors");
 
             Calculate();
 
@@ -39,7 +39,7 @@ namespace LedMusic2.Nodes.NodeModels
             double glow = Clamp(
                 ((NodeInterface<double>)Inputs.GetNodeInterface("Glow")).Value, 0, ledCount);
 
-            LedColorHSV color = ((NodeInterface<LedColor>)Inputs.GetNodeInterface("Color")).Value.GetColorHSV();
+            LedColorHSV color = ((NodeInterface<LedColors.LedColor>)Inputs.GetNodeInterface("Color")).Value.GetColorHSV();
 
             bool symmetric = ((NodeInterface<bool>)Inputs.GetNodeInterface("Symmetric")).Value;
 
@@ -67,7 +67,7 @@ namespace LedMusic2.Nodes.NodeModels
                 }
             }
 
-            ((NodeInterface<LedColor[]>)Outputs.GetNodeInterface("Colors")).SetValue(buffer);
+            ((NodeInterface<LedColors.LedColor[]>)Outputs.GetNodeInterface("Colors")).SetValue(buffer);
 
             return true;
 

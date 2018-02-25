@@ -27,10 +27,13 @@ namespace LedMusic2.Nodes.NodeModels
         public VstNode(Point initPosition, NodeEditorViewModel parentVM) : base(initPosition, parentVM)
         {
 
+            MinWidth = 150;
+
             niValue = AddOutput<double>("Value");
             niNote = AddOutput<double>("Note");
 
             channelOption = new NodeOption(NodeOptionType.CUSTOM, "Channel", typeof(VstSelection), this);
+            Options.Add(channelOption);
 
         }
 

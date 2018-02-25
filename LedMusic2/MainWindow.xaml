@@ -26,8 +26,8 @@
                 <MenuItem Header="Configure Outputs" Command="{Binding CmdConfigureOutputs}" />
             </MenuItem>
             <MenuItem Header="Scenes">
-                <MenuItem Header="Add Scene" />
-                <MenuItem Header="Delete Scene" />
+                <MenuItem Header="Add Scene" Command="{Binding CmdAddScene}" />
+                <MenuItem Header="Delete Scene" Command="{Binding CmdDeleteScene}" />
                 <Separator />
                 <MenuItem Header="Global Scene" IsChecked="{Binding GlobalScene.IsDisplayed}" />
                 <MenuItem Header="Scenes" ItemsSource="{Binding Scenes}">

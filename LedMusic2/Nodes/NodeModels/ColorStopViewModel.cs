@@ -36,8 +36,8 @@ namespace LedMusic2.Nodes.NodeModels
             get { return Position * Parent.Width - 5; }
         }
 
-        private System.Windows.Media.Color _color = Colors.Red;
-        public System.Windows.Media.Color Color
+        private Color _color = Colors.Red;
+        public Color Color
         {
             get { return _color; }
             set
@@ -49,7 +49,7 @@ namespace LedMusic2.Nodes.NodeModels
 
         public ColorRampNode Parent { get; private set; }
 
-        public ColorStopViewModel(System.Windows.Media.Color c, double p, ColorRampNode n)
+        public ColorStopViewModel(Color c, double p, ColorRampNode n)
         {
             Color = c;
             Position = p;

@@ -1,4 +1,4 @@
-﻿using LedMusic2.Color;
+﻿using LedMusic2.LedColors;
 using LedMusic2.Outputs.OutputViews;
 using System;
 using System.Windows;

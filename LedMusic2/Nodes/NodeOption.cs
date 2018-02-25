@@ -1,5 +1,5 @@
 ﻿using AttachedCommandBehavior;
-using LedMusic2.Color;
+using LedMusic2.LedColors;
 using LedMusic2.ViewModels;
 using System;
 using System.Collections.ObjectModel;
@@ -140,10 +140,10 @@ namespace LedMusic2.Nodes
 
         #region Internal Values
         private double _valDouble = 0.0;
-        private LedColor _valColor = new LedColorRGB(0, 0, 0);
+        private LedColors.LedColor _valColor = new LedColorRGB(0, 0, 0);
         private bool _valBool = false;
         private string _valString = "";
-        private LedColor[] _valColorArray = { new LedColorRGB(0, 0, 0) };
+        private LedColors.LedColor[] _valColorArray = { new LedColorRGB(0, 0, 0) };
         #endregion
 
         public NodeOption(NodeOptionType type, string name)
@@ -209,7 +209,7 @@ namespace LedMusic2.Nodes
                     _valBool = (bool)value;
                     break;
                 case NodeOptionType.COLOR:
-                    _valColor = (LedColor)value;
+                    _valColor = (LedColors.LedColor)value;
                     break;
                 case NodeOptionType.NUMBER:
                     if (byUser || !(value is double))
@@ -221,7 +221,7 @@ namespace LedMusic2.Nodes
                     _valString = (string)value;
                     break;
                 case NodeOptionType.PREVIEW:
-                    _valColorArray = (LedColor[])value;
+                    _valColorArray = (LedColors.LedColor[])value;
                     CalcPreviewBrush();
                     break;
             }

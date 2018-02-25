@@ -1,4 +1,4 @@
-﻿using LedMusic2.Color;
+﻿using LedMusic2.LedColors;
 using LedMusic2.NodeEditor;
 using System.Windows;
 
@@ -57,7 +57,7 @@ namespace LedMusic2.Nodes.NodeModels
     class ColorValueNode : NodeBase
     {
 
-        NodeInterface<LedColor> outputInterface;
+        NodeInterface<LedColors.LedColor> outputInterface;
         NodeOption opt = new NodeOption(NodeOptionType.COLOR, "Value");
 
         public ColorValueNode(Point initPosition, NodeEditorViewModel parentVM) : base(initPosition, parentVM)
@@ -66,7 +66,7 @@ namespace LedMusic2.Nodes.NodeModels
             MinWidth = 125;
 
             Options.Add(opt);
-            outputInterface = AddOutput<LedColor>("Value");
+            outputInterface = AddOutput<LedColors.LedColor>("Value");
 
         }
 

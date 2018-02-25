@@ -1,5 +1,4 @@
 ﻿using AttachedCommandBehavior;
-using LedMusic2.Nodes.NodeViews;
 using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
@@ -8,7 +7,7 @@ using System.Windows.Forms;
 using System.Windows.Media;
 using System.Xml.Linq;
 using System.Linq;
-using LedMusic2.Color;
+using LedMusic2.LedColors;
 using LedMusic2.NodeEditor;
 using LedMusic2.NodeConnection;
 
@@ -81,8 +80,8 @@ namespace LedMusic2.Nodes.NodeModels
         {
 
             AddInput("Factor", ConnectionType.NUMBER);
-            AddOutput<LedColor[]>("Color Band");
-            AddOutput<LedColor>("Single Color");
+            AddOutput<LedColors.LedColor[]>("Color Band");
+            AddOutput<LedColors.LedColor>("Single Color");
 
             Options.Add(new NodeOption(NodeOptionType.CUSTOM, "Test", typeof(NodeViews.ColorRampNode), this));
 
@@ -168,7 +167,7 @@ namespace LedMusic2.Nodes.NodeModels
 
         }
 
-        private LedColorRGB ColorToLedColor(System.Windows.Media.Color c)
+        private LedColorRGB ColorToLedColor(Color c)
         {
             return new LedColorRGB(c.R, c.G, c.B);
         }
@@ -191,7 +190,7 @@ namespace LedMusic2.Nodes.NodeModels
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 var resultColor = dlg.Color;
-                SelectedColorStop.Color = System.Windows.Media.Color.FromRgb(resultColor.R, resultColor.G, resultColor.B);
+                SelectedColorStop.Color = Color.FromRgb(resultColor.R, resultColor.G, resultColor.B);
                 CalcPreview();
             }
             dlg.Dispose();
@@ -222,7 +221,7 @@ namespace LedMusic2.Nodes.NodeModels
                         double pos = double.Parse(colorStopX.Attribute("position").Value, CultureInfo.InvariantCulture);
                         LedColorRGB c = LedColorRGB.Parse(colorStopX.Value);
                         ColorStopViewModel cvm = new ColorStopViewModel(
-                            System.Windows.Media.Color.FromRgb(c.R, c.G, c.B), pos, this);
+                            Color.FromRgb(c.R, c.G, c.B), pos, this);
                         ColorStops.Add(cvm);
                     }
                 }
@@ -235,7 +234,7 @@ namespace LedMusic2.Nodes.NodeModels
             XElement colorStopsX = new XElement("colorstops");
             foreach (ColorStopViewModel cvm in ColorStops)
             {
-                System.Windows.Media.Color c = cvm.Color;
+                Color c = cvm.Color;
                 XElement colorStopX = new XElement("colorstop", new LedColorRGB(c.R, c.G, c.B));
                 colorStopX.SetAttributeValue("position", cvm.Position);
                 colorStopsX.Add(colorStopX);

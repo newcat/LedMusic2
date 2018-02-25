@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace LedMusic2.Color
+namespace LedMusic2.LedColors
 {
     public class LedColorHSV : LedColor
     {

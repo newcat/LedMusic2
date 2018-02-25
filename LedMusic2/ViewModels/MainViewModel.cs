@@ -3,6 +3,7 @@ using LedMusic2.NodeEditor;
 using LedMusic2.Nodes.NodeModels;
 using LedMusic2.Outputs;
 using LedMusic2.Outputs.OutputModels;
+using LedMusic2.VstInterop;
 using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
@@ -63,6 +64,27 @@ namespace LedMusic2.ViewModels
             CmdConfigureOutputs = new SimpleCommand
             {
                 ExecuteDelegate = (o) => new OutputConfigurator().ShowDialog()
+            };
+
+            CmdAddScene = new SimpleCommand
+            {
+                ExecuteDelegate = (o) =>
+                {
+                    var newScene = new NodeEditorViewModel();
+                    Scenes.Add(newScene);
+                    DisplayedSceneIndex = Scenes.IndexOf(newScene);
+                }
+            };
+
+            CmdDeleteScene = new SimpleCommand
+            {
+                ExecuteDelegate = (o) =>
+                {
+                    var index = DisplayedSceneIndex;
+                    DisplayedSceneIndex = -1;
+                    Scenes.RemoveAt(index);
+                },
+                CanExecuteDelegate = (o) => DisplayedSceneIndex >= 0
             };
 
         }
@@ -203,6 +225,8 @@ namespace LedMusic2.ViewModels
         public SimpleCommand CmdSaveProject { get; private set; }
         public SimpleCommand CmdOpenProject { get; private set; }
         public SimpleCommand CmdConfigureOutputs { get; private set; }
+        public SimpleCommand CmdAddScene { get; private set; }
+        public SimpleCommand CmdDeleteScene { get; private set; }
         #endregion
         #endregion
 
@@ -227,6 +251,7 @@ namespace LedMusic2.ViewModels
         public void End()
         {
             //TODO: Dispose of everything
+            VstInputManager.Instance.Shutdown();
         }
 
         #region Nodes

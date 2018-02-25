@@ -1,4 +1,4 @@
-﻿using LedMusic2.Color;
+﻿using LedMusic2.LedColors;
 using LedMusic2.NodeEditor;
 using System;
 using System.Windows;
@@ -18,9 +18,9 @@ namespace LedMusic2.Nodes.NodeModels
             MinWidth = 170;
 
             AddInput("Factor", 0.5);
-            AddInput<LedColor[]>("Color 1");
-            AddInput<LedColor[]>("Color 2");
-            AddOutput<LedColor[]>("Output");
+            AddInput<LedColors.LedColor[]>("Color 1");
+            AddInput<LedColors.LedColor[]>("Color 2");
+            AddOutput<LedColors.LedColor[]>("Output");
 
             optMode = new NodeOption(NodeOptionType.SELECTION, "Mode");
             foreach (string s in new string[] { "Mix", "Add", "Multiply", "Subtract", "Screen", "Divide", "Difference", "Darken", "Lighten",
@@ -38,8 +38,8 @@ namespace LedMusic2.Nodes.NodeModels
         public override bool Calculate()
         {
 
-            LedColor[] colorsA = (LedColor[])Inputs.GetNodeInterface("Color 1").GetValue();
-            LedColor[] colorsB = (LedColor[])Inputs.GetNodeInterface("Color 2").GetValue();
+            LedColors.LedColor[] colorsA = (LedColors.LedColor[])Inputs.GetNodeInterface("Color 1").GetValue();
+            LedColors.LedColor[] colorsB = (LedColors.LedColor[])Inputs.GetNodeInterface("Color 2").GetValue();
 
             if (colorsA == null || colorsB == null)
                 return false;
@@ -48,13 +48,13 @@ namespace LedMusic2.Nodes.NodeModels
             string mode = (string)optMode.RenderValue;
 
             int length = Math.Max(colorsA.Length, colorsB.Length);
-            LedColor[] result = new LedColor[length];
+            LedColors.LedColor[] result = new LedColors.LedColor[length];
 
             for (int i = 0; i < length; i++)
             {
 
-                LedColor a = i < colorsA.Length && colorsA[i] != null ? colorsA[i] : new LedColorRGB(0, 0, 0);
-                LedColor b = i < colorsB.Length && colorsB[i] != null ? colorsB[i] : new LedColorRGB(0, 0, 0);
+                LedColors.LedColor a = i < colorsA.Length && colorsA[i] != null ? colorsA[i] : new LedColorRGB(0, 0, 0);
+                LedColors.LedColor b = i < colorsB.Length && colorsB[i] != null ? colorsB[i] : new LedColorRGB(0, 0, 0);
 
                 switch (mode)
                 {

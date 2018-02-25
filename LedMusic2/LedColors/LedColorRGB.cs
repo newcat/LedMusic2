@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LedMusic2.Color
+namespace LedMusic2.LedColors
 {
     public class LedColorRGB : LedColor
     {

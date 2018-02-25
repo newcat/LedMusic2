@@ -1,4 +1,4 @@
-﻿using LedMusic2.Color;
+﻿using LedMusic2.LedColors;
 using System.Windows;
 
 namespace LedMusic2.Outputs.OutputModels
@@ -10,7 +10,7 @@ namespace LedMusic2.Outputs.OutputModels
 
         public override FrameworkElement SettingsView => null;
 
-        public override void CalculationDone(LedColor[] calculationResult)
+        public override void CalculationDone(LedColors.LedColor[] calculationResult)
         {
             return;
         }

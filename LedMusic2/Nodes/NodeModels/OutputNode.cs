@@ -1,4 +1,4 @@
-﻿using LedMusic2.Color;
+﻿using LedMusic2.LedColors;
 using LedMusic2.NodeEditor;
 using LedMusic2.Nodes.NodeViews;
 using LedMusic2.Outputs;
@@ -13,7 +13,7 @@ namespace LedMusic2.Nodes.NodeModels
     public class OutputNode : NodeBase
     {
 
-        private NodeInterface<LedColor[]> input;
+        private NodeInterface<LedColors.LedColor[]> input;
         private NodeOption preview = new NodeOption(NodeOptionType.PREVIEW, "Preview");
         private NodeOption outputSelection;
 
@@ -33,7 +33,7 @@ namespace LedMusic2.Nodes.NodeModels
 
             MinWidth = 175;
 
-            input = AddInput<LedColor[]>("Color");
+            input = AddInput<LedColors.LedColor[]>("Color");
 
             Options.Add(preview);
 

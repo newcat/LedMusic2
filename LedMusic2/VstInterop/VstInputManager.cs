@@ -39,6 +39,8 @@ namespace LedMusic2.VstInterop
         private VstInputManager()
         {
 
+            Debug.WriteLine("Instantiated");
+
             try
             {
                 udpClient = new UdpClient(PORT);
@@ -49,6 +51,12 @@ namespace LedMusic2.VstInterop
                 Debug.WriteLine("Socket exception");
             }
 
+        }
+
+        public void Shutdown()
+        {
+            listenerThread.Abort();
+            udpClient.Close();
         }
 
         private void Listen()
