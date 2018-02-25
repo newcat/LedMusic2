@@ -1,5 +1,4 @@
-﻿using LedMusic2.Interfaces;
-using LedMusic2.Models;
+﻿using LedMusic2.Color;
 using LedMusic2.ViewModels;
 using System;
 using System.Windows;

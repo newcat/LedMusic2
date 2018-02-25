@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LedMusic2"
-        xmlns:Views="clr-namespace:LedMusic2.Views"
+        xmlns:NodeEditor="clr-namespace:LedMusic2.NodeEditor"
         mc:Ignorable="d"
         Title="MainWindow" Height="550" Width="925"
         Closing="Window_Closing">
@@ -75,7 +75,7 @@
         </Grid>
 
         <Grid>
-            <Views:NodeEditor DataContext="{Binding DisplayedScene}" />
+            <NodeEditor:NodeEditor DataContext="{Binding DisplayedScene}" />
         </Grid>
 
     </DockPanel>

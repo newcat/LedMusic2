@@ -1,4 +1,4 @@
-﻿using LedMusic2.Enums;
+﻿using LedMusic2.NodeConnection;
 using System;
 using System.Globalization;
 using System.Windows.Data;

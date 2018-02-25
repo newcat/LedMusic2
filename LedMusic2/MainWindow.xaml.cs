@@ -1,11 +1,6 @@
-﻿using LedMusic2.Models;
-using LedMusic2.Nodes;
-using LedMusic2.Outputs;
-using LedMusic2.ViewModels;
+﻿using LedMusic2.ViewModels;
 using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace LedMusic2
 {
@@ -23,7 +18,7 @@ namespace LedMusic2
             InitializeComponent();
             DataContext = MainViewModel.Instance;
 
-            Helpers.TypeConverter.Initialize();
+            NodeConnection.TypeConverter.Initialize();
 
             vm.Initialize();
 

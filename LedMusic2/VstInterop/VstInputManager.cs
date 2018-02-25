@@ -34,12 +34,21 @@ namespace LedMusic2.VstInterop
         public ObservableCollection<VstChannel> Channels => _channels;
 
         private Thread listenerThread;
-        private UdpClient udpClient = new UdpClient(PORT);
+        private UdpClient udpClient;
 
         private VstInputManager()
         {
-            listenerThread = new Thread(new ThreadStart(Listen));
-            listenerThread.Start();
+
+            try
+            {
+                udpClient = new UdpClient(PORT);
+                listenerThread = new Thread(new ThreadStart(Listen));
+                listenerThread.Start();
+            } catch (SocketException)
+            {
+                Debug.WriteLine("Socket exception");
+            }
+
         }
 
         private void Listen()

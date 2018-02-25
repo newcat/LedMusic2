@@ -1,9 +1,8 @@
 ﻿using AttachedCommandBehavior;
-using LedMusic2.Attributes;
-using LedMusic2.Interfaces;
-using LedMusic2.Models;
-using LedMusic2.Nodes;
+using LedMusic2.NodeEditor;
+using LedMusic2.Nodes.NodeModels;
 using LedMusic2.Outputs;
+using LedMusic2.Outputs.OutputModels;
 using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;

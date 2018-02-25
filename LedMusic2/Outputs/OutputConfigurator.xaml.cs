@@ -1,11 +1,10 @@
-﻿using LedMusic2.Models;
-using LedMusic2.Outputs;
+﻿using LedMusic2.Outputs.OutputModels;
 using LedMusic2.ViewModels;
 using System;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace LedMusic2
+namespace LedMusic2.Outputs
 {
     /// <summary>
     /// Interaktionslogik für OutputConfigurator.xaml

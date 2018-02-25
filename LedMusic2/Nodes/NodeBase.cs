@@ -1,7 +1,6 @@
-﻿using LedMusic2.Attributes;
-using LedMusic2.Enums;
-using LedMusic2.Interfaces;
-using LedMusic2.Models;
+﻿using LedMusic2.Color;
+using LedMusic2.NodeConnection;
+using LedMusic2.NodeEditor;
 using LedMusic2.ViewModels;
 using System;
 using System.Collections.ObjectModel;
@@ -91,8 +90,8 @@ namespace LedMusic2.Nodes
         protected NodeInterfaceList _outputs = new NodeInterfaceList();
         public NodeInterfaceList Outputs { get { return _outputs; } }
 
-        protected ObservableCollection<NodeOptionViewModel> _options = new ObservableCollection<NodeOptionViewModel>();
-        public ObservableCollection<NodeOptionViewModel> Options { get { return _options; } }
+        protected ObservableCollection<NodeOption> _options = new ObservableCollection<NodeOption>();
+        public ObservableCollection<NodeOption> Options { get { return _options; } }
 
         private Guid _id = Guid.NewGuid();
         public Guid Id { get { return _id; } set { _id = value; } }
@@ -182,7 +181,7 @@ namespace LedMusic2.Nodes
             nodeX.Add(outputsX);
 
             XElement optionsX = new XElement("options");
-            foreach (NodeOptionViewModel opt in Options)
+            foreach (NodeOption opt in Options)
             {
                 optionsX.Add(opt.GetXmlElement());
             }
@@ -251,7 +250,7 @@ namespace LedMusic2.Nodes
         private void LoadOption(XElement nodeOptionX)
         {
             string name = nodeOptionX.Attribute("name").Value;
-            foreach (NodeOptionViewModel opt in Options)
+            foreach (NodeOption opt in Options)
             {
                 if (opt.Name == name)
                     opt.LoadFromXml(nodeOptionX);

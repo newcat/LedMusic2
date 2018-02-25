@@ -60,7 +60,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Attributes\OutputAttribute.cs" />
+    <Compile Include="Color\LedColorHSV.cs" />
+    <Compile Include="Color\LedColorRGB.cs" />
+    <Compile Include="Color\LedColorRGBf.cs" />
+    <Compile Include="Outputs\OutputAttribute.cs" />
     <Compile Include="CommandBehaviorStuff\BehaviorBinding.cs" />
     <Compile Include="CommandBehaviorStuff\CommandBehavior.cs" />
     <Compile Include="CommandBehaviorStuff\CommandBehaviorBinding.cs" />
@@ -71,61 +74,63 @@
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\ColorToBrushConverter.cs" />
     <Compile Include="DataPiping.cs" />
-    <Compile Include="Enums\NodeOptionType.cs" />
+    <Compile Include="Nodes\NodeOptionType.cs" />
     <Compile Include="Converters\ConnectionTypeToColorConverter.cs" />
-    <Compile Include="Exceptions\RecursionException.cs" />
-    <Compile Include="Helpers\ColorHelper.cs" />
-    <Compile Include="Helpers\NodeConnectionHelper.cs" />
-    <Compile Include="Helpers\NodeTreeBuilder.cs" />
-    <Compile Include="Interfaces\IExportable.cs" />
-    <Compile Include="Models\NodeCategoryModel.cs" />
-    <Compile Include="Models\NodeType.cs" />
-    <Compile Include="Models\OutputType.cs" />
-    <Compile Include="Nodes\BooleanNode.cs" />
-    <Compile Include="Nodes\ColorRampNode.cs" />
-    <Compile Include="Nodes\MixColorNode.cs" />
+    <Compile Include="NodeTree\RecursionException.cs" />
+    <Compile Include="NodeConnection\NodeConnectionHelper.cs" />
+    <Compile Include="NodeTree\NodeTreeBuilder.cs" />
+    <Compile Include="IExportable.cs" />
+    <Compile Include="Nodes\NodeCategoryModel.cs" />
+    <Compile Include="Nodes\NodeType.cs" />
+    <Compile Include="Outputs\OutputType.cs" />
+    <Compile Include="Nodes\NodeModels\BooleanNode.cs" />
+    <Compile Include="Nodes\NodeModels\ColorRampNode.cs" />
+    <Compile Include="Nodes\NodeModels\MixColorNode.cs" />
     <Compile Include="Nodes\NodeViews\ColorRampNode.xaml.cs">
       <DependentUpon>ColorRampNode.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Nodes\NodeViews\ColorStopViewModel.cs" />
+    <Compile Include="Nodes\NodeModels\ColorStopViewModel.cs" />
     <Compile Include="Nodes\NodeViews\OutputSelection.xaml.cs">
       <DependentUpon>OutputSelection.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Nodes\OutputNode.cs" />
-    <Compile Include="Nodes\ParticleNode.cs" />
-    <Compile Include="Nodes\ValueNodes.cs" />
-    <Compile Include="Nodes\VstNode.cs" />
+    <Compile Include="Nodes\NodeViews\VstSelection.xaml.cs">
+      <DependentUpon>VstSelection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Nodes\NodeModels\OutputNode.cs" />
+    <Compile Include="Nodes\NodeModels\ParticleNode.cs" />
+    <Compile Include="Nodes\NodeModels\ValueNodes.cs" />
+    <Compile Include="Nodes\NodeModels\VstNode.cs" />
     <Compile Include="Outputs\OutputConfigurator.xaml.cs">
       <DependentUpon>OutputConfigurator.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Outputs\DummyOutput.cs" />
+    <Compile Include="Outputs\OutputModels\DummyOutput.cs" />
     <Compile Include="Outputs\OutputBase.cs" />
-    <Compile Include="Outputs\TcpOutput.cs" />
-    <Compile Include="Outputs\TcpOutputView.xaml.cs">
+    <Compile Include="Outputs\OutputModels\TcpOutput.cs" />
+    <Compile Include="Outputs\OutputViews\TcpOutputView.xaml.cs">
       <DependentUpon>TcpOutputView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\MainViewModel.cs" />
-    <Compile Include="ViewModels\NodeEditorViewModel.cs" />
-    <Compile Include="ViewModels\NodeOptionViewModel.cs" />
+    <Compile Include="NodeEditor\NodeEditorViewModel.cs" />
+    <Compile Include="Nodes\NodeOption.cs" />
     <Compile Include="ViewModels\ProgressViewModel.cs" />
-    <Compile Include="ViewModels\TemporaryConnectionViewModel.cs" />
+    <Compile Include="NodeConnection\TemporaryConnection.cs" />
     <Compile Include="ViewModels\VMBase.cs" />
-    <Compile Include="Views\ConnectionView.xaml.cs">
+    <Compile Include="NodeConnection\ConnectionView.xaml.cs">
       <DependentUpon>ConnectionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\NodeEditor.xaml.cs">
+    <Compile Include="NodeEditor\NodeEditor.xaml.cs">
       <DependentUpon>NodeEditor.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\NodeInterfaceView.xaml.cs">
+    <Compile Include="Nodes\NodeInterfaceView.xaml.cs">
       <DependentUpon>NodeInterfaceView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\NodeOptionView.xaml.cs">
+    <Compile Include="Nodes\NodeOptionView.xaml.cs">
       <DependentUpon>NodeOptionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\NodeView.xaml.cs">
+    <Compile Include="Nodes\NodeView.xaml.cs">
       <DependentUpon>NodeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\TemporaryConnectionView.xaml.cs">
+    <Compile Include="NodeConnection\TemporaryConnectionView.xaml.cs">
       <DependentUpon>TemporaryConnectionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="VstInterop\VstChannel.cs" />
@@ -138,13 +143,13 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Attributes\NodeAttribute.cs" />
-    <Compile Include="Enums\ConnectionType.cs" />
-    <Compile Include="Enums\NodeCategory.cs" />
+    <Compile Include="Nodes\NodeAttribute.cs" />
+    <Compile Include="NodeConnection\ConnectionType.cs" />
+    <Compile Include="Nodes\NodeCategory.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="Helpers\TypeConverter.cs" />
-    <Compile Include="Models\Connection.cs" />
-    <Compile Include="Nodes\DotNode.cs" />
+    <Compile Include="NodeConnection\TypeConverter.cs" />
+    <Compile Include="NodeConnection\Connection.cs" />
+    <Compile Include="Nodes\NodeModels\DotNode.cs" />
     <Compile Include="GlobalProperties.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -158,44 +163,48 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Nodes\NodeViews\VstSelection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Outputs\OutputConfigurator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Outputs\TcpOutputView.xaml">
+    <Page Include="Outputs\OutputViews\TcpOutputView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ConnectionView.xaml">
+    <Page Include="NodeConnection\ConnectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\NodeEditor.xaml">
+    <Page Include="NodeEditor\NodeEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\NodeInterfaceView.xaml">
+    <Page Include="Nodes\NodeInterfaceView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\NodeOptionView.xaml">
+    <Page Include="Nodes\NodeOptionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\NodeView.xaml">
+    <Page Include="Nodes\NodeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\TemporaryConnectionView.xaml">
+    <Page Include="NodeConnection\TemporaryConnectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Color.cs" />
-    <Compile Include="Models\NodeInterface.cs" />
-    <Compile Include="Models\NodeInterfaceList.cs" />
-    <Compile Include="Nodes\MathNode.cs" />
+    <Compile Include="Color\LedColor.cs" />
+    <Compile Include="Nodes\NodeInterface.cs" />
+    <Compile Include="Nodes\NodeInterfaceList.cs" />
+    <Compile Include="Nodes\NodeModels\MathNode.cs" />
     <Compile Include="Nodes\NodeBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -227,6 +236,7 @@
   <ItemGroup>
     <Resource Include="VstInterop\Messages.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -4,15 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:led="clr-namespace:LedMusic2"
-             xmlns:local="clr-namespace:LedMusic2.Nodes.NodeViews"
-             xmlns:acb="clr-namespace:AttachedCommandBehavior"
+             xmlns:models="clr-namespace:LedMusic2.Nodes.NodeModels"
              mc:Ignorable="d" Width="200"
              d:DesignHeight="110" d:DesignWidth="200">
     <Grid>
 
         <Grid.Resources>
 
-            <DataTemplate DataType="{x:Type local:ColorStopViewModel}">
+            <DataTemplate DataType="{x:Type models:ColorStopViewModel}">
                 <Thumb DragDelta="Thumb_DragDelta" >
 
                     <Thumb.Template>
