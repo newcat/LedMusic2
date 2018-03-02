@@ -29,8 +29,17 @@
                 <MenuItem Header="Add Scene" Command="{Binding CmdAddScene}" />
                 <MenuItem Header="Delete Scene" Command="{Binding CmdDeleteScene}" />
                 <Separator />
-                <MenuItem Header="Global Scene" IsChecked="{Binding GlobalScene.IsDisplayed}" />
+                <MenuItem Header="Global Scene"
+                          IsChecked="{Binding GlobalScene.IsDisplayed}"
+                          Command="{Binding CmdSelectGlobalScene}"/>
                 <MenuItem Header="Scenes" ItemsSource="{Binding Scenes}">
+                    <MenuItem.ItemContainerStyle>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Header" Value="Scene" />
+                            <Setter Property="IsChecked" Value="{Binding IsDisplayed}" />
+                            <Setter Property="Command" Value="{Binding CmdSelectScene}" />
+                        </Style>
+                    </MenuItem.ItemContainerStyle>
                 </MenuItem>
             </MenuItem>
         </Menu>
@@ -38,7 +47,6 @@
         <Grid DockPanel.Dock="Bottom" Panel.ZIndex="10" Background="{StaticResource PanelBackground}">
 
             <Grid.RowDefinitions>
-                <RowDefinition />
                 <RowDefinition Height="30" />
             </Grid.RowDefinitions>
 

@@ -1,4 +1,5 @@
-﻿using LedMusic2.NodeConnection;
+﻿using AttachedCommandBehavior;
+using LedMusic2.NodeConnection;
 using LedMusic2.Nodes;
 using LedMusic2.NodeTree;
 using LedMusic2.ViewModels;
@@ -17,13 +18,19 @@ namespace LedMusic2.NodeEditor
 
         public NodeEditorViewModel()
         {
+
             NodeBase.UnselectAllNodes += NodeBase_UnselectAllNodes;
             FillNodeCategories();
+
+            CmdSelectScene = new SimpleCommand
+            {
+                ExecuteDelegate = (o) => MainViewModel.Instance.SelectScene(this)
+            };
+
         }
 
         #region Private fields
         private NodeTreeBuilder ntb = new NodeTreeBuilder();
-        private NodeBase[] currentNodeCalculationOrder = new NodeBase[0];
         #endregion
 
         #region Properties
@@ -176,6 +183,8 @@ namespace LedMusic2.NodeEditor
                 NotifyPropertyChanged();
             }
         }
+
+        public SimpleCommand CmdSelectScene { get; }
         #endregion
 
         #region Connections
@@ -312,32 +321,24 @@ namespace LedMusic2.NodeEditor
 
         private void CalculateNodeTree()
         {
-            var nodes = Nodes.ToArray();
-            var order = ntb.GetCalculationOrder(ntb.GetRootElements(nodes), nodes, Connections.ToArray());
-            if (order == null)
-                MessageBox.Show("Failed to calculate node tree.");
-            else
-                currentNodeCalculationOrder = order;
+            ntb.Build(Nodes, Connections);
         }
+
         public void CalculateNodes(NodeBase startingNode)
         {
-            var i = Array.IndexOf(currentNodeCalculationOrder, startingNode);
-            if (i >= 0 && i < currentNodeCalculationOrder.Length)
-                CalculateNodes(i);
+            ntb.Calculate(startingNode);
         }
 
         public void CalculateNodes(int startingIndex)
         {
-            for (int i = startingIndex; i < currentNodeCalculationOrder.Length; i++)
-            {
-                currentNodeCalculationOrder[i].Calculate();
-            }
+            ntb.Calculate(startingIndex);
         }
 
         public void CalculateAllNodes()
         {
             CalculateNodes(0);
         }
+
         private void NodeBase_UnselectAllNodes(object sender, EventArgs e)
         {
             foreach (NodeBase n in Nodes)

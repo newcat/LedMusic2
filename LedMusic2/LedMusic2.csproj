@@ -63,6 +63,8 @@
     <Compile Include="LedColors\LedColorHSV.cs" />
     <Compile Include="LedColors\LedColorRGB.cs" />
     <Compile Include="LedColors\LedColorRGBf.cs" />
+    <Compile Include="Nodes\NodeModels\SceneSwitcherNode.cs" />
+    <Compile Include="NodeTree\TreeNode.cs" />
     <Compile Include="Outputs\OutputAttribute.cs" />
     <Compile Include="CommandBehaviorStuff\BehaviorBinding.cs" />
     <Compile Include="CommandBehaviorStuff\CommandBehavior.cs" />
@@ -76,7 +78,7 @@
     <Compile Include="DataPiping.cs" />
     <Compile Include="Nodes\NodeOptionType.cs" />
     <Compile Include="Converters\ConnectionTypeToColorConverter.cs" />
-    <Compile Include="NodeTree\RecursionException.cs" />
+    <Compile Include="NodeTree\CyclicGraphException.cs" />
     <Compile Include="NodeConnection\NodeConnectionHelper.cs" />
     <Compile Include="NodeTree\NodeTreeBuilder.cs" />
     <Compile Include="IExportable.cs" />

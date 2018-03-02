@@ -1,6 +1,7 @@
 ﻿using LedMusic2.Nodes;
 using LedMusic2.NodeTree;
 using LedMusic2.ViewModels;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace LedMusic2.NodeConnection
@@ -29,7 +30,7 @@ namespace LedMusic2.NodeConnection
             }
         }
 
-        public bool CanConnect(NodeInterface ni, NodeBase[] nodes, Connection[] connections)
+        public bool CanConnect(NodeInterface ni, IEnumerable<NodeBase> nodes, IEnumerable<Connection> connections)
         {
 
             if (ConnectionOrigin == null)
@@ -63,8 +64,8 @@ namespace LedMusic2.NodeConnection
             try
             {
                 NodeTreeBuilder ntb = new NodeTreeBuilder();
-                ntb.GetCalculationOrder(ntb.GetRootElements(nodes), nodes, tempConnections.ToArray());
-            } catch (RecursionException)
+                ntb.Build(nodes, tempConnections);
+            } catch (CyclicGraphException)
             {
                 return false;
             } finally

@@ -7,240 +7,111 @@ using System.Reflection;
 
 namespace LedMusic2.NodeTree
 {
-    class NodeTreeBuilder : IDisposable
+    class NodeTreeBuilder
     {
 
-        private List<Layer[]> multilayers = new List<Layer[]>();
-        private Layer[] layers;
-        private List<Dependency> dependencies = new List<Dependency>();
-        private int depth;
+        private Dictionary<NodeBase, IEnumerable<NodeBase>> adjacency = new Dictionary<NodeBase, IEnumerable<NodeBase>>();
+        private List<NodeBase> calculationOrder = new List<NodeBase>();
+        private List<NodeBase> outputs = new List<NodeBase>();
 
-        /// <summary>
-        /// Returns a list, which is ordered by which node should be calculated first, so the first node in the
-        /// list should be calculated first and the last node in the list should be calculated last.
-        /// </summary>
-        /// <param name="rootElement">The element which should be calculated last, e.g. the output node.</param>
-        /// <param name="nodes">The list of nodes in the node system.</param>
-        /// <param name="connections">The list of connections between the nodes.</param>
-        /// <returns></returns>
-        public NodeBase[] GetCalculationOrder(NodeBase[] rootElements, NodeBase[] nodes, Connection[] connections)
+        public void Calculate(int index)
         {
 
-            //clear old data
-            multilayers.Clear();
-            layers = null;
-            dependencies.Clear();
-            depth = 0;
+            if (index < 0)
+                return;
 
-            //Build dependency database
-            foreach (Connection c in connections)
-            {
-                dependencies.Add(new Dependency(c.Output.Parent, c.Input.Parent));
-            }
+            for (var i = index; i < calculationOrder.Count; i++)
+                calculationOrder[i].Calculate();
 
-            //Build the node tree
-            foreach (NodeBase rootElement in rootElements)
-            {
-
-                depth = 0;
-                TreeNode tree;
-                try
-                {
-                    tree = getTree(rootElement, depth);
-                }
-                catch (RecursionException)
-                {
-                    throw;
-                }
-
-                var localLayers = new Layer[depth];
-                createLayers(localLayers, tree, 0);
-                multilayers.Add(localLayers);
-
-            }
-
-            combineLayers();            
-            simplifyLayers();
-
-            //Create the order
-            return createOrder().ToArray();
+            foreach (var o in outputs) o.Calculate();
 
         }
 
-        public NodeBase[] GetRootElements(NodeBase[] nodes)
+        public void Calculate(NodeBase startingNode)
+        {
+            Calculate(calculationOrder.IndexOf(startingNode));
+        }
+
+        /** Calculates all nodes */
+        public void Calculate() { Calculate(0); }
+
+        public void Build(IEnumerable<NodeBase> nodes, IEnumerable<Connection> connections)
+        {
+
+            adjacency.Clear();
+            calculationOrder.Clear();
+            outputs.Clear();
+
+            //Build our adjacency list
+            foreach (var n in nodes)
+            {
+                adjacency.Add(n, connections
+                    .Where(c => c.Output != null && c.Input != null && c.Output.Parent == n)
+                    .Select(c => c.Input.Parent).AsEnumerable());
+            }
+
+            //DFS for initial tree building and cycle detection
+            var root = new TreeNode<NodeBase>(null);
+            outputs = GetOutputs(nodes);
+            root.Children.AddRange(outputs
+                .Select(o => adjacency[o])
+                .SelectMany(n => n)
+                .Select(n => new TreeNode<NodeBase>(n))
+                .Distinct());
+
+            FindDescendants(root, new Stack<NodeBase>());
+
+            //BFS with stack to find calculation order
+            var queue = new Queue<TreeNode<NodeBase>>();
+            var stack = new Stack<NodeBase>();
+            queue.Enqueue(root);
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                foreach (var child in current.Children)
+                {
+                    stack.Push(child.Data);
+                    queue.Enqueue(child);
+                }
+            }
+
+            //Pop stack to reverse the order
+            while (stack.Count > 0)
+            {
+                var n = stack.Pop();
+                if (!calculationOrder.Contains(n))
+                    calculationOrder.Add(n);
+            }
+
+            calculationOrder.Select(x => x);
+
+        }
+
+        private void FindDescendants(TreeNode<NodeBase> treeNode, Stack<NodeBase> ancestors)
+        {
+            foreach (var child in treeNode.Children)
+            {
+
+                if (ancestors.Contains(child.Data))
+                    throw new CyclicGraphException();
+
+                ancestors.Push(child.Data);
+
+                child.Children.AddRange(adjacency[child.Data]
+                    .Select(n => new TreeNode<NodeBase>(n)));
+                FindDescendants(child, ancestors);
+
+                ancestors.Pop();
+
+            }
+        }
+
+        private List<NodeBase> GetOutputs(IEnumerable<NodeBase> nodes)
         {
             return nodes.Where((x) =>
-                x.GetType().GetCustomAttribute<NodeAttribute>()?.Category == NodeCategory.OUTPUT).ToArray();
+                x.GetType().GetCustomAttribute<NodeAttribute>()?.Category == NodeCategory.OUTPUT).ToList();
         }
-
-        #region Private Methods
-        private TreeNode getTree(NodeBase rootElement, int d)
-        {
-
-            d++;
-            if (d > depth)
-                depth = d;
-
-            if (depth > 100)
-                throw new RecursionException();
-
-            var root = new TreeNode(rootElement);
-
-            foreach (var dep in dependencies.Where((x) => x.Element == rootElement))
-            {
-                root.Children.Add(getTree(dep.IsDependantOf, d));
-            }
-
-            return root;
-
-        }
-
-        private void createLayers(Layer[] arr, TreeNode t, int d)
-        {
-
-            if (arr[d] == null)
-                arr[d] = new Layer();
-
-            //Dont even bother to add nodes more than one time,
-            //they would be removed in the simplify step anyways.
-            if (!arr[d].Nodes.Contains(t.Node))
-                arr[d].Nodes.Add(t.Node);
-
-            foreach (TreeNode children in t.Children)
-            {
-                createLayers(arr, children, d + 1);
-            }
-
-        }
-
-        private void combineLayers()
-        {
-
-            var layersList = new List<Layer>();
-            int maxDepth = 1;            
-            for (int i = 0; i < maxDepth; i++)
-            {
-
-                var combinedLayer = new Layer();
-
-                foreach (Layer[] singleRootLayers in multilayers)
-                {
-
-                    if (i == 0 && singleRootLayers.Length > maxDepth)
-                        maxDepth = singleRootLayers.Length;
-
-                    if (i < singleRootLayers.Length)
-                    {
-                        foreach (NodeBase node in singleRootLayers[i].Nodes)
-                        {
-                            if (!combinedLayer.Nodes.Contains(node))
-                                combinedLayer.Nodes.Add(node);
-                        }
-                    }
-
-                }
-
-                layersList.Add(combinedLayer);
-            }
-
-            layers = layersList.ToArray();
-
-        }
-
-        private void simplifyLayers()
-        {
-
-            //If a node exists on multiple layers, only keep the one on the highest layer
-            //(which will be calculated first, so no need to calculate it again later).
-            for (int i = depth - 1; i > 0; i--)
-            {
-                foreach (NodeBase b in layers[i].Nodes)
-                {
-                    for (int j = i - 1; j >= 0; j--)
-                    {
-                        layers[j].Nodes.Remove(b);
-                    }
-                }
-            }
-
-        }
-
-        private List<NodeBase> createOrder()
-        {
-
-            var order = new List<NodeBase>();
-
-            for (int i = depth - 1; i >= 0; i--)
-            {
-                order.AddRange(layers[i].Nodes);
-            }
-
-            return order;
-
-        }
-        #endregion
-
-        #region Classes
-        private class Layer
-        {
-            public List<NodeBase> Nodes { get; set; }
-            
-            public Layer()
-            {
-                Nodes = new List<NodeBase>();
-            }
-        }
-
-        private class TreeNode
-        {
-            public NodeBase Node { get; set; }
-            public List<TreeNode> Children { get; set; }
-
-            public TreeNode(NodeBase node)
-            {
-                Node = node;
-                Children = new List<TreeNode>();
-            }
-
-        }
-
-        private class Dependency
-        {
-            public NodeBase Element { get; set; }
-            public NodeBase IsDependantOf { get; set; }
-
-            public Dependency(NodeBase element, NodeBase isDependantOf)
-            {
-                Element = element;
-                IsDependantOf = isDependantOf;
-            }
-        }
-        #endregion
-
-        #region IDisposable Support
-        private bool disposedValue = false;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    multilayers.Clear();
-                    dependencies.Clear();
-                }
-
-                layers = null;
-
-                disposedValue = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-        #endregion        
 
     }
 }

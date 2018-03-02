@@ -39,7 +39,7 @@ namespace LedMusic2.Nodes
 
         public object DisplayValue
         {
-            get { return GetValue(true); }
+            get { return GetValue(); }
             set
             {
                 SetDisplayValue(value, true);
@@ -49,7 +49,7 @@ namespace LedMusic2.Nodes
 
         public object RenderValue
         {
-            get { return GetValue(false); }
+            get { return GetValue(); }
         }
         #endregion
 
@@ -140,10 +140,10 @@ namespace LedMusic2.Nodes
 
         #region Internal Values
         private double _valDouble = 0.0;
-        private LedColors.LedColor _valColor = new LedColorRGB(0, 0, 0);
+        private LedColor _valColor = new LedColorRGB(0, 0, 0);
         private bool _valBool = false;
         private string _valString = "";
-        private LedColors.LedColor[] _valColorArray = { new LedColorRGB(0, 0, 0) };
+        private LedColor[] _valColorArray = { new LedColorRGB(0, 0, 0) };
         #endregion
 
         public NodeOption(NodeOptionType type, string name)
@@ -181,7 +181,7 @@ namespace LedMusic2.Nodes
 
         }
 
-        private object GetValue(bool ignoreKeyframes)
+        private object GetValue()
         {
 
             switch (OptionType)
@@ -193,6 +193,7 @@ namespace LedMusic2.Nodes
                 case NodeOptionType.NUMBER:
                     return _valDouble;
                 case NodeOptionType.SELECTION:
+                case NodeOptionType.TEXT:
                     return _valString;
                 case NodeOptionType.PREVIEW:
                     return _valColorArray;
@@ -209,7 +210,7 @@ namespace LedMusic2.Nodes
                     _valBool = (bool)value;
                     break;
                 case NodeOptionType.COLOR:
-                    _valColor = (LedColors.LedColor)value;
+                    _valColor = (LedColor)value;
                     break;
                 case NodeOptionType.NUMBER:
                     if (byUser || !(value is double))
@@ -218,10 +219,11 @@ namespace LedMusic2.Nodes
                         _valDouble = (double)value;
                     break;
                 case NodeOptionType.SELECTION:
+                case NodeOptionType.TEXT:
                     _valString = (string)value;
                     break;
                 case NodeOptionType.PREVIEW:
-                    _valColorArray = (LedColors.LedColor[])value;
+                    _valColorArray = (LedColor[])value;
                     CalcPreviewBrush();
                     break;
             }

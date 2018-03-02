@@ -66,6 +66,8 @@ namespace LedMusic2.NodeEditor
         private void NodePanel_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
 
+            Focus();
+
             if (vm.IsAddNodePanelOpen)
             {
                 if (addNodePanel.IsMouseOver)

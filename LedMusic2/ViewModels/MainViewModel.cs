@@ -87,6 +87,11 @@ namespace LedMusic2.ViewModels
                 CanExecuteDelegate = (o) => DisplayedSceneIndex >= 0
             };
 
+            CmdSelectGlobalScene = new SimpleCommand
+            {
+                ExecuteDelegate = (o) => { DisplayedSceneIndex = -1; }
+            };
+
         }
         #endregion
 
@@ -101,6 +106,12 @@ namespace LedMusic2.ViewModels
                     _activeSceneIndex = -1;
                 else
                     _activeSceneIndex = value;
+
+                if (_activeSceneIndex == -1)
+                    Infotext = "Active Scene: None";
+                else
+                    Infotext = string.Format("Active Scene: [{0}] {1}", _activeSceneIndex, "TODO" /* TODO: Scenes[_activeSceneIndex].Name*/); 
+
             }
         }
 
@@ -112,23 +123,24 @@ namespace LedMusic2.ViewModels
             {
 
                 _displayedSceneIndex = value;
-                NotifyPropertyChanged();
-                NotifyPropertyChanged("DisplayedScene");
 
                 GlobalScene.IsDisplayed = false;
                 foreach (var s in Scenes) s.IsDisplayed = false;
 
-                if (_activeSceneIndex == -1)
+                if (_displayedSceneIndex == -1)
                     GlobalScene.IsDisplayed = true;
                 else
-                    Scenes[_activeSceneIndex].IsDisplayed = true;
+                    Scenes[_displayedSceneIndex].IsDisplayed = true;
+
+                NotifyPropertyChanged();
+                NotifyPropertyChanged("DisplayedScene");
 
             }
         }
 
         public NodeEditorViewModel DisplayedScene
         {
-            get { return ActiveSceneIndex == -1 ? GlobalScene : Scenes[ActiveSceneIndex]; }
+            get { return DisplayedSceneIndex == -1 ? GlobalScene : Scenes[DisplayedSceneIndex]; }
         }
 
         private NodeEditorViewModel _globalScene = new NodeEditorViewModel();
@@ -227,6 +239,7 @@ namespace LedMusic2.ViewModels
         public SimpleCommand CmdConfigureOutputs { get; private set; }
         public SimpleCommand CmdAddScene { get; private set; }
         public SimpleCommand CmdDeleteScene { get; private set; }
+        public SimpleCommand CmdSelectGlobalScene { get; private set; }
         #endregion
         #endregion
 
@@ -254,6 +267,12 @@ namespace LedMusic2.ViewModels
             VstInputManager.Instance.Shutdown();
         }
 
+        public void SelectScene(NodeEditorViewModel scene)
+        {
+            if (Scenes.IndexOf(scene) >= 0)
+                DisplayedSceneIndex = Scenes.IndexOf(scene);
+        }
+
         #region Nodes
         public void StartProcessing()
         {
@@ -272,6 +291,8 @@ namespace LedMusic2.ViewModels
             GlobalScene.CalculateAllNodes();
             if (ActiveSceneIndex > -1)
                 Scenes[ActiveSceneIndex].CalculateAllNodes();
+            if (DisplayedSceneIndex != -1 && DisplayedSceneIndex != ActiveSceneIndex)
+                DisplayedScene.CalculateAllNodes();
         }
 
         public void OnCalculationTimerTick(object sender, EventArgs e)

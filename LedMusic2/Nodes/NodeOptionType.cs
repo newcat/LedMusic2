@@ -8,6 +8,7 @@
         BOOL,
         SELECTION,
         PREVIEW,
+        TEXT,
         CUSTOM
 
     }

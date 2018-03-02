@@ -102,7 +102,16 @@
                             </Setter.Value>
                         </Setter>
                     </DataTrigger>
-
+                    <DataTrigger Binding="{Binding OptionType}" Value="{x:Static local:NodeOptionType.TEXT}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Control">
+                                    <TextBlock Text="{Binding DisplayValue}" />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </DataTrigger>
+        
                 </Style.Triggers>
             </Style>
         </Control.Style>
