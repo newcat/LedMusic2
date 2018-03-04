@@ -14,20 +14,31 @@ namespace LedMusic2.Nodes.NodeModels
         private bool direction = false; //false = left; true = right
         private double particlesToSpawn = 0.0;
 
+        private NodeInterface<bool> niEmit;
+        private NodeInterface<double> niRate;
+        private NodeInterface<double> niStartVelocity;
+        private NodeInterface<double> niEndVelocity;
+        private NodeInterface<double> niEmitterPosition;
+        private NodeInterface<bool> niSymmetric;
+        private NodeInterface<double> niLifetime;
+        private NodeInterface<LedColor> niStartColor;
+        private NodeInterface<LedColor> niEndColor;
+        private NodeInterface<LedColor[]> niOutput;
+
         public ParticleNode(Point initPosition, NodeEditorViewModel parentVM) : base(initPosition, parentVM)
         {
 
-            AddInput("Emit", false);
-            AddInput("Rate", 10.0);
-            AddInput("Start Velocity", 0.1);
-            AddInput("End Velocity", 0.05);
-            AddInput("Emitter Position", 0.0);
-            AddInput("Symmetric", true);
-            AddInput("Lifetime", 30.0);
-            AddInput<LedColor>("Start Color");
-            AddInput<LedColor>("End Color");
+            niEmit = AddInput("Emit", false);
+            niRate = AddInput("Rate", 10.0);
+            niStartVelocity = AddInput("Start Velocity", 0.1);
+            niEndVelocity = AddInput("End Velocity", 0.05);
+            niEmitterPosition = AddInput("Emitter Position", 0.0);
+            niSymmetric = AddInput("Symmetric", true);
+            niLifetime = AddInput("Lifetime", 30.0);
+            niStartColor = AddInput<LedColor>("Start Color");
+            niEndColor = AddInput<LedColor>("End Color");
 
-            AddOutput<LedColor[]>("Output");
+            niOutput = AddOutput<LedColor[]>("Output");
 
         }
 
@@ -35,66 +46,47 @@ namespace LedMusic2.Nodes.NodeModels
         {
 
             var toRemove = new List<Particle>();
-            var ledCount = GlobalProperties.Instance.LedCount;
+            var resolution = GlobalProperties.Instance.Resolution;
 
             //update all existing particles
-            foreach (var p in particles)
+            particles.ForEach(p => p.CurrentLifetime++);
+            particles.RemoveAll(p => p.CurrentLifetime > p.TotalLifetime || p.Position < 0 || p.Position > 1);
+            particles.ForEach(p =>
             {
-                p.CurrentLifetime++;
-                if (p.CurrentLifetime > p.TotalLifetime || p.Position < -1 || p.Position > ledCount)
-                {
-                    toRemove.Add(p);
-                } else
-                {
-                    double lifeProgress = p.CurrentLifetime * 1.0 / p.TotalLifetime;
-                    p.Color = p.StartColor.Mix(p.EndColor, lifeProgress);
-                    p.Position += p.StartVelocity + (p.EndVelocity - p.StartVelocity) * lifeProgress;
-                }
-            }
+                double lifeProgress = p.CurrentLifetime * 1.0 / p.TotalLifetime;
+                p.Color = p.StartColor.Mix(p.EndColor, lifeProgress);
+                p.Position += p.StartVelocity + (p.EndVelocity - p.StartVelocity) * lifeProgress;
+            });
 
-            foreach (var p in toRemove)
-            {
-                particles.Remove(p);
-            }
-
-            var emit = ((NodeInterface<bool>)Inputs.GetNodeInterface("Emit")).Value;
-            if (emit)
+            //spawn particles if necessary
+            if (niEmit.Value)
             {
 
-                var rate = ((NodeInterface<double>)Inputs.GetNodeInterface("Rate")).Value;
-                var startVelocity = ((NodeInterface<double>)Inputs.GetNodeInterface("Start Velocity")).Value;
-                var endVelocity = ((NodeInterface<double>)Inputs.GetNodeInterface("End Velocity")).Value;
-                var emitterPosition = ((NodeInterface<double>)Inputs.GetNodeInterface("Emitter Position")).Value;
-                var symmetric = ((NodeInterface<bool>)Inputs.GetNodeInterface("Symmetric")).Value;
-                var lifetime = (int)((NodeInterface<double>)Inputs.GetNodeInterface("Lifetime")).Value;
-                var startColor = ((NodeInterface<LedColor>)Inputs.GetNodeInterface("Start Color")).Value ?? new LedColorRGB(0, 0, 0);
-                var endColor = ((NodeInterface<LedColor>)Inputs.GetNodeInterface("End Color")).Value ?? new LedColorRGB(0, 0, 0);
+                var fps = GlobalProperties.Instance.FPS;
+                var rate = niRate.Value / fps;
+                var startVelocity = niStartVelocity.Value / fps;
+                var endVelocity = niEndVelocity.Value / fps;
+                var emitterPosition = niEmitterPosition.Value;
+                var symmetric = niSymmetric.Value;
+                var lifetimeInFrames = (int)(niLifetime.Value * fps);
+                var startColor = niStartColor.Value ?? new LedColorRGB(0, 0, 0);
+                var endColor = niEndColor.Value ?? new LedColorRGB(0, 0, 0);
 
                 particlesToSpawn += rate;
                 while (particlesToSpawn > 1.0)
                 {
                     var p = new Particle()
                     {
-                        TotalLifetime = lifetime,
+                        TotalLifetime = lifetimeInFrames,
                         Position = emitterPosition,
-                        StartVelocity = startVelocity,
-                        EndVelocity = endVelocity,
+                        StartVelocity = symmetric && !direction ? -startVelocity : startVelocity,
+                        EndVelocity = symmetric && !direction ? -endVelocity : endVelocity,
                         Color = startColor,
                         StartColor = startColor,
                         EndColor = endColor
                     };
                     if (symmetric)
-                    {
-                        if (!direction)
-                        {
-                            p.StartVelocity = -startVelocity;
-                            p.EndVelocity = -endVelocity;
-                            direction = true;
-                        } else
-                        {
-                            direction = false;
-                        }
-                    }
+                        direction = !direction;
                     particles.Add(p);
                     particlesToSpawn--;
                 }
@@ -102,21 +94,21 @@ namespace LedMusic2.Nodes.NodeModels
             }
 
             //render the particles
-            var rendered = new LedColor[ledCount];
-            for (int i = 0; i < ledCount; i++)
+            var rendered = new LedColor[resolution];
+            for (int i = 0; i < resolution; i++)
                 rendered[i] = new LedColorRGB(0, 0, 0);
 
             foreach (var p in particles)
             {
 
-                var left = (int)Math.Floor(p.Position);
-                var right = (int)Math.Ceiling(p.Position);
+                var left = (int)Math.Floor(p.Position * resolution);
+                var right = left + 1;
 
-                if (left >= 0 && left < ledCount)
-                    rendered[left] = rendered[left].Add(p.Color, 1.0 - p.Position + left);
+                if (left >= 0 && left < resolution)
+                    rendered[left] = rendered[left].Add(p.Color, 1.0 - p.Position * resolution + left);
 
-                if (right >= 0 && right < ledCount)
-                    rendered[right] = rendered[right].Add(p.Color, 1.0 - right + p.Position);
+                if (right >= 0 && right < resolution)
+                    rendered[right] = rendered[right].Add(p.Color, 1.0 - right + p.Position * resolution);
 
             }
 

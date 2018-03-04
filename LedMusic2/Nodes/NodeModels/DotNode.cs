@@ -10,16 +10,30 @@ namespace LedMusic2.Nodes.NodeModels
     public class DotNode : NodeBase
     {
 
+        private NodeInterface<double> niCenterPosition;
+        private NodeInterface<double> niAlpha;
+        private NodeInterface<LedColor> niColor;
+        private NodeInterface<double> niGlow;
+        private NodeInterface<bool> niSymmetric;
+        private NodeInterface<LedColor[]> niOutput;
+
+        private NodeOption noGlowType = new NodeOption(NodeOptionType.SELECTION, "Glow Type");
+
         public DotNode(Point initPosition, NodeEditorViewModel parentVM) : base(initPosition, parentVM)
         {
 
-            AddInput("Center Position", 0.0);
-            AddInput("Alpha", 1.0);
-            AddInput<LedColors.LedColor>("Color", new LedColorRGB(0, 0, 0));
-            AddInput("Glow", 0.0);
-            AddInput("Symmetric", false);
+            niCenterPosition = AddInput("Center Position", 0.0);
+            niAlpha = AddInput("Alpha", 1.0);
+            niColor = AddInput<LedColor>("Color", new LedColorRGB(0, 0, 0));
+            niGlow = AddInput("Glow", 0.0);
+            niSymmetric = AddInput("Symmetric", false);
 
-            AddOutput<LedColors.LedColor[]>("Colors");
+            niOutput = AddOutput<LedColor[]>("Colors");
+
+            foreach (var s in new string[] { "Linear", "Exponential", "Gaussian" })
+                noGlowType.Options.Add(s);
+            noGlowType.DisplayValue = "Linear";
+            Options.Add(noGlowType);
 
             Calculate();
 
@@ -28,46 +42,52 @@ namespace LedMusic2.Nodes.NodeModels
         public override bool Calculate()
         {
 
-            int ledCount = GlobalProperties.Instance.LedCount;
+            int resolution = GlobalProperties.Instance.Resolution;
 
-            int centerPosition = (int)Clamp(
-                ((NodeInterface<double>)Inputs.GetNodeInterface("Center Position")).Value, 0, ledCount);
+            double centerPosition = Clamp(niCenterPosition.Value, 0, 1);
+            double alpha = Clamp(niAlpha.Value, 0, 1);
+            double glow = Math.Max(0, niGlow.Value);
+            LedColorHSV color = niColor.Value.GetColorHSV();
+            bool symmetric = niSymmetric.Value;
 
-            double alpha = Clamp(
-                ((NodeInterface<double>)Inputs.GetNodeInterface("Alpha")).Value, 0, 1);
+            LedColorHSV[] buffer = new LedColorHSV[resolution];
 
-            double glow = Clamp(
-                ((NodeInterface<double>)Inputs.GetNodeInterface("Glow")).Value, 0, ledCount);
-
-            LedColorHSV color = ((NodeInterface<LedColors.LedColor>)Inputs.GetNodeInterface("Color")).Value.GetColorHSV();
-
-            bool symmetric = ((NodeInterface<bool>)Inputs.GetNodeInterface("Symmetric")).Value;
-
-            LedColorHSV[] buffer = new LedColorHSV[ledCount];
-
-            for (int i = (int)Math.Floor(centerPosition - glow); i <= (int)Math.Ceiling(centerPosition + glow); i++)
+            Func<double, double, double, double> intensity;
+            switch (noGlowType.RenderValue)
             {
-                if (i >= 0 && i < ledCount)
-                    buffer[i] = new LedColorHSV(
-                        color.H, color.S, alpha * Math.Max((-Math.Abs(i - centerPosition)) / (glow + 1) + 1, 0) * color.V);
+                case "Exponential":
+                    intensity = new Func<double, double, double, double>((a, b, c) => ExponentialIntensity(a, b, c));
+                    break;
+                case "Gaussian":
+                    intensity = new Func<double, double, double, double>((a, b, c) => GaussianIntensity(a, b, c));
+                    break;
+                default:
+                case "Linear":
+                    intensity = new Func<double, double, double, double>((a, b, c) => LinearIntensity(a, b, c));
+                    break;
+            }
+
+            for (int i = 0; i < resolution; i++)
+            {
+                double position = 1.0 * i / resolution;
+                buffer[i] = new LedColorHSV(color.H, color.S,
+                    alpha * Clamp(intensity(centerPosition, position, glow), 0, 1) * color.V);
             }
 
             if (symmetric)
             {
-                LedColorHSV[] reverseColors = new LedColorHSV[ledCount];
-                for (int i = 0; i < ledCount; i++)
+                LedColorHSV[] reverseColors = new LedColorHSV[resolution];
+                for (int i = 0; i < resolution; i++)
                 {
-                    if (buffer[i] == null)
-                        buffer[i] = new LedColorHSV(0, 0, 0);
-                    reverseColors[ledCount - i - 1] = buffer[i];
+                    reverseColors[resolution - i - 1] = buffer[i];
                 }
-                for (int i = 0; i < ledCount; i++)
+                for (int i = 0; i < resolution; i++)
                 {
                     buffer[i] = buffer[i].Add(reverseColors[i], 0.5).GetColorHSV();
                 }
             }
 
-            ((NodeInterface<LedColors.LedColor[]>)Outputs.GetNodeInterface("Colors")).SetValue(buffer);
+            niOutput.SetValue(buffer);
 
             return true;
 
@@ -76,6 +96,24 @@ namespace LedMusic2.Nodes.NodeModels
         private double Clamp(double value, double min, double max)
         {
             return Math.Max(min, Math.Min(max, value));
+        }
+
+        private double LinearIntensity(double center, double position, double width)
+        {
+            if (width == 0.0) return 0.0;
+            double distance = Math.Abs(position - center);
+            return 1.0 - distance / width;
+        }
+
+        private double ExponentialIntensity(double center, double position, double pBase)
+        {
+            double distance = Math.Abs(position - center);
+            return Math.Pow(pBase, distance);
+        }
+
+        private double GaussianIntensity(double center, double position, double stdDeviation)
+        {
+            return Math.Exp(-((position - center) * (position - center)) / (2 * stdDeviation * stdDeviation)) / (stdDeviation * Math.Sqrt(2 * Math.PI));
         }
 
     }

@@ -80,8 +80,8 @@ namespace LedMusic2.Nodes.NodeModels
         {
 
             AddInput("Factor", ConnectionType.NUMBER);
-            AddOutput<LedColors.LedColor[]>("Color Band");
-            AddOutput<LedColors.LedColor>("Single Color");
+            AddOutput<LedColor[]>("Color Band");
+            AddOutput<LedColor>("Single Color");
 
             Options.Add(new NodeOption(NodeOptionType.CUSTOM, "Test", typeof(NodeViews.ColorRampNode), this));
 
@@ -112,12 +112,12 @@ namespace LedMusic2.Nodes.NodeModels
         public override bool Calculate()
         {
 
-            var ledCount = GlobalProperties.Instance.LedCount;
-            var output = new LedColorRGB[ledCount];
+            var resolution = GlobalProperties.Instance.Resolution;
+            var output = new LedColorRGB[resolution];
 
             if (ColorStops.Count == 0)
             {
-                for (int i = 0; i < ledCount; i++)
+                for (int i = 0; i < resolution; i++)
                 {
                     output[i] = new LedColorRGB(0, 0, 0);
                 }
@@ -127,10 +127,10 @@ namespace LedMusic2.Nodes.NodeModels
 
             ColorStops.Sort();
 
-            for (int i = 0; i < ledCount; i++)
+            for (int i = 0; i < resolution; i++)
             {
 
-                var currentPos = (double)i / ledCount;
+                var currentPos = (double)i / resolution;
                 output[i] = GetColorAtPosition(currentPos);
 
             }

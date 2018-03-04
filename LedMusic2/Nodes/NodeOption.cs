@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Xml.Linq;
 
@@ -152,8 +153,8 @@ namespace LedMusic2.Nodes
             OptionType = type;
             Name = name;
 
-            _cmdDecreaseValue.ExecuteDelegate = (o) => DisplayValue = _valDouble - 1;
-            _cmdIncreaseValue.ExecuteDelegate = (o) => DisplayValue = _valDouble + 1;
+            _cmdDecreaseValue.ExecuteDelegate = (o) => DecreaseNumber();
+            _cmdIncreaseValue.ExecuteDelegate = (o) => IncreaseNumber();
             _cmdPickColor.ExecuteDelegate = PickColor;
 
             if (type == NodeOptionType.PREVIEW)
@@ -260,6 +261,16 @@ namespace LedMusic2.Nodes
                 _valDouble = Math.Min(MaxValue, Math.Max(val, MinValue));
             }
 
+        }
+
+        private void IncreaseNumber()
+        {
+            DisplayValue = _valDouble + (Keyboard.IsKeyDown(Key.LeftAlt) ? 0.1 : 1);
+        }
+
+        private void DecreaseNumber()
+        {
+            DisplayValue = _valDouble - (Keyboard.IsKeyDown(Key.LeftAlt) ? 0.1 : 1);
         }
 
         //OptionType == COLOR

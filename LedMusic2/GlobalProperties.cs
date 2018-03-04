@@ -17,18 +17,16 @@ namespace LedMusic2
             }
         }
 
-        private int _ledCount = 30;
-        public int LedCount
+        private int _resolution = 30;
+        public int Resolution
         {
-            get { return _ledCount; }
+            get { return _resolution; }
             set
             {
-                _ledCount = value;
+                _resolution = value;
                 NotifyPropertyChanged();
             }
         }
-
-        public string CurrentProjectFile { get; set; }
 
         #region Constructor
         private static GlobalProperties instance;

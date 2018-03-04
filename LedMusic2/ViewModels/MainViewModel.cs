@@ -17,9 +17,8 @@ using System.Xml;
 using System.Xml.Linq;
 
 // TODO: Try to find out, why we have so many exceptions
-// TODO: Add scene switching by menu
-// TODO: Add scene switching node
 // TODO: Make VST Interop functional
+// TODO: Add Scene Naming
 
 namespace LedMusic2.ViewModels
 {
@@ -263,7 +262,8 @@ namespace LedMusic2.ViewModels
 
         public void End()
         {
-            //TODO: Dispose of everything
+            foreach (var s in Scenes)
+                s.Dispose();
             VstInputManager.Instance.Shutdown();
         }
 
@@ -393,7 +393,8 @@ namespace LedMusic2.ViewModels
 
                 XDocument doc = XDocument.Load(s);
 
-                //TODO: Dispose of scenes
+                foreach (var sc in Scenes) sc.Dispose();
+                Scenes.Clear();
                 Outputs.Clear();
 
                 LoadFromXml((XElement)doc.FirstNode);
@@ -433,13 +434,13 @@ namespace LedMusic2.ViewModels
             XElement rootX = new XElement("ledmusicproject");
 
             XElement scenesX = new XElement("scenes");
-            //TODO
+            foreach (var sc in Scenes)
+                scenesX.Add(sc.GetXmlElement());
 
             XElement outputsX = new XElement("outputs");
             foreach (OutputBase o in Outputs)
-            {
                 outputsX.Add(o.GetXmlElement());
-            }
+
             rootX.Add(outputsX);
 
             return rootX;
@@ -461,7 +462,14 @@ namespace LedMusic2.ViewModels
                 switch (n.Name.LocalName)
                 {
 
-                    //TODO: Scenes
+                    case "scenes":
+                        foreach (var sceneX in n.Elements())
+                        {
+                            var scene = new NodeEditorViewModel();
+                            scene.LoadFromXml(sceneX);
+                            Scenes.Add(scene);
+                        }
+                        break;
 
                     case "outputs":
                         foreach (XElement outputX in n.Elements())
