@@ -2,14 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
-using System.Diagnostics;
 
 namespace LedMusic2.VstInterop
 {
@@ -30,21 +29,19 @@ namespace LedMusic2.VstInterop
         #endregion
 
         private Dictionary<Guid, VstChannel> channelDictionary = new Dictionary<Guid, VstChannel>();
-        private ObservableCollection<VstChannel> _channels = new ObservableCollection<VstChannel>();
-        public ObservableCollection<VstChannel> Channels => _channels;
+        public ObservableCollection<VstChannel> Channels { get; } = new ObservableCollection<VstChannel>();
 
         private Thread listenerThread;
         private UdpClient udpClient;
+        private readonly ConcurrentQueue<VstChannel> channelsToAdd = new ConcurrentQueue<VstChannel>();
 
         private VstInputManager()
         {
 
-            Debug.WriteLine("Instantiated");
-
             try
             {
                 udpClient = new UdpClient(PORT);
-                listenerThread = new Thread(new ThreadStart(Listen));
+                listenerThread = new Thread(new ThreadStart(listen));
                 listenerThread.Start();
             } catch (SocketException)
             {
@@ -53,13 +50,26 @@ namespace LedMusic2.VstInterop
 
         }
 
+        public void UpdateValues()
+        {
+            while (channelsToAdd.TryDequeue(out VstChannel c))
+                Channels.Add(c);
+            foreach (var c in Channels)
+                c.UpdateValues();
+        }
+
         public void Shutdown()
         {
             listenerThread.Abort();
             udpClient.Close();
         }
 
-        private void Listen()
+        // "Hello" packet format
+        // Byte 0 - 15: GUID
+        // Byte 16: Type
+        // Expect "ACK" packet:
+        // Byte 0 - 3: ASCII-encoded "ACK"
+        private void listen()
         {
 
             IPEndPoint ipEndpoint = new IPEndPoint(IPAddress.Any, PORT);
@@ -68,28 +78,27 @@ namespace LedMusic2.VstInterop
             {
 
                 var datagram = udpClient.Receive(ref ipEndpoint);
+                var guid = new Guid(datagram.Take(16).ToArray());
+                var type = (VstChannelType)datagram[16];
 
-                try
+                // see if we already have a VstChannel instance for the specified GUID
+                if (channelDictionary.TryGetValue(guid, out VstChannel channel))
                 {
-
-                    var message = JObject.Parse(Encoding.UTF8.GetString(datagram));
-                    var uuid = message.Value<string>("uuid");
-                    var type = message.Value<string>("type");
-
-                    var guid = Guid.Parse(uuid);
-                    if (!channelDictionary.TryGetValue(guid, out VstChannel channel))
+                    // check if types match
+                    if (channel.Type != type)
                     {
-                        channel = new VstChannel(guid);
-                        channelDictionary.Add(guid, channel);
-                        Channels.Add(channel);
+                        Debug.WriteLine($"Incompatible types for channel {guid.ToString()}: Expected {channel.Type}, got {type}");
+                        continue;
                     }
-
-                    channel.ExecuteMessage(message);
-
-                } catch (Exception e)
+                } else
                 {
-                    Debug.WriteLine(e.ToString());
+                    channel = new VstChannel(guid, type);
+                    channelDictionary.Add(guid, channel);
+                    channelsToAdd.Enqueue(channel);
                 }
+
+                udpClient.Send(Encoding.ASCII.GetBytes("ACK"), 3, ipEndpoint);
+                Debug.WriteLine($"Plugin {guid} registered");
 
             }
 

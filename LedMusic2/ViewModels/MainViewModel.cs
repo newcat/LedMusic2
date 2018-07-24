@@ -297,6 +297,7 @@ namespace LedMusic2.ViewModels
 
         public void OnCalculationTimerTick(object sender, EventArgs e)
         {
+            VstInputManager.Instance.UpdateValues();
             CalculateAllNodes();
         }       
         #endregion

@@ -135,7 +135,9 @@
     <Compile Include="NodeConnection\TemporaryConnectionView.xaml.cs">
       <DependentUpon>TemporaryConnectionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="VstInterop\Note.cs" />
     <Compile Include="VstInterop\VstChannel.cs" />
+    <Compile Include="VstInterop\VstChannelType.cs" />
     <Compile Include="VstInterop\VstInputManager.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -234,9 +236,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="VstInterop\Messages.txt" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
