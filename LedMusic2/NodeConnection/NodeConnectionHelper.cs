@@ -8,16 +8,7 @@ namespace LedMusic2.NodeConnection
 {
     public sealed class NodeConnectionHelper : VMBase
     {
-
-        #region Singleton and Constructor
-        private static NodeConnectionHelper _instance = new NodeConnectionHelper();
-        public static NodeConnectionHelper Instance { get { return _instance; } }
-
-        private NodeConnectionHelper()
-        {
-
-        }
-        #endregion
+        public static NodeConnectionHelper Instance { get; } = new NodeConnectionHelper();
 
         private NodeInterface _connectionOrigin;
         public NodeInterface ConnectionOrigin

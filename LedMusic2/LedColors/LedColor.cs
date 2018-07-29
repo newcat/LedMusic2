@@ -14,6 +14,8 @@ namespace LedMusic2.LedColors
             return string.Format("{0},{1},{2}", c.R, c.G, c.B);
         }
 
+        public void 
+
         #region Mixing
         public LedColor Mix(LedColor other, double factor)
         {

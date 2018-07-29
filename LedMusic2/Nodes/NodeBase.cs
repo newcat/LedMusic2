@@ -1,75 +1,15 @@
-﻿using LedMusic2.LedColors;
+﻿using LedMusic2.BrowserInterop;
+using LedMusic2.LedColors;
 using LedMusic2.NodeConnection;
-using LedMusic2.NodeEditor;
 using LedMusic2.ViewModels;
 using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Globalization;
-using System.Windows;
 using System.Xml.Linq;
 
 namespace LedMusic2.Nodes
 {
-    public abstract class NodeBase : VMBase, IExportable, IDisposable
+    public abstract class NodeBase : VMBase, IExportable
     {
-
-        public static event EventHandler UnselectAllNodes;
-        public static void InvokeUnselectAllNodes(object sender)
-        {
-            UnselectAllNodes?.Invoke(sender, new EventArgs());
-        }
-
-        #region ViewModel Properties
-        private double _posX;
-        public double PosX
-        {
-            get { return _posX + NodeEditorVM.TranslateX; }
-            set
-            {
-                _posX = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        private double _posY;
-        public double PosY
-        {
-            get { return _posY + NodeEditorVM.TranslateY; }
-            set
-            {
-                _posY = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        private bool _isSelected = false;
-        public bool IsSelected
-        {
-            get { return _isSelected; }
-            set
-            {
-                _isSelected = value;
-                NotifyPropertyChanged();
-                NotifyPropertyChanged("ZIndex");
-            }
-        }
-
-        private int _minWidth = 0;
-        public int MinWidth
-        {
-            get { return _minWidth; }
-            set
-            {
-                _minWidth = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        public int ZIndex
-        {
-            get { return IsSelected ? 2 : 1; }
-        }
 
         public virtual string Name
         {
@@ -82,72 +22,43 @@ namespace LedMusic2.Nodes
                     return "Node";
             }
         }
-        #endregion
 
-        protected NodeInterfaceList _inputs = new NodeInterfaceList();
-        public NodeInterfaceList Inputs { get { return _inputs; } }
+        public NodeInterfaceList Inputs { get; } = new NodeInterfaceList();
+        public NodeInterfaceList Outputs { get; } = new NodeInterfaceList();
+        public SynchronizedCollection<NodeOption> Options { get; } = new SynchronizedCollection<NodeOption>();
 
-        protected NodeInterfaceList _outputs = new NodeInterfaceList();
-        public NodeInterfaceList Outputs { get { return _outputs; } }
-
-        protected ObservableCollection<NodeOption> _options = new ObservableCollection<NodeOption>();
-        public ObservableCollection<NodeOption> Options { get { return _options; } }
-
-        private Guid _id = Guid.NewGuid();
-        public Guid Id { get { return _id; } set { _id = value; } }
-
-        public NodeEditorViewModel NodeEditorVM { get; private set; }
-
-        public NodeBase(Point initPosition, NodeEditorViewModel parentVM)
-        {
-
-            NodeEditorVM = parentVM;
-            NodeEditorVM.PropertyChanged += NodeEditorVM_PropertyChanged;
-
-            PosX = initPosition.X;
-            PosY = initPosition.Y;
-
-        }
-
-        private void NodeEditorVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "TranslateX" || e.PropertyName == "TranslateY")
-            {
-                NotifyPropertyChanged("PosX");
-                NotifyPropertyChanged("PosY");
-            }                
-        }
+        public new Guid Id { get; set; }
 
         public abstract bool Calculate();
 
         protected NodeInterface<T> AddInput<T>(string name)
         {
-            var ni = new NodeInterface<T>(name, InferConnectionType<T>(), this, true, NodeEditorVM);
+            var ni = new NodeInterface<T>(name, inferConnectionType<T>(), this, true);
             Inputs.Add(ni);
             return ni;
         }
         protected NodeInterface<T> AddInput<T>(string name, T initialValue)
         {
-            var ni = new NodeInterface<T>(name, InferConnectionType<T>(), this, true, NodeEditorVM, initialValue);
+            var ni = new NodeInterface<T>(name, inferConnectionType<T>(), this, true, initialValue);
             Inputs.Add(ni);
             return ni;
         }
 
         protected NodeInterface<T> AddOutput<T>(string name)
         {
-            var ni = new NodeInterface<T>(name, InferConnectionType<T>(), this, false, NodeEditorVM);
+            var ni = new NodeInterface<T>(name, inferConnectionType<T>(), this, false);
             Outputs.Add(ni);
             return ni;
         }
 
-        private ConnectionType InferConnectionType<T>()
+        private ConnectionType inferConnectionType<T>()
         {
 
             if (typeof(T) == typeof(double))
                 return ConnectionType.NUMBER;
-            else if (typeof(T) == typeof(LedColors.LedColor))
+            else if (typeof(T) == typeof(LedColor))
                 return ConnectionType.COLOR;
-            else if (typeof(T) == typeof(LedColors.LedColor[]))
+            else if (typeof(T) == typeof(LedColor[]))
                 return ConnectionType.COLOR_ARRAY;
             else if (typeof(T) == typeof(bool))
                 return ConnectionType.BOOL;
@@ -163,8 +74,6 @@ namespace LedMusic2.Nodes
             XElement nodeX = new XElement("node");
             nodeX.SetAttributeValue("type", ((NodeAttribute)Attribute.GetCustomAttribute(GetType(), typeof(NodeAttribute))).Name);
             nodeX.Add(new XElement("id", Id));
-            nodeX.Add(new XElement("posx", PosX.ToString(CultureInfo.InvariantCulture)));
-            nodeX.Add(new XElement("posy", PosY.ToString(CultureInfo.InvariantCulture)));
 
             XElement inputsX = new XElement("inputs");
             foreach (NodeInterface ni in Inputs)
@@ -205,14 +114,6 @@ namespace LedMusic2.Nodes
                 {
                     case "id":
                         Id = Guid.Parse(el.Value);
-                        break;
-
-                    case "posx":
-                        PosX = double.Parse(el.Value, CultureInfo.InvariantCulture);
-                        break;
-
-                    case "posy":
-                        PosY = double.Parse(el.Value, CultureInfo.InvariantCulture);
                         break;
 
                     case "inputs":
@@ -265,28 +166,6 @@ namespace LedMusic2.Nodes
         protected virtual void LoadAdditionalXmlData(XElement x)
         {
             return;
-        }
-        #endregion
-
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    NodeEditorVM.PropertyChanged -= NodeEditorVM_PropertyChanged;
-                }
-
-                disposedValue = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
         }
         #endregion
 

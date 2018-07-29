@@ -1,8 +1,9 @@
-﻿using System;
+﻿using LedMusic2.BrowserInterop;
+using System;
 
 namespace LedMusic2.Outputs
 {
-    public class OutputType
+    public class OutputType : ISynchronizable
     {
 
         public string Name { get; set; }

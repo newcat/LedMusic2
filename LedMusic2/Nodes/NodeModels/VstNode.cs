@@ -66,14 +66,14 @@ namespace LedMusic2.Nodes.NodeModels
                 }
                 if (SelectedChannel.Notes[midiChannel].Velocity != niValue.Value)
                 {
-                    niValue.SetValue(SelectedChannel.Notes[midiChannel].Velocity);
+                    niValue.SetValue((double)SelectedChannel.Notes[midiChannel].Velocity);
                     changed = true;
                 }
             } else
             {
                 if (SelectedChannel.Value != niValue.Value)
                 {
-                    niValue.SetValue((double)SelectedChannel.Value);
+                    niValue.SetValue(SelectedChannel.Value);
                     changed = true;
                 }
             }            

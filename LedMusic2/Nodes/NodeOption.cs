@@ -1,5 +1,4 @@
-﻿using AttachedCommandBehavior;
-using LedMusic2.LedColors;
+﻿using LedMusic2.LedColors;
 using LedMusic2.ViewModels;
 using System;
 using System.Collections.ObjectModel;

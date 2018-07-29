@@ -9,7 +9,8 @@ namespace LedMusicVstPlugin
     class LedMusicInterop
     {
 
-        private const int MAX_QUEUE_SIZE = 100;
+        private const int MIDI_PACKET_COUNT = 5;
+        private const int MAX_QUEUE_SIZE = 100 * MIDI_PACKET_COUNT;
 
         private readonly Guid guid;
         private readonly ConcurrentQueue<byte[]> queue = new ConcurrentQueue<byte[]>();
@@ -50,10 +51,15 @@ namespace LedMusicVstPlugin
             if (connected)
             {
                 var currentData = va.ReadByte(0);
-                if (currentData == 0 && queue.TryDequeue(out byte[] newData))
+                if (currentData == 0)
                 {
-                    // ready to receive new event
-                    va.WriteArray(0, newData, 0, 3);
+                    for (var i = 0; i < MIDI_PACKET_COUNT; i++)
+                    {
+                        if (queue.TryDequeue(out byte[] newData))
+                            va.WriteArray(3 * i, newData, 0, 3);
+                        else
+                            break;
+                    }
                 }
             } else if (udpClient.Available >= 3)
             {

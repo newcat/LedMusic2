@@ -8,6 +8,8 @@ namespace LedMusic2.VstInterop
     public class VstChannel : IDisposable
     {
 
+        private const int MIDI_PACKET_COUNT = 5;
+
         public Guid Id { get; }
         public VstChannelType Type { get; }
         public string Name { get; private set; }
@@ -41,25 +43,29 @@ namespace LedMusic2.VstInterop
 
         private void parseMidi()
         {
-            var data = new byte[3];
-            va.ReadArray(0, data, 0, 3);
-            va.WriteArray(0, new byte[3] { 0, 0, 0 }, 0, 3);
-            var channel = data[0] & 0x0F;
-            if ((data[0] & 0xF0) == 0x80)
+            var data = new byte[3 * MIDI_PACKET_COUNT];
+            va.ReadArray(0, data, 0, 3 * MIDI_PACKET_COUNT);
+            va.WriteArray(0, new byte[15], 0, 3 * MIDI_PACKET_COUNT);
+            for (var i = 0; i < MIDI_PACKET_COUNT; i++)
             {
-                // Note off
-                Debug.WriteLine($"Note off (Channel {channel})");
-                if (Notes[channel].Number == data[1])
+                var channel = data[3 * i] & 0x0F;
+                if ((data[3 * i] & 0xF0) == 0x80)
                 {
-                    Notes[channel].Number = 0;
-                    Notes[channel].Velocity = 0;
+                    // Note off
+                    Debug.WriteLine($"Note off (Channel {channel})");
+                    if (Notes[channel].Number == data[3 * i + 1])
+                    {
+                        Notes[channel].Number = 0;
+                        Notes[channel].Velocity = 0;
+                    }
                 }
-            } else if ((data[0] & 0xF0) == 0x90)
-            {
-                // Note on event
-                Debug.WriteLine($"Note on (Channel {channel}, Note {data[1]}, Velocity {data[2]}");
-                Notes[channel].Number = data[1];
-                Notes[channel].Velocity = data[2];
+                else if ((data[3 * i] & 0xF0) == 0x90)
+                {
+                    // Note on event
+                    Debug.WriteLine($"Note on (Channel {channel}, Note {data[3 * i + 1]}, Velocity {data[3 * i + 2]}");
+                    Notes[channel].Number = data[3 * i + 1];
+                    Notes[channel].Velocity = data[3 * i + 2];
+                }
             }
         }
 
@@ -68,7 +74,7 @@ namespace LedMusic2.VstInterop
             switch (Type)
             {
                 case VstChannelType.MIDI:
-                    return 3;
+                    return 3 * MIDI_PACKET_COUNT;
                 case VstChannelType.VALUE:
                     return 4;
                 default:

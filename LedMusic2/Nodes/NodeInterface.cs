@@ -1,6 +1,4 @@
-﻿using AttachedCommandBehavior;
-using LedMusic2.NodeConnection;
-using LedMusic2.NodeEditor;
+﻿using LedMusic2.NodeConnection;
 using LedMusic2.ViewModels;
 using System;
 using System.ComponentModel;
@@ -16,7 +14,6 @@ namespace LedMusic2.Nodes
         public ConnectionType ConnectionType { get; private set; }
         public abstract Type NodeType { get; }
         public NodeBase Parent { get; private set; }
-        public NodeEditorViewModel NodeEditorVM { get; private set; }
 
         #region ViewModel Properties
         private NodeInterfaceView _view = null;
@@ -64,32 +61,13 @@ namespace LedMusic2.Nodes
         }
         #endregion
 
-        #region Commands
-        private SimpleCommand _cmdEllipseClicked = new SimpleCommand();
-        public SimpleCommand CmdEllipseClicked
-        {
-            get { return _cmdEllipseClicked; }
-            set
-            {
-                _cmdEllipseClicked = value;
-                NotifyPropertyChanged();
-            }
-        }
-        #endregion
-
         public event EventHandler ValueChanged;
 
-        private Guid _id = Guid.NewGuid();
-        public Guid Id { get { return _id; } set { _id = value; } }
-
-        public NodeInterface(string name, ConnectionType ctype, NodeBase parent, bool isInput, NodeEditorViewModel nevm)
+        public NodeInterface(string name, ConnectionType ctype, NodeBase parent, bool isInput)
         {
             Name = name;
             ConnectionType = ctype;
-            Parent = parent;
             IsInput = isInput;
-            NodeEditorVM = nevm;
-            _cmdEllipseClicked.ExecuteDelegate = (o) => NodeEditorVM.CreateTemporaryConnection(this);
 
             if (isInput)
             {
@@ -164,12 +142,12 @@ namespace LedMusic2.Nodes
         public override Type NodeType { get { return typeof(T); } }
         public T Value { get; private set; }
 
-        public NodeInterface(string name, ConnectionType cType, NodeBase parent, bool isInput, NodeEditorViewModel nevm) :
-            base(name, cType, parent, isInput, nevm)
+        public NodeInterface(string name, ConnectionType cType, NodeBase parent, bool isInput) :
+            base(name, cType, parent, isInput)
         { }
 
-        public NodeInterface(string name, ConnectionType cType, NodeBase parent, bool isInput, NodeEditorViewModel nevm, T initialValue) :
-            base(name, cType, parent, isInput, nevm)
+        public NodeInterface(string name, ConnectionType cType, NodeBase parent, bool isInput, T initialValue) :
+            base(name, cType, parent, isInput)
         {
             SetValue(initialValue);
         }

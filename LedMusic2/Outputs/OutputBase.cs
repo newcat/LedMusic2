@@ -1,7 +1,6 @@
 ﻿using LedMusic2.LedColors;
 using LedMusic2.ViewModels;
 using System;
-using System.Windows;
 using System.Xml.Linq;
 
 namespace LedMusic2.Outputs
@@ -10,8 +9,6 @@ namespace LedMusic2.Outputs
     {
 
         public abstract string DefaultName { get; }
-
-        public abstract FrameworkElement SettingsView { get; }
 
         private string _name;
         public string Name
@@ -31,7 +28,7 @@ namespace LedMusic2.Outputs
             Name = DefaultName;
         }
 
-        public abstract void CalculationDone(LedColors.LedColor[] calculationResult);
+        public abstract void CalculationDone(LedColor[] calculationResult);
 
         public XElement GetXmlElement()
         {
