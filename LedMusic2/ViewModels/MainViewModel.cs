@@ -13,7 +13,6 @@ using System.Windows.Threading;
 using System.Xml;
 using System.Xml.Linq;
 
-// TODO: Try to find out, why we have so many exceptions
 // TODO: Make VST Interop functional
 // TODO: Add Scene Naming
 
@@ -68,7 +67,7 @@ namespace LedMusic2.ViewModels
 
         public SynchronizedCollection<NodeEditorViewModel> Scenes { get; } = new SynchronizedCollection<NodeEditorViewModel>();
         public SynchronizedCollection<ProgressViewModel> Progresses { get; } = new SynchronizedCollection<ProgressViewModel>();
-        public OutputManager outputManager { get; } = new OutputManager();
+        public OutputManager OutputManager { get; } = new OutputManager();
 
         #region Private Fields
         private DispatcherTimer calculationTimer;
@@ -78,8 +77,8 @@ namespace LedMusic2.ViewModels
         public void Initialize()
         {
 
-            outputManager.FillOutputTypes();
-            outputManager.Outputs.Add(new DummyOutput());
+            OutputManager.FillOutputTypes();
+            OutputManager.Outputs.Add(new DummyOutput());
 
             Scenes[0].Nodes.Add(new OutputNode(new Point(600.0, 150.0), Scenes[0]));
             DisplayedSceneIndex = 0;
@@ -172,7 +171,7 @@ namespace LedMusic2.ViewModels
 
                 foreach (var sc in Scenes) sc.Dispose();
                 Scenes.Clear();
-                outputManager.Outputs.Clear();
+                OutputManager.Outputs.Clear();
 
                 LoadFromXml((XElement)doc.FirstNode);
 
@@ -193,13 +192,13 @@ namespace LedMusic2.ViewModels
         {
 
             string type = outputX.Attribute("type").Value;
-            foreach (var t in outputManager.OutputTypes)
+            foreach (var t in OutputManager.OutputTypes)
             {
                 if (t.Name == type)
                 {
                     OutputBase outputInstance = (OutputBase)t.T.GetConstructor(Type.EmptyTypes).Invoke(null);
                     outputInstance.LoadFromXml(outputX);
-                    outputManager.Outputs.Add(outputInstance);
+                    OutputManager.Outputs.Add(outputInstance);
                 }
             }
 
@@ -215,7 +214,7 @@ namespace LedMusic2.ViewModels
                 scenesX.Add(sc.GetXmlElement());
 
             XElement outputsX = new XElement("outputs");
-            foreach (OutputBase o in outputManager.Outputs)
+            foreach (OutputBase o in OutputManager.Outputs)
                 outputsX.Add(o.GetXmlElement());
 
             rootX.Add(outputsX);

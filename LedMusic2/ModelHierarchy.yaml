@@ -1,0 +1,71 @@
+﻿# There are two types of lists:
+# Fixed List: Items in this list do not need to contain an Id property. This type of list can only be updated as a whole.
+# Synchronized List: Items in this list must contain an Id property. This allows for single items in this list to be updated.
+
+Main:
+	ActiveScene: 2
+	DisplayedScene: 5
+
+	NodeTypes:	# Fixed List
+		- Name: Math
+			Category: CONVERTER
+		- Name: Mix Color
+			Category: COLOR
+
+	OutputTypes: # Fixed List
+		- Name: Dummy
+		- Name: TCP
+
+	Progress: # Synchronized List
+		- Id: <GUID>
+			Name: Progress 1
+			Progress: 0.3
+		- Id: <GUID>
+			Name: Progress 2
+			Progress: 0.1
+
+	Scenes: # Synchronized List
+		- Id: <GUID>
+			Nodes:
+				- Id: <GUID>
+					Type: Numeric Value
+					Outputs:
+					- Id: <GUID>
+						Type: NUMBER
+						Name: Value
+					Options:
+					- Id: <GUID>
+						Type: NUMBER
+						Value: 0.8
+				- Id: <GUID>
+					Type: Color Ramp
+					Inputs:
+						- Id: <GUID>
+							Type: NUMBER
+							Name: Factor
+					Options:
+						- Id: <GUID>
+							Type: CUSTOM
+							Name: colorramp
+							Value:
+								ColorStops:
+									- Id: <GUID>
+										Position: 0.25
+										Color: <Base64 encoded RGB color>
+									- Id: <GUID>
+										Position: 0.75
+										Color: <Base64 encoded RGB color>
+					Outputs:
+						- Id: <GUID>
+							Type: COLOR_ARRAY
+							Name: Color Band
+						- Id: <GUID>
+							Type: COLOR
+							Name: Single Color
+			Connections:
+				- Id: <GUID>
+					Input: <GUID of NodeInterface>
+					Output: <GUID of NodeInterface>
+
+	Outputs: # Synchronized List
+		# TODO

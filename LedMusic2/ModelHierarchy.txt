@@ -1,8 +1,0 @@
-﻿- Main
-	- Progress
-	- Scenes
-		- Nodes
-		- Connection
-	- Outputs
-		- Outputs
-		- OutputTypes

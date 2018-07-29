@@ -56,9 +56,11 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BrowserInterop\BrowserAgent.cs" />
     <Compile Include="BrowserInterop\ISynchronizable.cs" />
     <Compile Include="BrowserInterop\SendMessageEventArgs.cs" />
     <Compile Include="BrowserInterop\SynchronizedCollection.cs" />
+    <Compile Include="BrowserInterop\WebSocket.cs" />
     <Compile Include="LedColors\LedColorHSV.cs" />
     <Compile Include="LedColors\LedColorRGB.cs" />
     <Compile Include="LedColors\LedColorRGBf.cs" />
@@ -157,7 +159,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="ModelHierarchy.txt" />
+    <None Include="ModelHierarchy.yaml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

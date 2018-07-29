@@ -16,17 +16,6 @@ namespace LedMusic2.Nodes
         public NodeBase Parent { get; private set; }
 
         #region ViewModel Properties
-        private NodeInterfaceView _view = null;
-        public NodeInterfaceView View
-        {
-            get { return _view; }
-            set
-            {
-                _view = value;
-                NotifyPropertyChanged();
-            }
-        }
-
         private NodeOption _option = null;
         public NodeOption Option
         {
