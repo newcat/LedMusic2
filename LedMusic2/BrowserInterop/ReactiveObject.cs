@@ -17,7 +17,6 @@ namespace LedMusic2.BrowserInterop
                 .Where(p => typeof(IReactive).IsAssignableFrom(p.PropertyType) && !p.GetAccessors().Any(a => a.IsStatic))
                 .Select(p => (IReactive)p.GetValue(this))
             );
-            props = props;
         }
 
         public IStateUpdate GetStateUpdates()

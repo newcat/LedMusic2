@@ -1,5 +1,5 @@
-﻿using LedMusic2.NodeEditor;
-using System.Windows;
+﻿using LedMusic2.BrowserInterop;
+using LedMusic2.Nodes.NodeOptions;
 
 namespace LedMusic2.Nodes.NodeModels
 {
@@ -7,9 +7,9 @@ namespace LedMusic2.Nodes.NodeModels
     class BooleanNode : NodeBase
     {
 
-        NodeOption optOperation = new NodeOption(NodeOptionType.SELECTION, "Operation");
-        NodeOption optInteger = new NodeOption(NodeOptionType.BOOL, "Use integer values");
-        NodeOption optInvert = new NodeOption(NodeOptionType.BOOL, "Invert output");
+        SelectOption optOperation = new SelectOption("Operation");
+        BoolOption optInteger = new BoolOption("Use integer values");
+        BoolOption optInvert = new BoolOption("Invert output");
 
         public BooleanNode() : base()
         {
@@ -19,7 +19,7 @@ namespace LedMusic2.Nodes.NodeModels
 
             foreach (string s in new string[] { "==", ">", "<", ">=", "<=" })
             {
-                optOperation.Options.Add(s);
+                optOperation.Options.Add(new ReactiveListItem<string>(s));
             }
             optOperation.Value.Set("==");
             Options.Add(optOperation);

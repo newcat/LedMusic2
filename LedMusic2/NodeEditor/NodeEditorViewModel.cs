@@ -155,7 +155,7 @@ namespace LedMusic2.NodeEditor
             NodeBase nodeInstance = null;
             foreach (NodeType n in NodeTypes)
             {
-                if (n.Name == type)
+                if (n.Name.Get() == type)
                 {
                     nodeInstance = AddNode(n);
                     break;

@@ -1,6 +1,7 @@
 ﻿using LedMusic2.BrowserInterop;
 using LedMusic2.LedColors;
 using LedMusic2.NodeConnection;
+using LedMusic2.Nodes.NodeOptions;
 using System;
 using System.Xml.Linq;
 
@@ -26,7 +27,7 @@ namespace LedMusic2.Nodes
 
         public NodeInterfaceList Inputs { get; } = new NodeInterfaceList();
         public NodeInterfaceList Outputs { get; } = new NodeInterfaceList();
-        public ReactiveCollection<NodeOption> Options { get; } = new ReactiveCollection<NodeOption>("Options");
+        public ReactiveCollection<BaseOption> Options { get; } = new ReactiveCollection<BaseOption>("Options");
 
         public abstract bool Calculate();
 
@@ -89,7 +90,7 @@ namespace LedMusic2.Nodes
             nodeX.Add(outputsX);
 
             XElement optionsX = new XElement("options");
-            foreach (NodeOption opt in Options)
+            foreach (BaseOption opt in Options)
             {
                 optionsX.Add(opt.GetXmlElement());
             }
@@ -150,7 +151,7 @@ namespace LedMusic2.Nodes
         private void loadOption(XElement nodeOptionX)
         {
             string name = nodeOptionX.Attribute("name").Value;
-            foreach (NodeOption opt in Options)
+            foreach (BaseOption opt in Options)
             {
                 if (opt.Name.Get() == name)
                     opt.LoadFromXml(nodeOptionX);

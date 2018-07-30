@@ -1,11 +1,5 @@
-﻿using LedMusic2.NodeEditor;
+﻿using LedMusic2.Nodes.NodeOptions;
 using LedMusic2.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace LedMusic2.Nodes.NodeModels
 {
@@ -13,8 +7,8 @@ namespace LedMusic2.Nodes.NodeModels
     class SceneSwitcherNode : NodeBase
     {
 
-        private NodeInterface<double> sceneInput;
-        private NodeOption displayedSceneNameOption = new NodeOption(NodeOptionType.TEXT, "Displayed Scene");
+        private readonly NodeInterface<double> sceneInput;
+        private readonly TextOption optDisplayedScene = new TextOption("Displayed Scene");
 
         public SceneSwitcherNode() : base()
         {

@@ -35,7 +35,7 @@ namespace LedMusic2.BrowserInterop
                 (Value as StateUpdateCollection).Print(depth + 1);
             }
             else
-                Console.WriteLine("{0}: {1}", Name, Value.ToString());
+                Console.WriteLine("{0}: {1}", Name, Value?.ToString() ?? "null");
         }
 
     }

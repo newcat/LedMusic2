@@ -1,4 +1,5 @@
 ﻿using LedMusic2.LedColors;
+using LedMusic2.Nodes.NodeOptions;
 using LedMusic2.Nodes.NodeViews;
 using LedMusic2.Outputs;
 using LedMusic2.ViewModels;
@@ -12,8 +13,8 @@ namespace LedMusic2.Nodes.NodeModels
     {
 
         private NodeInterface<LedColor[]> input;
-        private NodeOption preview = new NodeOption(NodeOptionType.PREVIEW, "Preview");
-        private readonly NodeOption outputSelection;
+        private PreviewOption preview = new PreviewOption("Preview");
+        private SelectOption outputSelection = new SelectOption("Output");
 
         public OutputBase SelectedOutput { get; set; }
 
@@ -23,8 +24,6 @@ namespace LedMusic2.Nodes.NodeModels
             input = AddInput<LedColor[]>("Color");
 
             Options.Add(preview);
-
-            outputSelection = new NodeOption(NodeOptionType.CUSTOM, "Output", typeof(OutputSelection), this);
             Options.Add(outputSelection);
 
         }

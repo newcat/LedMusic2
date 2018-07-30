@@ -1,4 +1,4 @@
-﻿namespace LedMusic2.Nodes
+﻿namespace LedMusic2.Nodes.NodeOptions
 {
     public enum NodeOptionType
     {
@@ -6,7 +6,7 @@
         NUMBER,
         COLOR,
         BOOL,
-        SELECTION,
+        SELECT,
         PREVIEW,
         TEXT,
         CUSTOM

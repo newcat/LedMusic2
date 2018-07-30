@@ -3,6 +3,7 @@ using LedMusic2.Nodes.NodeViews;
 using LedMusic2.VstInterop;
 using System.Windows;
 using System;
+using LedMusic2.Nodes.NodeOptions;
 
 namespace LedMusic2.Nodes.NodeModels
 {
@@ -12,8 +13,8 @@ namespace LedMusic2.Nodes.NodeModels
 
         private NodeInterface<double> niValue;
         private NodeInterface<double> niNote;
-        private readonly NodeOption channelOption;
-        private readonly NodeOption midiChannelOption;
+        private readonly SelectOption channelOption;
+        private readonly NumberOption midiChannelOption;
 
         public VstChannel SelectedChannel { get; set; }
 
@@ -23,13 +24,13 @@ namespace LedMusic2.Nodes.NodeModels
             niValue = AddOutput<double>("Value");
             niNote = AddOutput<double>("Note");
 
-            midiChannelOption = new NodeOption(NodeOptionType.NUMBER, "MIDI Channel");
+            midiChannelOption = new NumberOption("MIDI Channel");
             midiChannelOption.MinValue.Set(1);
             midiChannelOption.MaxValue.Set(16);
             midiChannelOption.Value.Set(1);
             Options.Add(midiChannelOption);
 
-            channelOption = new NodeOption(NodeOptionType.CUSTOM, "Channel", typeof(VstSelection), this);
+            channelOption = new SelectOption("Channel");
             Options.Add(channelOption);
 
         }

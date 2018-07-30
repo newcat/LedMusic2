@@ -1,7 +1,7 @@
-﻿using LedMusic2.LedColors;
-using LedMusic2.NodeEditor;
+﻿using LedMusic2.BrowserInterop;
+using LedMusic2.LedColors;
+using LedMusic2.Nodes.NodeOptions;
 using System;
-using System.Windows;
 
 namespace LedMusic2.Nodes.NodeModels
 {
@@ -10,7 +10,7 @@ namespace LedMusic2.Nodes.NodeModels
     {
 
         private float factor = 0.5f;
-        private NodeOption optMode;
+        private SelectOption optMode = new SelectOption("Mode");
 
         public MixColorNode() : base()
         {
@@ -20,11 +20,10 @@ namespace LedMusic2.Nodes.NodeModels
             AddInput<LedColor[]>("Color 2");
             AddOutput<LedColor[]>("Output");
 
-            optMode = new NodeOption(NodeOptionType.SELECTION, "Mode");
             foreach (string s in new string[] { "Mix", "Add", "Multiply", "Subtract", "Screen", "Divide", "Difference", "Darken", "Lighten",
                                                 "Overlay", "Dodge", "Burn", "Hue", "Saturation", "Value", "Color", "Soft Light", "Linear Light"})
             {
-                optMode.Options.Add(s);
+                optMode.Options.Add(new ReactiveListItem<string>(s));
             }
             optMode.Value.Set("Overlay");
             Options.Add(optMode);

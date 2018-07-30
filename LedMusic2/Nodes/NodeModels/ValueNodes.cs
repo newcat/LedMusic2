@@ -1,4 +1,5 @@
 ﻿using LedMusic2.LedColors;
+using LedMusic2.Nodes.NodeOptions;
 
 namespace LedMusic2.Nodes.NodeModels
 {
@@ -8,7 +9,7 @@ namespace LedMusic2.Nodes.NodeModels
     {
 
         NodeInterface<double> outputInterface;
-        NodeOption opt = new NodeOption(NodeOptionType.NUMBER, "Value");
+        NumberOption opt = new NumberOption("Value");
 
         public DoubleValueNode() : base()
         {
@@ -31,7 +32,7 @@ namespace LedMusic2.Nodes.NodeModels
     {
 
         NodeInterface<bool> outputInterface;
-        NodeOption opt = new NodeOption(NodeOptionType.BOOL, "Value");
+        BoolOption opt = new BoolOption("Value");
 
         public BoolValueNode() : base()
         {
@@ -53,8 +54,8 @@ namespace LedMusic2.Nodes.NodeModels
     class ColorValueNode : NodeBase
     {
 
-        NodeInterface<LedColors.LedColor> outputInterface;
-        NodeOption opt = new NodeOption(NodeOptionType.COLOR, "Value");
+        NodeInterface<LedColor> outputInterface;
+        ColorOption opt = new ColorOption("Value");
 
         public ColorValueNode() : base()
         {

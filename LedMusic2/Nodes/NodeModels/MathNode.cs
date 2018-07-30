@@ -1,6 +1,6 @@
-﻿using LedMusic2.NodeEditor;
+﻿using LedMusic2.BrowserInterop;
+using LedMusic2.Nodes.NodeOptions;
 using System;
-using System.Windows;
 
 namespace LedMusic2.Nodes.NodeModels
 {
@@ -9,8 +9,8 @@ namespace LedMusic2.Nodes.NodeModels
     class MathNode : NodeBase
     {
 
-        NodeOption optOperation;
-        NodeOption optClamp;
+        SelectOption optOperation = new SelectOption("Operation");
+        BoolOption optClamp = new BoolOption("Clamp");
 
         public MathNode() : base()
         {
@@ -18,17 +18,15 @@ namespace LedMusic2.Nodes.NodeModels
             AddInput("Value 1", 0.0);
             AddInput("Value 2", 0.0);
             AddOutput<double>("Output");
-
-            optOperation = new NodeOption(NodeOptionType.SELECTION, "Operation");
+            
             foreach (string s in new string[] { "Add", "Subtract", "Multiply", "Divide", "Sine", "Cosine", "Tangent", "Arcsine", "Arccosine",
                                                 "Arctangent", "Power", "Logarithm", "Minimum", "Maximum", "Round", "Modulo", "Absolute"})
             {
-                optOperation.Options.Add(s);
+                optOperation.Options.Add(new ReactiveListItem<string>(s));
             }
             optOperation.Value.Set("Add");
-            Options.Add(optOperation);
 
-            optClamp = new NodeOption(NodeOptionType.BOOL, "Clamp");
+            Options.Add(optOperation);
             Options.Add(optClamp);
 
             Calculate();

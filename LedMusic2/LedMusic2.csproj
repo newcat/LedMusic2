@@ -63,6 +63,7 @@
     <Compile Include="BrowserInterop\BrowserAgent.cs" />
     <Compile Include="BrowserInterop\IReactive.cs" />
     <Compile Include="BrowserInterop\IReactiveListItem.cs" />
+    <Compile Include="BrowserInterop\ReactiveListItem.cs" />
     <Compile Include="BrowserInterop\ReactiveObject.cs" />
     <Compile Include="BrowserInterop\ReactiveCollection.cs" />
     <Compile Include="BrowserInterop\ReactiveProperty.cs" />
@@ -72,9 +73,16 @@
     <Compile Include="LedColors\LedColorRGB.cs" />
     <Compile Include="LedColors\LedColorRGBf.cs" />
     <Compile Include="Nodes\NodeModels\SceneSwitcherNode.cs" />
+    <Compile Include="Nodes\NodeOptions\BaseOption.cs" />
+    <Compile Include="Nodes\NodeOptions\BoolOption.cs" />
+    <Compile Include="Nodes\NodeOptions\ColorOption.cs" />
+    <Compile Include="Nodes\NodeOptions\NumberOption.cs" />
+    <Compile Include="Nodes\NodeOptions\PreviewOption.cs" />
+    <Compile Include="Nodes\NodeOptions\SelectOption.cs" />
+    <Compile Include="Nodes\NodeOptions\TextOption.cs" />
     <Compile Include="NodeTree\TreeNode.cs" />
     <Compile Include="Outputs\OutputAttribute.cs" />
-    <Compile Include="Nodes\NodeOptionType.cs" />
+    <Compile Include="Nodes\NodeOptions\NodeOptionType.cs" />
     <Compile Include="NodeTree\CyclicGraphException.cs" />
     <Compile Include="NodeConnection\NodeConnectionHelper.cs" />
     <Compile Include="NodeTree\NodeTreeBuilder.cs" />
@@ -101,7 +109,7 @@
     <Compile Include="Outputs\OutputModels\TcpOutput.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="NodeEditor\NodeEditorViewModel.cs" />
-    <Compile Include="Nodes\NodeOption.cs" />
+    <None Include="Nodes\NodeOption.cs" />
     <Compile Include="ViewModels\ProgressViewModel.cs" />
     <Compile Include="VstInterop\Note.cs" />
     <Compile Include="VstInterop\VstChannel.cs" />

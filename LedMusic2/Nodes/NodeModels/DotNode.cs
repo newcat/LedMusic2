@@ -1,5 +1,7 @@
-﻿using LedMusic2.LedColors;
+﻿using LedMusic2.BrowserInterop;
+using LedMusic2.LedColors;
 using LedMusic2.NodeEditor;
+using LedMusic2.Nodes.NodeOptions;
 using System;
 using System.Windows;
 
@@ -17,7 +19,7 @@ namespace LedMusic2.Nodes.NodeModels
         private NodeInterface<bool> niSymmetric;
         private NodeInterface<LedColor[]> niOutput;
 
-        private NodeOption noGlowType = new NodeOption(NodeOptionType.SELECTION, "Glow Type");
+        private SelectOption noGlowType = new SelectOption("Glow Type");
 
         public DotNode() : base()
         {
@@ -31,7 +33,7 @@ namespace LedMusic2.Nodes.NodeModels
             niOutput = AddOutput<LedColor[]>("Colors");
 
             foreach (var s in new string[] { "Linear", "Exponential", "Gaussian" })
-                noGlowType.Options.Add(s);
+                noGlowType.Options.Add(new ReactiveListItem<string>(s));
             noGlowType.Value.Set("Linear");
             Options.Add(noGlowType);
 
