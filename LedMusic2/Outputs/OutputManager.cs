@@ -4,10 +4,12 @@ using System.Reflection;
 
 namespace LedMusic2.Outputs
 {
-    public class OutputManager
+    public class OutputManager : ReactiveObject
     {
-        public SynchronizedCollection<OutputBase> Outputs { get; } = new SynchronizedCollection<OutputBase>();
-        public SynchronizedCollection<OutputType> OutputTypes { get; } = new SynchronizedCollection<OutputType>();
+
+        public override string ReactiveName => "OutputManager";
+        public ReactiveCollection<OutputBase> Outputs { get; } = new ReactiveCollection<OutputBase>("Outputs");
+        public ReactiveCollection<OutputType> OutputTypes { get; } = new ReactiveCollection<OutputType>("OutputType");
 
         public void FillOutputTypes()
         {

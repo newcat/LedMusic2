@@ -1,6 +1,4 @@
 ﻿using LedMusic2.LedColors;
-using LedMusic2.NodeEditor;
-using System.Windows;
 
 namespace LedMusic2.Nodes.NodeModels
 {
@@ -12,10 +10,8 @@ namespace LedMusic2.Nodes.NodeModels
         NodeInterface<double> outputInterface;
         NodeOption opt = new NodeOption(NodeOptionType.NUMBER, "Value");
 
-        public DoubleValueNode(Point initPosition, NodeEditorViewModel parentVM) : base(initPosition, parentVM)
+        public DoubleValueNode() : base()
         {
-
-            MinWidth = 150;
 
             Options.Add(opt);
             outputInterface = AddOutput<double>("Value");         
@@ -24,7 +20,7 @@ namespace LedMusic2.Nodes.NodeModels
 
         public override bool Calculate()
         {
-            outputInterface.SetValue(opt.RenderValue);
+            outputInterface.SetValue(opt.Value.Get());
             return true;
         }
 
@@ -37,7 +33,7 @@ namespace LedMusic2.Nodes.NodeModels
         NodeInterface<bool> outputInterface;
         NodeOption opt = new NodeOption(NodeOptionType.BOOL, "Value");
 
-        public BoolValueNode(Point initPosition, NodeEditorViewModel parentVM) : base(initPosition, parentVM)
+        public BoolValueNode() : base()
         {
 
             Options.Add(opt);
@@ -47,7 +43,7 @@ namespace LedMusic2.Nodes.NodeModels
 
         public override bool Calculate()
         {
-            outputInterface.SetValue(opt.RenderValue);
+            outputInterface.SetValue(opt.Value.Get());
             return true;
         }
 
@@ -60,19 +56,17 @@ namespace LedMusic2.Nodes.NodeModels
         NodeInterface<LedColors.LedColor> outputInterface;
         NodeOption opt = new NodeOption(NodeOptionType.COLOR, "Value");
 
-        public ColorValueNode(Point initPosition, NodeEditorViewModel parentVM) : base(initPosition, parentVM)
+        public ColorValueNode() : base()
         {
 
-            MinWidth = 125;
-
             Options.Add(opt);
-            outputInterface = AddOutput<LedColors.LedColor>("Value");
+            outputInterface = AddOutput<LedColor>("Value");
 
         }
 
         public override bool Calculate()
         {
-            outputInterface.SetValue(opt.RenderValue);
+            outputInterface.SetValue(opt.Value.Get());
             return true;
         }
 

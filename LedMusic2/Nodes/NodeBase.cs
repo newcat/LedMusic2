@@ -1,17 +1,18 @@
 ﻿using LedMusic2.BrowserInterop;
 using LedMusic2.LedColors;
 using LedMusic2.NodeConnection;
-using LedMusic2.ViewModels;
 using System;
-using System.Globalization;
 using System.Xml.Linq;
 
 namespace LedMusic2.Nodes
 {
-    public abstract class NodeBase : VMBase, IExportable
+    public abstract class NodeBase : ReactiveObject, IReactiveListItem, IExportable
     {
 
-        public virtual string Name
+        public Guid Id { get; set; }
+        public override string ReactiveName => "NodeBase";
+
+        public virtual string NodeName
         {
             get
             {
@@ -25,9 +26,7 @@ namespace LedMusic2.Nodes
 
         public NodeInterfaceList Inputs { get; } = new NodeInterfaceList();
         public NodeInterfaceList Outputs { get; } = new NodeInterfaceList();
-        public SynchronizedCollection<NodeOption> Options { get; } = new SynchronizedCollection<NodeOption>();
-
-        public new Guid Id { get; set; }
+        public ReactiveCollection<NodeOption> Options { get; } = new ReactiveCollection<NodeOption>("Options");
 
         public abstract bool Calculate();
 
@@ -136,7 +135,7 @@ namespace LedMusic2.Nodes
 
                     case "options":
                         foreach (XElement nodeOptionX in el.Elements())
-                            LoadOption(nodeOptionX);
+                            loadOption(nodeOptionX);
                         break;
 
                     case "customdata":
@@ -148,12 +147,12 @@ namespace LedMusic2.Nodes
 
         }
 
-        private void LoadOption(XElement nodeOptionX)
+        private void loadOption(XElement nodeOptionX)
         {
             string name = nodeOptionX.Attribute("name").Value;
             foreach (NodeOption opt in Options)
             {
-                if (opt.Name == name)
+                if (opt.Name.Get() == name)
                     opt.LoadFromXml(nodeOptionX);
             }
         }

@@ -18,11 +18,34 @@ using System.Xml.Linq;
 
 namespace LedMusic2.ViewModels
 {
-    public class MainViewModel : VMBase, IExportable
+    public class MainViewModel : ReactiveObject, IExportable
     {
 
-        public static MainViewModel Instance { get; } = new MainViewModel();
-        private MainViewModel() {
+        //public static MainViewModel Instance { get; } = new MainViewModel();
+        public static MainViewModel Instance { get; } = null;
+
+        public override string ReactiveName => "MainViewModel";
+
+        public ReactivePrimitive<int> ActiveSceneIndex { get; }
+            = new ReactivePrimitive<int>("ActiveSceneIndex", 0);
+
+        public ReactivePrimitive<int> DisplayedSceneIndex { get; }
+            = new ReactivePrimitive<int>("DisplayedSceneIndex", 0);
+
+        public ReactivePrimitive<bool> IsRunning { get; }
+            = new ReactivePrimitive<bool>("IsRunning", true);
+
+        public ReactiveCollection<NodeEditorViewModel> Scenes { get; }
+            = new ReactiveCollection<NodeEditorViewModel>("Scenes");
+
+        public ReactiveCollection<ProgressViewModel> Progress { get; }
+            = new ReactiveCollection<ProgressViewModel>("Progress");
+
+        public OutputManager OutputManager { get; } = new OutputManager();
+
+        private DispatcherTimer calculationTimer;
+
+        public MainViewModel() {
 
             calculationTimer = new DispatcherTimer(DispatcherPriority.Normal)
             {
@@ -30,58 +53,12 @@ namespace LedMusic2.ViewModels
             };
             calculationTimer.Tick += OnCalculationTimerTick;
 
-        }
-
-        private int _activeSceneIndex = 0;
-        public int ActiveSceneIndex
-        {
-            get { return _activeSceneIndex; }
-            set
-            {
-                _activeSceneIndex = value < 0 || value >= Scenes.Count ? 0 : value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        private int _displayedSceneIndex = 0;
-        public int DisplayedSceneIndex
-        {
-            get { return _displayedSceneIndex; }
-            set
-            {
-                _displayedSceneIndex = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        private bool _isRunning = true;
-        public bool IsRunning
-        {
-            get { return _isRunning; }
-            set
-            {
-                _isRunning = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        public SynchronizedCollection<NodeEditorViewModel> Scenes { get; } = new SynchronizedCollection<NodeEditorViewModel>();
-        public SynchronizedCollection<ProgressViewModel> Progresses { get; } = new SynchronizedCollection<ProgressViewModel>();
-        public OutputManager OutputManager { get; } = new OutputManager();
-
-        #region Private Fields
-        private DispatcherTimer calculationTimer;
-        #endregion
-
-        #region Public Methods
-        public void Initialize()
-        {
-
             OutputManager.FillOutputTypes();
             OutputManager.Outputs.Add(new DummyOutput());
 
-            Scenes[0].Nodes.Add(new OutputNode(new Point(600.0, 150.0), Scenes[0]));
-            DisplayedSceneIndex = 0;
+            Scenes.Add(new NodeEditorViewModel());
+            Scenes[0].Nodes.Add(new OutputNode());
+            DisplayedSceneIndex.Set(0);
 
             StartProcessing();
 
@@ -97,28 +74,28 @@ namespace LedMusic2.ViewModels
         public void SelectScene(NodeEditorViewModel scene)
         {
             if (Scenes.IndexOf(scene) >= 0)
-                DisplayedSceneIndex = Scenes.IndexOf(scene);
+                DisplayedSceneIndex.Set(Scenes.IndexOf(scene));
         }
 
         public void StartProcessing()
         {
             calculationTimer.Start();
-            IsRunning = false;
+            IsRunning.Set(false);
         }
 
         public void StopProcessing()
         {
             calculationTimer.Stop();
-            IsRunning = true;
+            IsRunning.Set(true);
         }
 
         public void CalculateAllNodes()
         {
             Scenes[0].CalculateAllNodes();
-            if (ActiveSceneIndex > 0)
-                Scenes[ActiveSceneIndex].CalculateAllNodes();
-            if (DisplayedSceneIndex > 0 && DisplayedSceneIndex != ActiveSceneIndex)
-                Scenes[DisplayedSceneIndex].CalculateAllNodes();
+            if (ActiveSceneIndex.Get() > 0)
+                Scenes[ActiveSceneIndex.Get()].CalculateAllNodes();
+            if (DisplayedSceneIndex.Get() > 0 && DisplayedSceneIndex != ActiveSceneIndex)
+                Scenes[DisplayedSceneIndex.Get()].CalculateAllNodes();
         }
 
         public void OnCalculationTimerTick(object sender, EventArgs e)
@@ -194,7 +171,7 @@ namespace LedMusic2.ViewModels
             string type = outputX.Attribute("type").Value;
             foreach (var t in OutputManager.OutputTypes)
             {
-                if (t.Name == type)
+                if (t.Name.Get() == type)
                 {
                     OutputBase outputInstance = (OutputBase)t.T.GetConstructor(Type.EmptyTypes).Invoke(null);
                     outputInstance.LoadFromXml(outputX);
@@ -227,7 +204,7 @@ namespace LedMusic2.ViewModels
         {
 
             ProgressViewModel prg = new ProgressViewModel("Loading project");
-            Progresses.Add(prg);
+            Progress.Add(prg);
                         
             int totalElements = rootX.Elements().Count();
             int counter = 0;
@@ -255,11 +232,11 @@ namespace LedMusic2.ViewModels
                 }
 
                 counter++;
-                prg.Progress = (int)(1.0 * counter / totalElements) * 100;
+                prg.Progress.Set((int)(1.0 * counter / totalElements) * 100);
 
             }
 
-            Progresses.Remove(prg);
+            Progress.Remove(prg);
 
         }
         #endregion

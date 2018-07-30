@@ -1,15 +1,10 @@
-﻿using AttachedCommandBehavior;
+﻿using LedMusic2.LedColors;
+using LedMusic2.NodeConnection;
 using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Windows;
-using System.Windows.Forms;
-using System.Windows.Media;
-using System.Xml.Linq;
 using System.Linq;
-using LedMusic2.LedColors;
-using LedMusic2.NodeEditor;
-using LedMusic2.NodeConnection;
+using System.Xml.Linq;
 
 namespace LedMusic2.Nodes.NodeModels
 {
@@ -18,94 +13,21 @@ namespace LedMusic2.Nodes.NodeModels
     public class ColorRampNode : NodeBase
     {
 
-        #region ViewModel Properties
-        private LinearGradientBrush _fillBrush = new LinearGradientBrush(Colors.Black, Colors.White, 0);
-        public LinearGradientBrush FillBrush
-        {
-            get { return _fillBrush; }
-            set
-            {
-                _fillBrush = value;
-                NotifyPropertyChanged();
-            }
-        }
+        public double Width { get; set; } = 0;
+        public ObservableCollection<ColorStopViewModel> ColorStops { get; } = new ObservableCollection<ColorStopViewModel>();
+        public ColorStopViewModel SelectedColorStop { get; set; } = null;
 
-        private double _width = 0;
-        public double Width
-        {
-            get { return _width; }
-            set
-            {
-                _width = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        private ObservableCollection<ColorStopViewModel> _colorStops = new ObservableCollection<ColorStopViewModel>();
-        public ObservableCollection<ColorStopViewModel> ColorStops
-        {
-            get { return _colorStops; }
-            set
-            {
-                _colorStops = value;
-                NotifyPropertyChanged();
-                NotifyPropertyChanged("FillBrush");
-            }
-        }
-
-        private ColorStopViewModel _selectedColorStop = null;
-        public ColorStopViewModel SelectedColorStop
-        {
-            get { return _selectedColorStop; }
-            set
-            {
-                _selectedColorStop = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        private SimpleCommand _cmdAddStop = new SimpleCommand();
-        public SimpleCommand CmdAddStop { get { return _cmdAddStop; } }
-
-        private SimpleCommand _cmdRemoveStop = new SimpleCommand();
-        public SimpleCommand CmdRemoveStop { get { return _cmdRemoveStop; } }
-
-        public SimpleCommand CmdSelectColor
-        {
-            get { return new SimpleCommand() { ExecuteDelegate = (o) => SetColorOfSelected() }; }
-        }
-        #endregion
-
-        public ColorRampNode(Point initPosition, NodeEditorViewModel parentVM) : base(initPosition, parentVM)
+        public ColorRampNode() : base()
         {
 
             AddInput("Factor", ConnectionType.NUMBER);
             AddOutput<LedColor[]>("Color Band");
             AddOutput<LedColor>("Single Color");
 
-            Options.Add(new NodeOption(NodeOptionType.CUSTOM, "Test", typeof(NodeViews.ColorRampNode), this));
+            //Options.Add(new NodeOption(NodeOptionType.CUSTOM, "Test", typeof(NodeViews.ColorRampNode), this));
 
-            CmdAddStop.ExecuteDelegate = (o) => {
-                var c = new ColorStopViewModel(Colors.White, 0.0, this);
-                _colorStops.Add(c);
-                SelectStop(c);
-                CalcPreview();
-            };
-
-            CmdRemoveStop.CanExecuteDelegate = (o) => SelectedColorStop != null;
-            CmdRemoveStop.ExecuteDelegate = (o) =>
-            {
-                if (SelectedColorStop != null)
-                {
-                    _colorStops.Remove(SelectedColorStop);
-                    SelectedColorStop.Dispose();
-                    SelectedColorStop = null;
-                    CalcPreview();
-                }
-            };
-
-            ColorStops.Add(new ColorStopViewModel(Colors.Black, 0, this));
-            ColorStops.Add(new ColorStopViewModel(Colors.White, 1, this));
+            ColorStops.Add(new ColorStopViewModel(new LedColorRGB(0, 0, 0), 0));
+            ColorStops.Add(new ColorStopViewModel(new LedColorRGB(255, 255, 255), 1));
 
         }
 
@@ -121,7 +43,7 @@ namespace LedMusic2.Nodes.NodeModels
                 {
                     output[i] = new LedColorRGB(0, 0, 0);
                 }
-                _outputs[0].SetValue(output);
+                Outputs[0].SetValue(output);
                 return true;
             }
 
@@ -131,20 +53,20 @@ namespace LedMusic2.Nodes.NodeModels
             {
 
                 var currentPos = (double)i / resolution;
-                output[i] = GetColorAtPosition(currentPos);
+                output[i] = getColorAtPosition(currentPos);
 
             }
 
             Outputs.GetNodeInterface("Color Band").SetValue(output);
 
             var fac = Math.Max(0.0, Math.Min(1.0, ((NodeInterface<double>)Inputs.GetNodeInterface("Factor")).Value));
-            Outputs.GetNodeInterface("Single Color").SetValue(GetColorAtPosition(fac));
+            Outputs.GetNodeInterface("Single Color").SetValue(getColorAtPosition(fac));
 
             return true;
 
         }
 
-        private LedColorRGB GetColorAtPosition(double position)
+        private LedColorRGB getColorAtPosition(double position)
         {
 
             var prev = ColorStops.LastOrDefault(x => x.Position <= position);
@@ -153,9 +75,9 @@ namespace LedMusic2.Nodes.NodeModels
             if (prev == null && next == null)
                 return null;
             else if (prev == null)
-                return ColorToLedColor(next.Color);
+                return next.Color;
             else if (next == null || prev.Position == position)
-                return ColorToLedColor(prev.Color);
+                return prev.Color;
             else
             {
                 var fac = (position - prev.Position) / (next.Position - prev.Position);
@@ -164,47 +86,6 @@ namespace LedMusic2.Nodes.NodeModels
                         (byte)Math.Max(0, Math.Min(255, prev.Color.G + fac * (next.Color.G - prev.Color.G))),
                         (byte)Math.Max(0, Math.Min(255, prev.Color.B + fac * (next.Color.B - prev.Color.B))));
             }
-
-        }
-
-        private LedColorRGB ColorToLedColor(Color c)
-        {
-            return new LedColorRGB(c.R, c.G, c.B);
-        }
-
-        public void SelectStop(ColorStopViewModel vm)
-        {
-            if (SelectedColorStop != null)
-                SelectedColorStop.IsSelected = false;
-            vm.IsSelected = true;
-            SelectedColorStop = vm;
-        }
-
-        private void SetColorOfSelected()
-        {
-            var c = SelectedColorStop.Color;
-            var dlg = new ColorDialog
-            {
-                Color = System.Drawing.Color.FromArgb(255, c.R, c.G, c.B)
-            };
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                var resultColor = dlg.Color;
-                SelectedColorStop.Color = Color.FromRgb(resultColor.R, resultColor.G, resultColor.B);
-                CalcPreview();
-            }
-            dlg.Dispose();
-        }
-
-        public void CalcPreview()
-        {
-
-            var sc = new GradientStopCollection();
-            foreach (ColorStopViewModel s in ColorStops)
-            {
-                sc.Add(new GradientStop(s.Color, s.Position));
-            }
-            FillBrush = new LinearGradientBrush(sc, 0);
 
         }
 
@@ -220,13 +101,11 @@ namespace LedMusic2.Nodes.NodeModels
                     {
                         double pos = double.Parse(colorStopX.Attribute("position").Value, CultureInfo.InvariantCulture);
                         LedColorRGB c = LedColorRGB.Parse(colorStopX.Value);
-                        ColorStopViewModel cvm = new ColorStopViewModel(
-                            Color.FromRgb(c.R, c.G, c.B), pos, this);
+                        ColorStopViewModel cvm = new ColorStopViewModel(c, pos);
                         ColorStops.Add(cvm);
                     }
                 }
             }
-            CalcPreview();
         }
 
         protected override void SaveAdditionalXmlData(XElement x)
@@ -234,8 +113,7 @@ namespace LedMusic2.Nodes.NodeModels
             XElement colorStopsX = new XElement("colorstops");
             foreach (ColorStopViewModel cvm in ColorStops)
             {
-                Color c = cvm.Color;
-                XElement colorStopX = new XElement("colorstop", new LedColorRGB(c.R, c.G, c.B));
+                XElement colorStopX = new XElement("colorstop", cvm.Color);
                 colorStopX.SetAttributeValue("position", cvm.Position);
                 colorStopsX.Add(colorStopX);
             }

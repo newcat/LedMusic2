@@ -3,30 +3,11 @@
 namespace LedMusic2
 {
 
-    class GlobalProperties : VMBase
+    class GlobalProperties
     {
 
-        private int _fps = 30;
-        public int FPS
-        {
-            get { return _fps; }
-            set
-            {
-                _fps = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        private int _resolution = 30;
-        public int Resolution
-        {
-            get { return _resolution; }
-            set
-            {
-                _resolution = value;
-                NotifyPropertyChanged();
-            }
-        }
+        public int FPS { get; set; } = 30;
+        public int Resolution { get; set; } = 30;
 
         #region Constructor
         private static GlobalProperties instance;

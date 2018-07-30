@@ -8,8 +8,6 @@ namespace LedMusic2.Outputs.OutputModels
     {
         public override string DefaultName => "Dummy";
 
-        public override FrameworkElement SettingsView => null;
-
         public override void CalculationDone(LedColors.LedColor[] calculationResult)
         {
             return;

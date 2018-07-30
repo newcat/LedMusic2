@@ -15,31 +15,18 @@ namespace LedMusic2.Nodes.NodeModels
         private readonly NodeOption channelOption;
         private readonly NodeOption midiChannelOption;
 
-        private VstChannel _selectedChannel;
-        public VstChannel SelectedChannel
+        public VstChannel SelectedChannel { get; set; }
+
+        public VstNode() : base()
         {
-            get { return _selectedChannel; }
-            set
-            {
-                _selectedChannel = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        public VstNode(Point initPosition, NodeEditorViewModel parentVM) : base(initPosition, parentVM)
-        {
-
-            MinWidth = 150;
-
+            
             niValue = AddOutput<double>("Value");
             niNote = AddOutput<double>("Note");
 
-            midiChannelOption = new NodeOption(NodeOptionType.NUMBER, "MIDI Channel")
-            {
-                MinValue = 1,
-                MaxValue = 16
-            };
-            midiChannelOption.DisplayValue = 1;
+            midiChannelOption = new NodeOption(NodeOptionType.NUMBER, "MIDI Channel");
+            midiChannelOption.MinValue.Set(1);
+            midiChannelOption.MaxValue.Set(16);
+            midiChannelOption.Value.Set(1);
             Options.Add(midiChannelOption);
 
             channelOption = new NodeOption(NodeOptionType.CUSTOM, "Channel", typeof(VstSelection), this);
@@ -57,7 +44,7 @@ namespace LedMusic2.Nodes.NodeModels
 
             if (SelectedChannel.Type == VstChannelType.MIDI)
             {
-                var midiChannel = (int)((double)midiChannelOption.RenderValue) - 1;
+                var midiChannel = (int)((double)midiChannelOption.Value.Get()) - 1;
                 midiChannel = Math.Min(15, Math.Max(0, midiChannel));
                 if (SelectedChannel.Notes[midiChannel].Number != niNote.Value)
                 {

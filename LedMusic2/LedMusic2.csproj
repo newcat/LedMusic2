@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{C03178AB-CC01-42C8-B9DB-041050BB99CC}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LedMusic2</RootNamespace>
     <AssemblyName>LedMusic2</AssemblyName>
@@ -34,6 +34,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>LedMusic2.App</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -56,10 +59,14 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App.cs" />
     <Compile Include="BrowserInterop\BrowserAgent.cs" />
-    <Compile Include="BrowserInterop\ISynchronizable.cs" />
-    <Compile Include="BrowserInterop\SendMessageEventArgs.cs" />
-    <Compile Include="BrowserInterop\SynchronizedCollection.cs" />
+    <Compile Include="BrowserInterop\IReactive.cs" />
+    <Compile Include="BrowserInterop\IReactiveListItem.cs" />
+    <Compile Include="BrowserInterop\ReactiveObject.cs" />
+    <Compile Include="BrowserInterop\ReactiveCollection.cs" />
+    <Compile Include="BrowserInterop\ReactiveProperty.cs" />
+    <Compile Include="BrowserInterop\StateUpdate.cs" />
     <Compile Include="BrowserInterop\WebSocket.cs" />
     <Compile Include="LedColors\LedColorHSV.cs" />
     <Compile Include="LedColors\LedColorRGB.cs" />
@@ -78,9 +85,6 @@
     <Compile Include="Nodes\NodeModels\BooleanNode.cs" />
     <Compile Include="Nodes\NodeModels\ColorRampNode.cs" />
     <Compile Include="Nodes\NodeModels\MixColorNode.cs" />
-    <Compile Include="Nodes\NodeViews\ColorRampNode.xaml.cs">
-      <DependentUpon>ColorRampNode.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Nodes\NodeModels\ColorStopViewModel.cs" />
     <Compile Include="Nodes\NodeViews\OutputSelection.xaml.cs">
       <DependentUpon>OutputSelection.xaml</DependentUpon>
@@ -99,7 +103,6 @@
     <Compile Include="NodeEditor\NodeEditorViewModel.cs" />
     <Compile Include="Nodes\NodeOption.cs" />
     <Compile Include="ViewModels\ProgressViewModel.cs" />
-    <Compile Include="ViewModels\VMBase.cs" />
     <Compile Include="VstInterop\Note.cs" />
     <Compile Include="VstInterop\VstChannel.cs" />
     <Compile Include="VstInterop\VstChannelType.cs" />
@@ -112,10 +115,6 @@
     <Compile Include="NodeConnection\Connection.cs" />
     <Compile Include="Nodes\NodeModels\DotNode.cs" />
     <Compile Include="GlobalProperties.cs" />
-    <Page Include="Nodes\NodeViews\ColorRampNode.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Nodes\NodeViews\OutputSelection.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

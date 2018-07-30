@@ -1,5 +1,4 @@
 ﻿using LedMusic2.LedColors;
-using LedMusic2.Outputs.OutputViews;
 using System;
 using System.Windows;
 using System.Xml.Linq;
@@ -12,25 +11,8 @@ namespace LedMusic2.Outputs.OutputModels
     {
 
         public override string DefaultName => "TCP";
-
-        private FrameworkElement _settingsView = Activator.CreateInstance<TcpOutputView>();
-        public override FrameworkElement SettingsView => _settingsView;
-
-        private int _port = 4444;
-        public int Port
-        {
-            get { return _port; }
-            set
-            {
-                _port = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        public TcpOutput()
-        {
-            _settingsView.DataContext = this;
-        }
+        
+        public int Port { get; set; } = 4444;
 
         public override void CalculationDone(LedColor[] calculationResult)
         {

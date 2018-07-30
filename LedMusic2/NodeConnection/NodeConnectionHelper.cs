@@ -6,20 +6,11 @@ using System.Linq;
 
 namespace LedMusic2.NodeConnection
 {
-    public sealed class NodeConnectionHelper : VMBase
+    public sealed class NodeConnectionHelper
     {
         public static NodeConnectionHelper Instance { get; } = new NodeConnectionHelper();
 
-        private NodeInterface _connectionOrigin;
-        public NodeInterface ConnectionOrigin
-        {
-            get { return _connectionOrigin; }
-            set
-            {
-                _connectionOrigin = value;
-                NotifyPropertyChanged();
-            }
-        }
+        public NodeInterface ConnectionOrigin { get; set; }
 
         public bool CanConnect(NodeInterface ni, IEnumerable<NodeBase> nodes, IEnumerable<Connection> connections)
         {
@@ -38,8 +29,8 @@ namespace LedMusic2.NodeConnection
                 return false;
 
             //find input and output
-            NodeInterface input = ni.IsInput ? ni : ConnectionOrigin;
-            NodeInterface output = ni.IsInput ? ConnectionOrigin : ni;
+            NodeInterface input = ni.IsInput.Get() ? ni : ConnectionOrigin;
+            NodeInterface output = ni.IsInput.Get() ? ConnectionOrigin : ni;
 
             //Check if types match or can be converted
             if (!TypeConverter.CanConvert(output.NodeType, input.NodeType))

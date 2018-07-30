@@ -12,7 +12,7 @@ using System.Threading;
 
 namespace LedMusic2.VstInterop
 {
-    public class VstInputManager : VMBase
+    public class VstInputManager
     {
 
         private const int PORT = 1959;

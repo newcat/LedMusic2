@@ -1,12 +1,16 @@
-﻿using LedMusic2.Nodes;
+﻿using LedMusic2.BrowserInterop;
+using LedMusic2.Nodes;
 using LedMusic2.ViewModels;
 using System;
 using System.Xml.Linq;
 
 namespace LedMusic2.NodeConnection
 {
-    public class Connection : VMBase, IExportable, IDisposable
+    public class Connection : ReactiveObject, IReactiveListItem, IExportable, IDisposable
     {
+
+        public Guid Id { get; set; } = Guid.NewGuid();
+        public override string ReactiveName => "Connection";
 
         public NodeInterface Input { get; private set; }
         public NodeInterface Output { get; private set; }
@@ -53,9 +57,9 @@ namespace LedMusic2.NodeConnection
         public void SetOutput(NodeInterface ni)
         {
             if (Output != null)
-                Output.IsConnected = false;
+                Output.IsConnected.Set(false);
             Output = ni;
-            Output.IsConnected = true;
+            Output.IsConnected.Set(true);
         }
 
         private void input_ValueChanged(object sender, EventArgs e)
@@ -79,7 +83,7 @@ namespace LedMusic2.NodeConnection
                 {
 
                     if (Output != null)
-                        Output.IsConnected = false;
+                        Output.IsConnected.Set(false);
 
                     if (Input != null)
                         Input.ValueChanged -= input_ValueChanged;

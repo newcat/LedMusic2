@@ -1,33 +1,19 @@
-﻿namespace LedMusic2.ViewModels
+﻿using LedMusic2.BrowserInterop;
+using System;
+
+namespace LedMusic2.ViewModels
 {
-    public class ProgressViewModel : VMBase
+    public class ProgressViewModel : ReactiveObject, IReactiveListItem
     {
 
-        private string _name = "";
-        public string Name
-        {
-            get { return _name; }
-            set
-            {
-                _name = value;
-                NotifyPropertyChanged();
-            }
-        }
+        public Guid Id { get; } = Guid.NewGuid();
+        public override string ReactiveName => "ProgressViewModel";
+        public ReactivePrimitive<string> Description = new ReactivePrimitive<string>("Name");
+        public ReactivePrimitive<int> Progress = new ReactivePrimitive<int>("Progress", 0);
 
-        private int _progress = 0;
-        public int Progress
+        public ProgressViewModel(string description)
         {
-            get { return _progress; }
-            set
-            {
-                _progress = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        public ProgressViewModel(string name)
-        {
-            Name = name;
+            Description.Set(description);
         }
 
     }

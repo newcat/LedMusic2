@@ -1,31 +1,23 @@
-﻿using LedMusic2.LedColors;
-using LedMusic2.ViewModels;
+﻿using LedMusic2.BrowserInterop;
+using LedMusic2.LedColors;
 using System;
 using System.Xml.Linq;
 
 namespace LedMusic2.Outputs
 {
-    public abstract class OutputBase : VMBase, IExportable
+    public abstract class OutputBase : ReactiveObject, IReactiveListItem, IExportable
     {
 
-        public abstract string DefaultName { get; }
-
-        private string _name;
-        public string Name
-        {
-            get { return _name; }
-            set
-            {
-                _name = value;
-                NotifyPropertyChanged();
-            }
-        }
-
         public Guid Id { get; set; } = Guid.NewGuid();
+        public override string ReactiveName => "Output";
+
+        public abstract string DefaultName { get; }
+        public ReactivePrimitive<string> Name = new ReactivePrimitive<string>("OutputName");
+
 
         protected OutputBase()
         {
-            Name = DefaultName;
+            Name.Set(DefaultName);
         }
 
         public abstract void CalculationDone(LedColor[] calculationResult);
@@ -35,7 +27,7 @@ namespace LedMusic2.Outputs
 
             var el = new XElement("output");
             el.SetAttributeValue("type", DefaultName);
-            el.SetAttributeValue("name", Name);
+            el.SetAttributeValue("name", Name.Get());
             el.SetAttributeValue("id", Id);
             SaveAdditionalXmlData(el);
 
@@ -46,7 +38,7 @@ namespace LedMusic2.Outputs
         public void LoadFromXml(XElement element)
         {
 
-            Name = element.Attribute("name").Value;
+            Name.Set(element.Attribute("name").Value);
             Id = Guid.Parse(element.Attribute("id").Value);
             LoadAdditionalXmlData(element);
 

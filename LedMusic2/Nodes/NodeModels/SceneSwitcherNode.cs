@@ -16,7 +16,7 @@ namespace LedMusic2.Nodes.NodeModels
         private NodeInterface<double> sceneInput;
         private NodeOption displayedSceneNameOption = new NodeOption(NodeOptionType.TEXT, "Displayed Scene");
 
-        public SceneSwitcherNode(Point initPosition, NodeEditorViewModel parentVm) : base(initPosition, parentVm)
+        public SceneSwitcherNode() : base()
         {
             sceneInput = AddInput<double>("Scene Index");
         }
@@ -27,9 +27,9 @@ namespace LedMusic2.Nodes.NodeModels
             var sceneToActivate = (int)((double)sceneInput.GetValue());
 
             if (sceneToActivate >= -1 && sceneToActivate < MainViewModel.Instance.Scenes.Count &&
-                sceneToActivate != MainViewModel.Instance.ActiveSceneIndex)
+                sceneToActivate != MainViewModel.Instance.ActiveSceneIndex.Get())
             {
-                MainViewModel.Instance.ActiveSceneIndex = sceneToActivate;
+                MainViewModel.Instance.ActiveSceneIndex.Set(sceneToActivate);
                 return true;
             }
             else

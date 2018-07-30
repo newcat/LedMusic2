@@ -19,7 +19,7 @@ namespace LedMusic2.Nodes.NodeModels
 
         private NodeOption noGlowType = new NodeOption(NodeOptionType.SELECTION, "Glow Type");
 
-        public DotNode(Point initPosition, NodeEditorViewModel parentVM) : base(initPosition, parentVM)
+        public DotNode() : base()
         {
 
             niCenterPosition = AddInput("Center Position", 0.0);
@@ -32,7 +32,7 @@ namespace LedMusic2.Nodes.NodeModels
 
             foreach (var s in new string[] { "Linear", "Exponential", "Gaussian" })
                 noGlowType.Options.Add(s);
-            noGlowType.DisplayValue = "Linear";
+            noGlowType.Value.Set("Linear");
             Options.Add(noGlowType);
 
             Calculate();
@@ -53,7 +53,7 @@ namespace LedMusic2.Nodes.NodeModels
             LedColorHSV[] buffer = new LedColorHSV[resolution];
 
             Func<double, double, double, double> intensity;
-            switch (noGlowType.RenderValue)
+            switch (noGlowType.Value.Get())
             {
                 case "Exponential":
                     intensity = new Func<double, double, double, double>((a, b, c) => ExponentialIntensity(a, b, c));

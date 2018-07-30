@@ -1,88 +1,30 @@
-﻿using LedMusic2.LedColors;
-using LedMusic2.ViewModels;
+﻿using LedMusic2.BrowserInterop;
+using LedMusic2.LedColors;
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Windows;
-using System.Windows.Forms;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Xml.Linq;
 
 namespace LedMusic2.Nodes
 {
-    public class NodeOption : VMBase
+    public class NodeOption : ReactiveObject, IReactiveListItem
     {
 
-        #region ViewModel Properties
-        private string _name = "";
-        public string Name
-        {
-            get { return _name; }
-            set
-            {
-                _name = value;
-                NotifyPropertyChanged();
-            }
-        }
+        public override string ReactiveName => "NodeOption";
+        public Guid Id { get; } = Guid.NewGuid();
 
-        private NodeOptionType _optionType = NodeOptionType.NUMBER;
-        public NodeOptionType OptionType
-        {
-            get { return _optionType; }
-            set
-            {
-                _optionType = value;
-                NotifyPropertyChanged();
-            }
-        }
+        public ReactivePrimitive<string> Name = new ReactivePrimitive<string>("Name", "");
+        public ReactivePrimitive<NodeOptionType> Type = new ReactivePrimitive<NodeOptionType>("Type", NodeOptionType.NUMBER);
+        public ReactivePrimitive<object> Value;
 
-        public object DisplayValue
-        {
-            get { return GetValue(); }
-            set
-            {
-                SetDisplayValue(value, true);
-                NotifyPropertyChanged();
-            }
-        }
+        //OptionType == NUMBER
+        public ReactivePrimitive<double> MinValue = new ReactivePrimitive<double>("MinValue", 0.0);
+        public ReactivePrimitive<double> MaxValue = new ReactivePrimitive<double>("MaxValue", 0.0);
 
-        public object RenderValue
-        {
-            get { return GetValue(); }
-        }
-        #endregion
+        public List<string> Options = new List<string>();
 
-        #region OptionType == NUMBER
-        private double _minValue = 0;
-        public double MinValue
-        {
-            get { return _minValue; }
-            set
-            {
-                _minValue = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        private double _maxValue = 0;
-        public double MaxValue
-        {
-            get { return _maxValue; }
-            set
-            {
-                _maxValue = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        private SimpleCommand _cmdDecreaseValue = new SimpleCommand();
-        public SimpleCommand CmdDecreaseValue { get { return _cmdDecreaseValue; } }
-
-        private SimpleCommand _cmdIncreaseValue = new SimpleCommand();
-        public SimpleCommand CmdIncreaseValue { get { return _cmdIncreaseValue; } }
-        #endregion
-
+        /*
         #region OptionType == SELECTION
         private ObservableCollection<string> _options = new ObservableCollection<string>();
         public ObservableCollection<string> Options
@@ -137,6 +79,7 @@ namespace LedMusic2.Nodes
             }
         }
         #endregion
+        */
 
         #region Internal Values
         private double _valDouble = 0.0;
@@ -149,15 +92,17 @@ namespace LedMusic2.Nodes
         public NodeOption(NodeOptionType type, string name)
         {
 
-            OptionType = type;
-            Name = name;
+            Name.Set(name);
+            Type.Set(type);
 
-            _cmdDecreaseValue.ExecuteDelegate = (o) => DecreaseNumber();
-            _cmdIncreaseValue.ExecuteDelegate = (o) => IncreaseNumber();
-            _cmdPickColor.ExecuteDelegate = PickColor;
+            Value = new ReactivePrimitive<object>("Value")
+            {
+                CustomGetter = (v) => getValue(),
+                CustomSetter = (v) => { setDisplayValue(v, true); return getValue(); }
+            };
 
-            if (type == NodeOptionType.PREVIEW)
-                CalcPreviewBrush();
+            /*if (type == NodeOptionType.PREVIEW)
+                CalcPreviewBrush();*/
 
         }
 
@@ -172,19 +117,15 @@ namespace LedMusic2.Nodes
                 throw new ArgumentException(
                     "customUIControl needs to be a subclass of FrameworkElement.");
 
-            OptionType = type;
-            Name = name;
-            CustomViewModel = viewmodelInstance;
-
-            CustomUIElement = (FrameworkElement)Activator.CreateInstance(customUIControlType);
-            CustomUIElement.DataContext = CustomViewModel;
+            Name.Set(name);
+            Type.Set(type);
 
         }
 
-        private object GetValue()
+        private object getValue()
         {
 
-            switch (OptionType)
+            switch (Type.Get())
             {
                 case NodeOptionType.BOOL:
                     return _valBool;
@@ -202,9 +143,9 @@ namespace LedMusic2.Nodes
             return null;
         }
 
-        private void SetDisplayValue(object value, bool byUser = false)
+        private void setDisplayValue(object value, bool byUser = false)
         {
-            switch (OptionType)
+            switch (Type.Get())
             {
                 case NodeOptionType.BOOL:
                     _valBool = (bool)value;
@@ -213,10 +154,10 @@ namespace LedMusic2.Nodes
                     _valColor = (LedColor)value;
                     break;
                 case NodeOptionType.NUMBER:
-                    if (byUser || !(value is double))
+                    /*if (byUser || !(value is double))
                         ParseNumber(value);
                     else
-                        _valDouble = (double)value;
+                        _valDouble = (double)value;*/
                     break;
                 case NodeOptionType.SELECTION:
                 case NodeOptionType.TEXT:
@@ -224,15 +165,13 @@ namespace LedMusic2.Nodes
                     break;
                 case NodeOptionType.PREVIEW:
                     _valColorArray = (LedColor[])value;
-                    CalcPreviewBrush();
+                    //CalcPreviewBrush();
                     break;
             }
 
-            NotifyPropertyChanged("RenderValue");
-            NotifyPropertyChanged("DisplayValue");
-
         }
 
+        /*
         //OptionType == NUMBER
         private void ParseNumber(object value)
         {
@@ -245,7 +184,7 @@ namespace LedMusic2.Nodes
                     CultureInfo.InvariantCulture, out double parsed))
                     val = parsed;
                 else
-                    val = MinValue;
+                    val = MinValue.Get();
             }
             else
             {
@@ -284,7 +223,7 @@ namespace LedMusic2.Nodes
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 var resultColor = dlg.Color;
-                SetDisplayValue(new LedColorRGB(resultColor.R, resultColor.G, resultColor.B), true);
+                setDisplayValue(new LedColorRGB(resultColor.R, resultColor.G, resultColor.B), true);
             }
             dlg.Dispose();            
 
@@ -324,18 +263,19 @@ namespace LedMusic2.Nodes
             
             PreviewBrush = new LinearGradientBrush(coll, 0);
         }
+        */
 
         #region Saving and Loading
         public XElement GetXmlElement()
         {
             XElement nodeOptionX = new XElement("nodeoption");
-            nodeOptionX.SetAttributeValue("type", (int)OptionType);
+            nodeOptionX.SetAttributeValue("type", (int)Type.Get());
             nodeOptionX.SetAttributeValue("name", Name);
 
-            if (OptionType == NodeOptionType.NUMBER)
+            if (Type.Get() == NodeOptionType.NUMBER)
                 nodeOptionX.Add(new XElement("value", _valDouble.ToString(CultureInfo.InvariantCulture)));
             else
-                nodeOptionX.Add(new XElement("value", DisplayValue));
+                nodeOptionX.Add(new XElement("value", Value.Get()));
 
             return nodeOptionX;
         }
@@ -347,15 +287,15 @@ namespace LedMusic2.Nodes
                 switch (el.Name.LocalName)
                 {
                     case "value":
-                        DisplayValue = ParseValue(el.Value);
+                        Value.Set(parseValue(el.Value));
                         break;
                 }
             }
         }
 
-        private object ParseValue(string s)
+        private object parseValue(string s)
         {
-            switch (OptionType)
+            switch (Type.Get())
             {
                 case NodeOptionType.BOOL:
                     return bool.Parse(s);

@@ -25,7 +25,7 @@ namespace LedMusic2.Nodes.NodeModels
         private NodeInterface<LedColor> niEndColor;
         private NodeInterface<LedColor[]> niOutput;
 
-        public ParticleNode(Point initPosition, NodeEditorViewModel parentVM) : base(initPosition, parentVM)
+        public ParticleNode() : base()
         {
 
             niEmit = AddInput("Emit", false);

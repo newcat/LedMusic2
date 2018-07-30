@@ -2,9 +2,7 @@
 using LedMusic2.NodeConnection;
 using LedMusic2.Nodes;
 using LedMusic2.NodeTree;
-using LedMusic2.ViewModels;
 using System;
-using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -12,13 +10,17 @@ using System.Xml.Linq;
 
 namespace LedMusic2.NodeEditor
 {
-    public class NodeEditorViewModel : VMBase, IExportable, IDisposable
+    public class NodeEditorViewModel : ReactiveObject, IReactiveListItem, IExportable, IDisposable
     {
 
+        public Guid Id { get; set; }
+        public override string ReactiveName => "NodeEditorViewModel";
+
         private NodeTreeBuilder ntb = new NodeTreeBuilder();
-        public SynchronizedCollection<NodeBase> Nodes { get; } = new SynchronizedCollection<NodeBase>();
-        public SynchronizedCollection<Connection> Connections { get; } = new SynchronizedCollection<Connection>();
-        public SynchronizedCollection<NodeType> NodeTypes { get; } = new SynchronizedCollection<NodeType>();
+        public ReactiveCollection<NodeBase> Nodes { get; } = new ReactiveCollection<NodeBase>("Nodes");
+        public ReactiveCollection<Connection> Connections { get; } = new ReactiveCollection<Connection>("Connections");
+        public ReactiveCollection<NodeType> NodeTypes { get; } = new ReactiveCollection<NodeType>("NodeTypes");
+
 
         public NodeEditorViewModel()
         {
@@ -105,11 +107,6 @@ namespace LedMusic2.NodeEditor
 
             var rootX = new XElement("scene");
 
-            XElement translateX = new XElement("translate");
-            translateX.SetAttributeValue("x", TranslateX.ToString(CultureInfo.InvariantCulture));
-            translateX.SetAttributeValue("y", TranslateY.ToString(CultureInfo.InvariantCulture));
-            rootX.Add(translateX);
-
             XElement nodesX = new XElement("nodes");
             foreach (NodeBase n in Nodes)
             {
@@ -136,19 +133,14 @@ namespace LedMusic2.NodeEditor
                 switch (n.Name.LocalName)
                 {
 
-                    case "translate":
-                        TranslateX = double.Parse(n.Attribute("x").Value, CultureInfo.InvariantCulture);
-                        TranslateY = double.Parse(n.Attribute("y").Value, CultureInfo.InvariantCulture);
-                        break;
-
                     case "nodes":
                         foreach (XElement nodeX in n.Elements())
-                            LoadNode(nodeX);
+                            loadNode(nodeX);
                         break;
 
                     case "connections":
                         foreach (XElement connectionX in n.Elements())
-                            LoadConnection(connectionX);
+                            loadConnection(connectionX);
                         break;
 
                 }
@@ -156,30 +148,24 @@ namespace LedMusic2.NodeEditor
 
         }
 
-        private void LoadNode(XElement nodeX)
+        private void loadNode(XElement nodeX)
         {
 
             string type = nodeX.Attribute("type").Value;
             NodeBase nodeInstance = null;
-            foreach (NodeCategoryModel ncm in NodeCategories)
+            foreach (NodeType n in NodeTypes)
             {
-                foreach (NodeType n in ncm.NodeTypes)
+                if (n.Name == type)
                 {
-                    if (n.Name == type)
-                    {
-                        nodeInstance = AddNode(n);
-                        break;
-                    }
-                }
-                if (nodeInstance != null)
+                    nodeInstance = AddNode(n);
                     break;
+                }
             }
-
             if (nodeInstance != null) nodeInstance.LoadFromXml(nodeX);
 
         }
 
-        private void LoadConnection(XElement connectionX)
+        private void loadConnection(XElement connectionX)
         {
 
             Guid inputId = Guid.Empty, outputId = Guid.Empty;
@@ -195,8 +181,8 @@ namespace LedMusic2.NodeEditor
             if (inputId == Guid.Empty || outputId == Guid.Empty)
                 return;
 
-            NodeInterface input = FindInterfaceById(inputId);
-            NodeInterface output = FindInterfaceById(outputId);
+            NodeInterface input = findInterfaceById(inputId);
+            NodeInterface output = findInterfaceById(outputId);
 
             if (input == null || output == null)
                 return;
@@ -206,7 +192,7 @@ namespace LedMusic2.NodeEditor
 
         }
 
-        private NodeInterface FindInterfaceById(Guid id)
+        private NodeInterface findInterfaceById(Guid id)
         {
             foreach (NodeBase n in Nodes)
             {

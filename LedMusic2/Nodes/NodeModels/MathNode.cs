@@ -12,10 +12,8 @@ namespace LedMusic2.Nodes.NodeModels
         NodeOption optOperation;
         NodeOption optClamp;
 
-        public MathNode(Point initPosition, NodeEditorViewModel parentVM) : base(initPosition, parentVM)
+        public MathNode() : base()
         {
-
-            MinWidth = 150;
 
             AddInput("Value 1", 0.0);
             AddInput("Value 2", 0.0);
@@ -27,11 +25,11 @@ namespace LedMusic2.Nodes.NodeModels
             {
                 optOperation.Options.Add(s);
             }
-            optOperation.DisplayValue = "Add";
-            _options.Add(optOperation);
+            optOperation.Value.Set("Add");
+            Options.Add(optOperation);
 
             optClamp = new NodeOption(NodeOptionType.BOOL, "Clamp");
-            _options.Add(optClamp);
+            Options.Add(optClamp);
 
             Calculate();
 
@@ -40,11 +38,11 @@ namespace LedMusic2.Nodes.NodeModels
         public override bool Calculate()
         {
 
-            double val1 = ((NodeInterface<double>)_inputs.GetNodeInterface("Value 1")).Value;
-            double val2 = ((NodeInterface<double>)_inputs.GetNodeInterface("Value 2")).Value;
+            double val1 = ((NodeInterface<double>)Inputs.GetNodeInterface("Value 1")).Value;
+            double val2 = ((NodeInterface<double>)Inputs.GetNodeInterface("Value 2")).Value;
             double outputVal = 0;
 
-            switch ((string)optOperation.RenderValue)
+            switch ((string)optOperation.Value.Get())
             {
                 case "Add":
                     outputVal = val1 + val2;
@@ -102,10 +100,10 @@ namespace LedMusic2.Nodes.NodeModels
                     break;
             }
 
-            if ((bool)optClamp.RenderValue)
+            if ((bool)optClamp.Value.Get())
                 outputVal = Math.Max(0, Math.Min(1, outputVal));
 
-            ((NodeInterface<double>)_outputs.GetNodeInterface("Output")).SetValue(outputVal);
+            ((NodeInterface<double>)Outputs.GetNodeInterface("Output")).SetValue(outputVal);
             return true;
 
         }
