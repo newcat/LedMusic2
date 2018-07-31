@@ -8,10 +8,15 @@ namespace LedMusic2.Reactive
         where T : IReactive, IReactiveListItem
     {
 
-        public string __Type => "Collection";
+        public string __Type { get; }
 
         private readonly List<T> addedItems = new List<T>();
         private readonly List<T> removedItems = new List<T>();
+
+        public ReactiveCollection()
+        {
+            __Type = GetType().ToString();
+        }
 
         public new void Add(T item)
         {
@@ -42,6 +47,8 @@ namespace LedMusic2.Reactive
             var updates = new StateUpdateCollection(new StateUpdate<string>("__Type", __Type));
             updates.AddRange((this as IEnumerable<T>)
                 .Select(item => new StateUpdate<StateUpdateCollection>(item.Id.ToString(), item.GetFullState())));
+            addedItems.Clear();
+            removedItems.Clear();
             return updates;
         }
 

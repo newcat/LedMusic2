@@ -54,11 +54,14 @@ namespace LedMusic2.Reactive
 
         public override StateUpdateCollection GetStateUpdates()
         {
-            return stateUpdate != null ? new StateUpdateCollection(stateUpdate) : null;
+            var res = stateUpdate != null ? new StateUpdateCollection(stateUpdate) : null;
+            stateUpdate = null;
+            return res;
         }
 
         public override StateUpdateCollection GetFullState()
         {
+            stateUpdate = null;
             return new StateUpdateCollection(
                 new StateUpdate<string>("__Type", __Type),
                 new StateUpdate<T>("Value", Get())
