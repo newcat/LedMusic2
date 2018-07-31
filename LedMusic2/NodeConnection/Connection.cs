@@ -1,6 +1,5 @@
-﻿using LedMusic2.BrowserInterop;
+﻿using LedMusic2.Reactive;
 using LedMusic2.Nodes;
-using LedMusic2.ViewModels;
 using System;
 using System.Xml.Linq;
 
@@ -10,7 +9,7 @@ namespace LedMusic2.NodeConnection
     {
 
         public Guid Id { get; set; } = Guid.NewGuid();
-        public override string ReactiveName => "Connection";
+        public override string __Type => "Connection";
 
         public NodeInterface Input { get; private set; }
         public NodeInterface Output { get; private set; }

@@ -1,4 +1,4 @@
-﻿using LedMusic2.BrowserInterop;
+﻿using LedMusic2.Reactive;
 using LedMusic2.Nodes.NodeOptions;
 using System;
 

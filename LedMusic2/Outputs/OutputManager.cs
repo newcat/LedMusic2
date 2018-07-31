@@ -1,4 +1,4 @@
-﻿using LedMusic2.BrowserInterop;
+﻿using LedMusic2.Reactive;
 using System.Linq;
 using System.Reflection;
 
@@ -6,10 +6,9 @@ namespace LedMusic2.Outputs
 {
     public class OutputManager : ReactiveObject
     {
-
-        public override string ReactiveName => "OutputManager";
-        public ReactiveCollection<OutputBase> Outputs { get; } = new ReactiveCollection<OutputBase>("Outputs");
-        public ReactiveCollection<OutputType> OutputTypes { get; } = new ReactiveCollection<OutputType>("OutputType");
+        
+        public ReactiveCollection<OutputBase> Outputs { get; } = new ReactiveCollection<OutputBase>();
+        public ReactiveCollection<OutputType> OutputTypes { get; } = new ReactiveCollection<OutputType>();
 
         public void FillOutputTypes()
         {

@@ -45,7 +45,7 @@ namespace LedMusic2.Nodes.NodeModels
 
             if (SelectedChannel.Type == VstChannelType.MIDI)
             {
-                var midiChannel = (int)((double)midiChannelOption.Value.Get()) - 1;
+                var midiChannel = (int)midiChannelOption.Value.Get() - 1;
                 midiChannel = Math.Min(15, Math.Max(0, midiChannel));
                 if (SelectedChannel.Notes[midiChannel].Number != niNote.Value)
                 {

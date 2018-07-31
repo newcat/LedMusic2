@@ -1,16 +1,15 @@
-﻿using LedMusic2.BrowserInterop;
+﻿using LedMusic2.Reactive;
 using System;
 
 namespace LedMusic2.Nodes
 {
     public class NodeType : ReactiveObject, IReactiveListItem
     {
-
-        public override string ReactiveName => "NodeType";
+        
         public Guid Id { get; } = Guid.NewGuid();
 
-        public ReactivePrimitive<string> Name { get; } = new ReactivePrimitive<string>("Name");
-        public ReactivePrimitive<NodeCategory> Category { get; } = new ReactivePrimitive<NodeCategory>("Category");
+        public ReactivePrimitive<string> Name { get; } = new ReactivePrimitive<string>();
+        public ReactivePrimitive<NodeCategory> Category { get; } = new ReactivePrimitive<NodeCategory>();
 
         public Type T { get; set; }
 

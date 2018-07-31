@@ -11,16 +11,15 @@ namespace LedMusic2.Nodes
     public class NodeOption : ReactiveObject, IReactiveListItem
     {
 
-        public override string ReactiveName => "NodeOption";
         public Guid Id { get; } = Guid.NewGuid();
 
-        public ReactivePrimitive<string> Name = new ReactivePrimitive<string>("Name", "");
-        public ReactivePrimitive<NodeOptionType> Type = new ReactivePrimitive<NodeOptionType>("Type", NodeOptionType.NUMBER);
+        public ReactivePrimitive<string> Name = new ReactivePrimitive<string>("");
+        public ReactivePrimitive<NodeOptionType> Type = new ReactivePrimitive<NodeOptionType>(NodeOptionType.NUMBER);
         public ReactivePrimitive<object> Value;
 
         //OptionType == NUMBER
-        public ReactivePrimitive<double> MinValue = new ReactivePrimitive<double>("MinValue", 0.0);
-        public ReactivePrimitive<double> MaxValue = new ReactivePrimitive<double>("MaxValue", 0.0);
+        public ReactivePrimitive<double> MinValue = new ReactivePrimitive<double>(0.0);
+        public ReactivePrimitive<double> MaxValue = new ReactivePrimitive<double>(0.0);
 
         public List<string> Options = new List<string>();
 

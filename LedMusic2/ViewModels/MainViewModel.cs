@@ -1,4 +1,4 @@
-﻿using LedMusic2.BrowserInterop;
+﻿using LedMusic2.Reactive;
 using LedMusic2.NodeEditor;
 using LedMusic2.Nodes.NodeModels;
 using LedMusic2.Outputs;
@@ -24,22 +24,20 @@ namespace LedMusic2.ViewModels
         //public static MainViewModel Instance { get; } = new MainViewModel();
         public static MainViewModel Instance { get; } = null;
 
-        public override string ReactiveName => "MainViewModel";
-
         public ReactivePrimitive<int> ActiveSceneIndex { get; }
-            = new ReactivePrimitive<int>("ActiveSceneIndex", 0);
+            = new ReactivePrimitive<int>(0);
 
         public ReactivePrimitive<int> DisplayedSceneIndex { get; }
-            = new ReactivePrimitive<int>("DisplayedSceneIndex", 0);
+            = new ReactivePrimitive<int>(0);
 
         public ReactivePrimitive<bool> IsRunning { get; }
-            = new ReactivePrimitive<bool>("IsRunning", true);
+            = new ReactivePrimitive<bool>(true);
 
         public ReactiveCollection<NodeEditorViewModel> Scenes { get; }
-            = new ReactiveCollection<NodeEditorViewModel>("Scenes");
+            = new ReactiveCollection<NodeEditorViewModel>();
 
         public ReactiveCollection<ProgressViewModel> Progress { get; }
-            = new ReactiveCollection<ProgressViewModel>("Progress");
+            = new ReactiveCollection<ProgressViewModel>();
 
         public OutputManager OutputManager { get; } = new OutputManager();
 

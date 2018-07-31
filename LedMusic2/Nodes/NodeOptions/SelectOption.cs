@@ -1,4 +1,4 @@
-﻿using LedMusic2.BrowserInterop;
+﻿using LedMusic2.Reactive;
 
 namespace LedMusic2.Nodes.NodeOptions
 {
@@ -6,13 +6,12 @@ namespace LedMusic2.Nodes.NodeOptions
     {
 
         public override NodeOptionType Type => NodeOptionType.SELECT;
-        public override string ReactiveName => "SelectOption";
 
         public ReactiveCollection<ReactiveListItem<string>> Options { get; }
-            = new ReactiveCollection<ReactiveListItem<string>>("Options");
+            = new ReactiveCollection<ReactiveListItem<string>>();
 
         public ReactivePrimitive<string> Value { get; }
-            = new ReactivePrimitive<string>("Value");
+            = new ReactivePrimitive<string>();
 
         public SelectOption(string name) : base(name) { }
 

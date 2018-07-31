@@ -1,4 +1,4 @@
-﻿using LedMusic2.BrowserInterop;
+﻿using LedMusic2.Reactive;
 using LedMusic2.NodeConnection;
 using LedMusic2.Nodes;
 using LedMusic2.NodeTree;
@@ -13,13 +13,13 @@ namespace LedMusic2.NodeEditor
     public class NodeEditorViewModel : ReactiveObject, IReactiveListItem, IExportable, IDisposable
     {
 
-        public Guid Id { get; set; }
-        public override string ReactiveName => "NodeEditorViewModel";
+        public Guid Id { get; set; } = Guid.NewGuid();
+        public override string __Type => "NodeEditorViewModel";
 
         private NodeTreeBuilder ntb = new NodeTreeBuilder();
-        public ReactiveCollection<NodeBase> Nodes { get; } = new ReactiveCollection<NodeBase>("Nodes");
-        public ReactiveCollection<Connection> Connections { get; } = new ReactiveCollection<Connection>("Connections");
-        public ReactiveCollection<NodeType> NodeTypes { get; } = new ReactiveCollection<NodeType>("NodeTypes");
+        public ReactiveCollection<NodeBase> Nodes { get; } = new ReactiveCollection<NodeBase>();
+        public ReactiveCollection<Connection> Connections { get; } = new ReactiveCollection<Connection>();
+        public ReactiveCollection<NodeType> NodeTypes { get; } = new ReactiveCollection<NodeType>();
 
 
         public NodeEditorViewModel()

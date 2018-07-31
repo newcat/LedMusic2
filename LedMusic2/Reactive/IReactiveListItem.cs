@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LedMusic2.BrowserInterop
+namespace LedMusic2.Reactive
 {
     public interface IReactiveListItem
     {

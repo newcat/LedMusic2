@@ -1,4 +1,4 @@
-﻿using LedMusic2.BrowserInterop;
+﻿using LedMusic2.Reactive;
 using LedMusic2.NodeConnection;
 using System;
 using System.Xml.Linq;
@@ -15,8 +15,8 @@ namespace LedMusic2.Nodes
         public abstract Type NodeType { get; }
         public NodeBase Parent { get; private set; }
 
-        public ReactivePrimitive<bool> IsInput { get; } = new ReactivePrimitive<bool>("IsInput", false);
-        public ReactivePrimitive<bool> IsConnected { get; } = new ReactivePrimitive<bool>("IsConnected", false);
+        public ReactivePrimitive<bool> IsInput { get; } = new ReactivePrimitive<bool>(false);
+        public ReactivePrimitive<bool> IsConnected { get; } = new ReactivePrimitive<bool>(false);
 
         public event EventHandler ValueChanged;
 
@@ -53,10 +53,8 @@ namespace LedMusic2.Nodes
     public class NodeInterface<T> : NodeInterface
     {
 
-        public override string ReactiveName => "NodeInterface<>";
         public override Type NodeType { get { return typeof(T); } }
         public T Value { get; private set; }
-
 
         public NodeInterface(string name, ConnectionType cType, NodeBase parent, bool isInput) :
             base(name, cType, parent, isInput)

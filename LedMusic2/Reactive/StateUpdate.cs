@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace LedMusic2.BrowserInterop
+namespace LedMusic2.Reactive
 {
 
     public interface IStateUpdate
@@ -32,7 +32,7 @@ namespace LedMusic2.BrowserInterop
             else if (typeof(T) == typeof(StateUpdateCollection))
             {
                 Console.WriteLine("{0}:", Name);
-                (Value as StateUpdateCollection).Print(depth + 1);
+                (Value as StateUpdateCollection)?.Print(depth + 1);
             }
             else
                 Console.WriteLine("{0}: {1}", Name, Value?.ToString() ?? "null");

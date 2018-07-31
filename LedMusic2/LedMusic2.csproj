@@ -61,13 +61,13 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="BrowserInterop\BrowserAgent.cs" />
-    <Compile Include="BrowserInterop\IReactive.cs" />
-    <Compile Include="BrowserInterop\IReactiveListItem.cs" />
-    <Compile Include="BrowserInterop\ReactiveListItem.cs" />
-    <Compile Include="BrowserInterop\ReactiveObject.cs" />
-    <Compile Include="BrowserInterop\ReactiveCollection.cs" />
-    <Compile Include="BrowserInterop\ReactiveProperty.cs" />
-    <Compile Include="BrowserInterop\StateUpdate.cs" />
+    <Compile Include="Reactive\IReactive.cs" />
+    <Compile Include="Reactive\IReactiveListItem.cs" />
+    <Compile Include="Reactive\ReactiveListItem.cs" />
+    <Compile Include="Reactive\ReactiveObject.cs" />
+    <Compile Include="Reactive\ReactiveCollection.cs" />
+    <Compile Include="Reactive\ReactivePrimitive.cs" />
+    <Compile Include="Reactive\StateUpdate.cs" />
     <Compile Include="BrowserInterop\WebSocket.cs" />
     <Compile Include="LedColors\LedColorHSV.cs" />
     <Compile Include="LedColors\LedColorRGB.cs" />

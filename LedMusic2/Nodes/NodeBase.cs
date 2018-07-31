@@ -1,4 +1,4 @@
-﻿using LedMusic2.BrowserInterop;
+﻿using LedMusic2.Reactive;
 using LedMusic2.LedColors;
 using LedMusic2.NodeConnection;
 using LedMusic2.Nodes.NodeOptions;
@@ -10,8 +10,7 @@ namespace LedMusic2.Nodes
     public abstract class NodeBase : ReactiveObject, IReactiveListItem, IExportable
     {
 
-        public Guid Id { get; set; }
-        public override string ReactiveName => "NodeBase";
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         public virtual string NodeName
         {
@@ -27,7 +26,7 @@ namespace LedMusic2.Nodes
 
         public NodeInterfaceList Inputs { get; } = new NodeInterfaceList();
         public NodeInterfaceList Outputs { get; } = new NodeInterfaceList();
-        public ReactiveCollection<BaseOption> Options { get; } = new ReactiveCollection<BaseOption>("Options");
+        public ReactiveCollection<BaseOption> Options { get; } = new ReactiveCollection<BaseOption>();
 
         public abstract bool Calculate();
 

@@ -1,4 +1,4 @@
-﻿using LedMusic2.BrowserInterop;
+﻿using LedMusic2.Reactive;
 using System;
 using System.Xml.Linq;
 
@@ -9,7 +9,7 @@ namespace LedMusic2.Nodes.NodeOptions
 
         public Guid Id { get; } = Guid.NewGuid();
 
-        public ReactivePrimitive<string> Name { get; } = new ReactivePrimitive<string>("Name", "");
+        public ReactivePrimitive<string> Name { get; } = new ReactivePrimitive<string>("");
         public abstract NodeOptionType Type { get; }
 
         public BaseOption(string name)

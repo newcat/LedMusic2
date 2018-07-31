@@ -1,4 +1,4 @@
-﻿using LedMusic2.BrowserInterop;
+﻿using LedMusic2.Reactive;
 using System;
 
 namespace LedMusic2.ViewModels
@@ -7,9 +7,8 @@ namespace LedMusic2.ViewModels
     {
 
         public Guid Id { get; } = Guid.NewGuid();
-        public override string ReactiveName => "ProgressViewModel";
-        public ReactivePrimitive<string> Description = new ReactivePrimitive<string>("Name");
-        public ReactivePrimitive<int> Progress = new ReactivePrimitive<int>("Progress", 0);
+        public ReactivePrimitive<string> Description = new ReactivePrimitive<string>();
+        public ReactivePrimitive<int> Progress = new ReactivePrimitive<int>(0);
 
         public ProgressViewModel(string description)
         {

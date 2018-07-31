@@ -1,4 +1,4 @@
-﻿using LedMusic2.BrowserInterop;
+﻿using LedMusic2.Reactive;
 
 namespace LedMusic2.Nodes.NodeOptions
 {
@@ -6,9 +6,8 @@ namespace LedMusic2.Nodes.NodeOptions
     {
 
         public override NodeOptionType Type => NodeOptionType.BOOL;
-        public override string ReactiveName => "BoolOption";
 
-        public ReactivePrimitive<bool> Value = new ReactivePrimitive<bool>("Value", false);
+        public ReactivePrimitive<bool> Value = new ReactivePrimitive<bool>(false);
 
         public BoolOption(string name) : base(name) { }
 

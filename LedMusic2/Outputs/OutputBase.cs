@@ -1,4 +1,4 @@
-﻿using LedMusic2.BrowserInterop;
+﻿using LedMusic2.Reactive;
 using LedMusic2.LedColors;
 using System;
 using System.Xml.Linq;
@@ -9,10 +9,9 @@ namespace LedMusic2.Outputs
     {
 
         public Guid Id { get; set; } = Guid.NewGuid();
-        public override string ReactiveName => "Output";
 
         public abstract string DefaultName { get; }
-        public ReactivePrimitive<string> Name = new ReactivePrimitive<string>("OutputName");
+        public ReactivePrimitive<string> Name = new ReactivePrimitive<string>();
 
 
         protected OutputBase()
