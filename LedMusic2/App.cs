@@ -16,11 +16,12 @@ namespace LedMusic2
         {
 
             var mvm = new MainViewModel();
-            mvm.GetFullState();
-            mvm.StopProcessing();
-            mvm.Scenes[0].Nodes.Add(new BooleanNode());
-            mvm.Scenes[0].Nodes.Remove(mvm.Scenes[0].Nodes[0]);
-            mvm.GetStateUpdates().Print(0);
+            var json = mvm.GetFullState().ToJson();
+            Console.WriteLine(json.ToString());
+            //mvm.StopProcessing();
+            //mvm.Scenes[0].Nodes.Add(new BooleanNode());
+            //mvm.Scenes[0].Nodes.Remove(mvm.Scenes[0].Nodes[0]);
+            //mvm.GetStateUpdates().Print(0);
             Console.ReadLine();
 
         }

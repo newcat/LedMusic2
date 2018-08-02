@@ -78,13 +78,13 @@ namespace LedMusic2.ViewModels
         public void StartProcessing()
         {
             calculationTimer.Start();
-            IsRunning.Set(false);
+            IsRunning.Set(true);
         }
 
         public void StopProcessing()
         {
             calculationTimer.Stop();
-            IsRunning.Set(true);
+            IsRunning.Set(false);
         }
 
         public void CalculateAllNodes()

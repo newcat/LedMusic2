@@ -15,7 +15,11 @@ namespace LedMusic2.Reactive
         {
             var props = GetType()
                 .GetProperties()
-                .Where(p => typeof(IReactive).IsAssignableFrom(p.PropertyType) && !p.GetAccessors().Any(a => a.IsStatic));
+                .Where(p =>
+                    typeof(IReactive).IsAssignableFrom(p.PropertyType) &&
+                    Attribute.GetCustomAttribute(p, typeof(ReactiveIgnoreAttribute)) == null &&
+                    !p.GetAccessors().Any(a => a.IsStatic)
+                );
             foreach (var p in props)
             {
                 children.Add(p.Name, (IReactive)p.GetValue(this));

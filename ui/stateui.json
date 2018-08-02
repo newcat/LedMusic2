@@ -1,0 +1,84 @@
+{
+    "ActiveSceneIndex": 0,
+    "DisplayedSceneIndex": 0,
+    "IsRunning": true,
+    "Scenes": {
+        "fec68c7a-1e2f-4338-8fdb-524c9bd992cf": {
+            "Nodes": {
+                "d4c5d839-620d-43b2-8dcb-085ee1c87ba2": {
+                    "Options": {
+                        "6da13c7f-b5ad-4509-96a3-4e48f2fb57f4": {
+                            "Value": {
+                                "Value": null
+                            },
+                            "Name": "Preview"
+                        },
+                        "741351b7-7306-4958-9f78-3b43938bcf0e": {
+                            "Options": {},
+                            "Value": null,
+                            "Name": "Output"
+                        }
+                    }
+                }
+            },
+            "Connections": {},
+            "NodeTypes": {
+                "add381e3-ab41-4581-8809-3c2cc3d2d814": {
+                    "Name": "Scene Switcher",
+                    "Category": 1
+                },
+                "cf1716c4-3245-4632-ad0c-f0665903c94b": {
+                    "Name": "Boolean",
+                    "Category": 3
+                },
+                "036b3e94-f0c5-454e-8edb-0615a00e9cbf": {
+                    "Name": "Color Ramp",
+                    "Category": 2
+                },
+                "e7ee1317-2e5d-41e0-8f2a-304e51d2b2fb": {
+                    "Name": "Mix Color",
+                    "Category": 2
+                },
+                "6b854ffa-5c75-4e5d-8c60-2c396bc8d349": {
+                    "Name": "Output",
+                    "Category": 1
+                },
+                "946dcad6-ff0b-4023-9ebf-904852c45078": {
+                    "Name": "Particle",
+                    "Category": 4
+                },
+                "023de7df-e3f7-444c-9a89-792c0fac059a": {
+                    "Name": "Numeric value",
+                    "Category": 0
+                },
+                "47e60ca2-c19d-41db-91d3-ec7813d6492f": {
+                    "Name": "Boolean value",
+                    "Category": 0
+                },
+                "1a552d54-3982-4eae-b987-a5f5481980dc": {
+                    "Name": "Color value",
+                    "Category": 0
+                },
+                "d7abe845-f94f-49ac-9ea1-abcc96c68d24": {
+                    "Name": "VST Channel",
+                    "Category": 0
+                },
+                "35d99d12-1544-428d-aa77-60097c57da75": {
+                    "Name": "Dot",
+                    "Category": 4
+                },
+                "97771b93-4cf1-492d-b5e0-f368d6628a95": {
+                    "Name": "Math",
+                    "Category": 3
+                }
+            }
+        }
+    },
+    "Progress": {},
+    "OutputManager": {
+        "Outputs": {
+            "cd6b3706-06b9-4114-919e-12ab53c4a8c1": {}
+        },
+        "OutputTypes": {}
+    }
+}

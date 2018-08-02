@@ -10,17 +10,18 @@ namespace LedMusic2.Nodes.NodeOptions
         public Guid Id { get; } = Guid.NewGuid();
 
         public ReactivePrimitive<string> Name { get; } = new ReactivePrimitive<string>("");
-        public abstract NodeOptionType Type { get; }
+        public ReactivePrimitive<NodeOptionType> Type { get; }
 
-        public BaseOption(string name)
+        public BaseOption(string name, NodeOptionType type)
         {
             Name.Set(name);
+            Type = new ReactivePrimitive<NodeOptionType>(type);
         }
 
         public virtual XElement GetXmlElement()
         {
             XElement nodeOptionX = new XElement("nodeoption");
-            nodeOptionX.SetAttributeValue("type", (int)Type);
+            nodeOptionX.SetAttributeValue("type", (int)Type.Get());
             nodeOptionX.SetAttributeValue("name", Name);
             return nodeOptionX;
         }

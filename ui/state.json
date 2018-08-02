@@ -1,0 +1,209 @@
+{
+    "__Type": "LedMusic2.ViewModels.MainViewModel",
+    "ActiveSceneIndex": {
+        "__Type": "System.Int32",
+        "Value": 0
+    },
+    "DisplayedSceneIndex": {
+        "__Type": "System.Int32",
+        "Value": 0
+    },
+    "IsRunning": {
+        "__Type": "System.Boolean",
+        "Value": true
+    },
+    "Scenes": {
+        "__Type": "LedMusic2.Reactive.ReactiveCollection`1[LedMusic2.NodeEditor.NodeEditorViewModel]",
+        "fec68c7a-1e2f-4338-8fdb-524c9bd992cf": {
+            "__Type": "NodeEditorViewModel",
+            "Nodes": {
+                "__Type": "LedMusic2.Reactive.ReactiveCollection`1[LedMusic2.Nodes.NodeBase]",
+                "d4c5d839-620d-43b2-8dcb-085ee1c87ba2": {
+                    "__Type": "LedMusic2.Nodes.NodeModels.OutputNode",
+                    "SelectedOutput": null,
+                    "Options": {
+                        "__Type": "LedMusic2.Reactive.ReactiveCollection`1[LedMusic2.Nodes.NodeOptions.BaseOption]",
+                        "6da13c7f-b5ad-4509-96a3-4e48f2fb57f4": {
+                            "__Type": "LedMusic2.Nodes.NodeOptions.PreviewOption",
+                            "Value": {
+                                "__Type": "LedMusic2.LedColors.LedColor[]",
+                                "Value": null
+                            },
+                            "Name": {
+                                "__Type": "System.String",
+                                "Value": "Preview"
+                            }
+                        },
+                        "741351b7-7306-4958-9f78-3b43938bcf0e": {
+                            "__Type": "LedMusic2.Nodes.NodeOptions.SelectOption",
+                            "Options": {
+                                "__Type": "LedMusic2.Reactive.ReactiveCollection`1[LedMusic2.Reactive.ReactiveListItem`1[System.String]]"
+                            },
+                            "Value": {
+                                "__Type": "System.String",
+                                "Value": null
+                            },
+                            "Name": {
+                                "__Type": "System.String",
+                                "Value": "Output"
+                            }
+                        }
+                    }
+                }
+            },
+            "Connections": {
+                "__Type": "LedMusic2.Reactive.ReactiveCollection`1[LedMusic2.NodeConnection.Connection]"
+            },
+            "NodeTypes": {
+                "__Type": "LedMusic2.Reactive.ReactiveCollection`1[LedMusic2.Nodes.NodeType]",
+                "add381e3-ab41-4581-8809-3c2cc3d2d814": {
+                    "__Type": "LedMusic2.Nodes.NodeType",
+                    "Name": {
+                        "__Type": "System.String",
+                        "Value": "Scene Switcher"
+                    },
+                    "Category": {
+                        "__Type": "LedMusic2.Nodes.NodeCategory",
+                        "Value": 1
+                    }
+                },
+                "cf1716c4-3245-4632-ad0c-f0665903c94b": {
+                    "__Type": "LedMusic2.Nodes.NodeType",
+                    "Name": {
+                        "__Type": "System.String",
+                        "Value": "Boolean"
+                    },
+                    "Category": {
+                        "__Type": "LedMusic2.Nodes.NodeCategory",
+                        "Value": 3
+                    }
+                },
+                "036b3e94-f0c5-454e-8edb-0615a00e9cbf": {
+                    "__Type": "LedMusic2.Nodes.NodeType",
+                    "Name": {
+                        "__Type": "System.String",
+                        "Value": "Color Ramp"
+                    },
+                    "Category": {
+                        "__Type": "LedMusic2.Nodes.NodeCategory",
+                        "Value": 2
+                    }
+                },
+                "e7ee1317-2e5d-41e0-8f2a-304e51d2b2fb": {
+                    "__Type": "LedMusic2.Nodes.NodeType",
+                    "Name": {
+                        "__Type": "System.String",
+                        "Value": "Mix Color"
+                    },
+                    "Category": {
+                        "__Type": "LedMusic2.Nodes.NodeCategory",
+                        "Value": 2
+                    }
+                },
+                "6b854ffa-5c75-4e5d-8c60-2c396bc8d349": {
+                    "__Type": "LedMusic2.Nodes.NodeType",
+                    "Name": {
+                        "__Type": "System.String",
+                        "Value": "Output"
+                    },
+                    "Category": {
+                        "__Type": "LedMusic2.Nodes.NodeCategory",
+                        "Value": 1
+                    }
+                },
+                "946dcad6-ff0b-4023-9ebf-904852c45078": {
+                    "__Type": "LedMusic2.Nodes.NodeType",
+                    "Name": {
+                        "__Type": "System.String",
+                        "Value": "Particle"
+                    },
+                    "Category": {
+                        "__Type": "LedMusic2.Nodes.NodeCategory",
+                        "Value": 4
+                    }
+                },
+                "023de7df-e3f7-444c-9a89-792c0fac059a": {
+                    "__Type": "LedMusic2.Nodes.NodeType",
+                    "Name": {
+                        "__Type": "System.String",
+                        "Value": "Numeric value"
+                    },
+                    "Category": {
+                        "__Type": "LedMusic2.Nodes.NodeCategory",
+                        "Value": 0
+                    }
+                },
+                "47e60ca2-c19d-41db-91d3-ec7813d6492f": {
+                    "__Type": "LedMusic2.Nodes.NodeType",
+                    "Name": {
+                        "__Type": "System.String",
+                        "Value": "Boolean value"
+                    },
+                    "Category": {
+                        "__Type": "LedMusic2.Nodes.NodeCategory",
+                        "Value": 0
+                    }
+                },
+                "1a552d54-3982-4eae-b987-a5f5481980dc": {
+                    "__Type": "LedMusic2.Nodes.NodeType",
+                    "Name": {
+                        "__Type": "System.String",
+                        "Value": "Color value"
+                    },
+                    "Category": {
+                        "__Type": "LedMusic2.Nodes.NodeCategory",
+                        "Value": 0
+                    }
+                },
+                "d7abe845-f94f-49ac-9ea1-abcc96c68d24": {
+                    "__Type": "LedMusic2.Nodes.NodeType",
+                    "Name": {
+                        "__Type": "System.String",
+                        "Value": "VST Channel"
+                    },
+                    "Category": {
+                        "__Type": "LedMusic2.Nodes.NodeCategory",
+                        "Value": 0
+                    }
+                },
+                "35d99d12-1544-428d-aa77-60097c57da75": {
+                    "__Type": "LedMusic2.Nodes.NodeType",
+                    "Name": {
+                        "__Type": "System.String",
+                        "Value": "Dot"
+                    },
+                    "Category": {
+                        "__Type": "LedMusic2.Nodes.NodeCategory",
+                        "Value": 4
+                    }
+                },
+                "97771b93-4cf1-492d-b5e0-f368d6628a95": {
+                    "__Type": "LedMusic2.Nodes.NodeType",
+                    "Name": {
+                        "__Type": "System.String",
+                        "Value": "Math"
+                    },
+                    "Category": {
+                        "__Type": "LedMusic2.Nodes.NodeCategory",
+                        "Value": 3
+                    }
+                }
+            }
+        }
+    },
+    "Progress": {
+        "__Type": "LedMusic2.Reactive.ReactiveCollection`1[LedMusic2.ViewModels.ProgressViewModel]"
+    },
+    "OutputManager": {
+        "__Type": "LedMusic2.Outputs.OutputManager",
+        "Outputs": {
+            "__Type": "LedMusic2.Reactive.ReactiveCollection`1[LedMusic2.Outputs.OutputBase]",
+            "cd6b3706-06b9-4114-919e-12ab53c4a8c1": {
+                "__Type": "LedMusic2.Outputs.OutputModels.DummyOutput"
+            }
+        },
+        "OutputTypes": {
+            "__Type": "LedMusic2.Reactive.ReactiveCollection`1[LedMusic2.Outputs.OutputType]"
+        }
+    }
+}

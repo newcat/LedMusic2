@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace LedMusic2.Reactive
 {
@@ -8,6 +10,7 @@ namespace LedMusic2.Reactive
     {
         string Name { get; }
         void Print(int depth);
+        JToken ToJson();
     }
 
     public class StateUpdate<T> : IStateUpdate
@@ -18,6 +21,23 @@ namespace LedMusic2.Reactive
         {
             Name = path;
             Value = value;
+        }
+
+        public JToken ToJson()
+        {
+            if (typeof(IStateUpdate).IsAssignableFrom(typeof(T)))
+            {
+                // Value is also a IStateUpdate
+                return new JProperty(Name, (Value as IStateUpdate).ToJson());
+            } else if (typeof(T) == typeof(StateUpdateCollection))
+            {
+                // Value is a StateUpdateCollection
+                return new JProperty(Name, (Value as StateUpdateCollection)?.ToJson());
+            } else
+            {
+                // Value is a class or primitive type
+                return new JProperty(Name, Value);
+            }
         }
 
         public void Print(int depth)
@@ -49,6 +69,10 @@ namespace LedMusic2.Reactive
         {
             foreach (var u in this)
                 u?.Print(depth);
+        }
+        public JToken ToJson()
+        {
+            return new JObject(from el in this select el.ToJson());
         }
     }
 

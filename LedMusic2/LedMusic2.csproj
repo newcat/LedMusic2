@@ -63,6 +63,7 @@
     <Compile Include="BrowserInterop\BrowserAgent.cs" />
     <Compile Include="Reactive\IReactive.cs" />
     <Compile Include="Reactive\IReactiveListItem.cs" />
+    <Compile Include="Reactive\ReactiveIgnoreAttribute.cs" />
     <Compile Include="Reactive\ReactiveListItem.cs" />
     <Compile Include="Reactive\ReactiveObject.cs" />
     <Compile Include="Reactive\ReactiveCollection.cs" />

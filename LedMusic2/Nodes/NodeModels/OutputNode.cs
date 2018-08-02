@@ -1,7 +1,7 @@
 ﻿using LedMusic2.LedColors;
 using LedMusic2.Nodes.NodeOptions;
-using LedMusic2.Nodes.NodeViews;
 using LedMusic2.Outputs;
+using LedMusic2.Reactive;
 using LedMusic2.ViewModels;
 using System.Xml.Linq;
 
@@ -16,6 +16,7 @@ namespace LedMusic2.Nodes.NodeModels
         private PreviewOption preview = new PreviewOption("Preview");
         private SelectOption outputSelection = new SelectOption("Output");
 
+        [ReactiveIgnore]
         public OutputBase SelectedOutput { get; set; }
 
         public OutputNode() : base()
