@@ -42,13 +42,18 @@
                                 :value="displayedScene.Name"
                                 @input="sendSceneCommand('Name.set', $event)">
                             </b-form-input>
-                            <b-button variant="outline-danger" class="my-2 my-sm-0">Delete Scene</b-button>
+                            <b-button
+                                variant="outline-danger" 
+                                class="my-2 my-sm-0"
+                                @click="sendCommand('delete', displayed)"
+                            >Delete Scene</b-button>
                         </b-nav-form>
                     </b-navbar-nav>
                 </b-collapse>
             </b-navbar>
 
-            <p>Current Selected: {{displayed}}</p>
+            <node-editor v-if="displayedScene" :scene="displayedScene"></node-editor>
+
         </div>
 
     </b-tabs>

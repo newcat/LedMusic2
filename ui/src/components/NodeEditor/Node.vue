@@ -1,5 +1,5 @@
 <template>
-    <vue-drag-resize>
+    <!--<vue-drag-resize>-->
         <b-card header="Node" style="margin: 1rem; max-width: 20rem;">
 
             <!-- Outputs -->
@@ -23,7 +23,7 @@
             >{{ input.name }}</div>
 
         </b-card>
-    </vue-drag-resize>
+    <!--</vue-drag-resize>-->
 </template>
 
 <script lang="ts">

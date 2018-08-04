@@ -73,6 +73,7 @@ export default class App extends Vue {
     handleMessage(ev: MessageEvent) {
 
         const msg = JSON.parse(ev.data);
+        console.log(msg);
 
         switch (msg.type) {
             case "state":

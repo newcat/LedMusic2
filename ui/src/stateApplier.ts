@@ -10,6 +10,9 @@ export default function apply(state: Record<string, any>, obj: Record<string, an
         const v = state[k];
         if (k === "__Type") {
             // obj.__Type = v;
+        } else if (typeof(v) === "string" && v === "__Deleted") {
+            Vue.delete(obj, k);
+            delete obj[k];
         } else if (v === null) {
             Vue.set(obj, k, null);
         } else if (v.__Type) {
