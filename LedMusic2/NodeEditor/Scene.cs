@@ -7,24 +7,26 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Xml.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace LedMusic2.NodeEditor
 {
-    public class NodeEditorViewModel : ReactiveObject, IReactiveListItem, IExportable, IDisposable
+    public class Scene : ReactiveObject, IReactiveListItem, IExportable, IDisposable
     {
 
         public Guid Id { get; set; } = Guid.NewGuid();
-        public override string __Type => "NodeEditorViewModel";
 
         private NodeTreeBuilder ntb = new NodeTreeBuilder();
+        public ReactivePrimitive<string> Name { get; } = new ReactivePrimitive<string>("Scene");
         public ReactiveCollection<NodeBase> Nodes { get; } = new ReactiveCollection<NodeBase>();
         public ReactiveCollection<Connection> Connections { get; } = new ReactiveCollection<Connection>();
         public ReactiveCollection<NodeType> NodeTypes { get; } = new ReactiveCollection<NodeType>();
 
-
-        public NodeEditorViewModel()
+        public Scene()
         {
             fillNodeCategories();
+            RegisterCommand("addNode", (t) => addNode(t));
+            RegisterCommand("deleteNode", (id) => deleteNode(id));
         }
 
         public void CreateConnection()
@@ -48,11 +50,11 @@ namespace LedMusic2.NodeEditor
         }
 
         #region Nodes
-        public void DeleteNode(NodeBase node)
+        private void deleteNode(JToken payload)
         {
-
-            if (node == null)
-                return;
+            
+            var node = Nodes.FindById((payload as JToken).Value<string>());
+            if (node == null) return;
 
             //Delete all the connections from and to the node.
             var toDelete = Connections.Where((x) => x.Input.Parent == node || x.Output.Parent == node).ToArray();
@@ -67,14 +69,14 @@ namespace LedMusic2.NodeEditor
 
         }
 
-        public NodeBase AddNode(NodeType t)
+        private NodeBase addNode(JToken payload)
         {
 
-            if (t == null)
-                return null;
+            var t = NodeTypes.FindById((payload as JToken).Value<string>());
+            if (t == null) return null;
 
-            var constructor = t.T.GetConstructor(new Type[] { typeof(Point), typeof(NodeEditorViewModel) });
-            var node = (NodeBase)constructor.Invoke(new object[] { new Point(0, 0), this });
+            var constructor = t.T.GetConstructor(new Type[] {});
+            var node = (NodeBase)constructor.Invoke(new object[] {});
             Nodes.Add(node);
             return node;
 
@@ -157,7 +159,7 @@ namespace LedMusic2.NodeEditor
             {
                 if (n.Name.Get() == type)
                 {
-                    nodeInstance = AddNode(n);
+                    nodeInstance = addNode(n.Id);
                     break;
                 }
             }

@@ -19,11 +19,12 @@ namespace LedMusic2.Nodes.NodeModels
         {
 
             var sceneToActivate = (int)((double)sceneInput.GetValue());
+            var scenes = MainViewModel.Instance.Scenes;
 
-            if (sceneToActivate >= -1 && sceneToActivate < MainViewModel.Instance.Scenes.Count &&
-                sceneToActivate != MainViewModel.Instance.ActiveSceneIndex.Get())
+            if (sceneToActivate >= -1 && sceneToActivate < scenes.Count &&
+                sceneToActivate != scenes.IndexOf(scenes.FindById(MainViewModel.Instance.ActiveSceneId.Get())))
             {
-                MainViewModel.Instance.ActiveSceneIndex.Set(sceneToActivate);
+                MainViewModel.Instance.ActiveSceneId.Set(scenes[sceneToActivate].Id);
                 return true;
             }
             else

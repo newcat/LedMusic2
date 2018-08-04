@@ -10,6 +10,9 @@ Vue.use(BootstrapVue);
 
 Vue.config.productionTip = false;
 
+import commandMixin from "./commandMixin";
+Vue.mixin(commandMixin);
+
 new Vue({
   router,
   store,

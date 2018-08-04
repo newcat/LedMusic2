@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from "vue-property-decorator";
-import Node from "../components/NodeEditor/Node.vue";
+import Node from "./Node.vue";
 
 @Component({
     components: {

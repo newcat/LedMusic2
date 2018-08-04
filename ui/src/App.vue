@@ -1,6 +1,7 @@
 <template>
     <div id="app">
         
+        <!--  style="flex: 0 1 auto;" -->
         <b-navbar style="flex: 0 1 auto;" type="dark" variant="primary" toggleable="md">
 
             <b-navbar-brand>LedMusic2</b-navbar-brand>
@@ -16,25 +17,34 @@
 
         </b-navbar>
 
-        <b-container class="mt-3">
+        <b-container v-if="connecting" class="mt-3">
             <b-alert show>Connecting...</b-alert>
         </b-container>
 
-        <!--<router-view style="flex: 1 1 auto;"></router-view>-->
-        <node-editor v-if="selectedScene" style="flex: 1 1 auto;" :scene="selectedScene"></node-editor>
+        <!--  style="flex: 1 1 auto;" -->
+        <b-container fluid style="flex: 1 1 auto;" class="mt-3" v-else>
+                
+                <editor
+                    v-show="$route.name === 'editor'"
+                    :scenes="state.Scenes"
+                    :displayed="state.DisplayedSceneId"
+                    rname="Scenes"
+                ></editor>
+
+        </b-container>
 
     </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import NodeEditor from "./views/NodeEditor.vue";
+import Editor from "./views/Editor.vue";
 
 import apply from "./stateApplier";
 
 @Component({
     components: {
-        "node-editor": NodeEditor
+        "editor": Editor
     }
 })
 export default class App extends Vue {
@@ -44,18 +54,20 @@ export default class App extends Vue {
     connecting = true;
     state: any = {};
 
-    get selectedScene() {
-        if (this.state && this.state.Scenes) {
-            return this.state.Scenes[Object.keys(this.state.Scenes)[0]];
-        } else {
-            return undefined;
-        }
-    }
-
     mounted() {
         this.ws = new WebSocket("ws://localhost:48235");
         this.ws.onopen = () => { this.connecting = false; };
         this.ws.onmessage = this.handleMessage;
+    }
+
+    sendCommand(command: string, payload: any) {
+        if (this.ws && this.ws.readyState === this.ws.OPEN) {
+            this.ws.send(JSON.stringify({
+                type: "command",
+                command,
+                payload
+            }));
+        }
     }
 
     handleMessage(ev: MessageEvent) {
@@ -64,7 +76,9 @@ export default class App extends Vue {
 
         switch (msg.type) {
             case "state":
+                console.log("Received state update");
                 apply(msg.state, this.state);
+                break;
             default:
                 console.log("Unknown message type", msg.type);
         }

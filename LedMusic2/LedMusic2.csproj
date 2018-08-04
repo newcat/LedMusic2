@@ -38,29 +38,23 @@
     <StartupObject>LedMusic2.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
     <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="BrowserInterop\BrowserAgent.cs" />
+    <Compile Include="BrowserInterop\MessageReceivedEventArgs.cs" />
     <Compile Include="Reactive\IReactive.cs" />
     <Compile Include="Reactive\IReactiveListItem.cs" />
     <Compile Include="Reactive\ReactiveIgnoreAttribute.cs" />
@@ -69,7 +63,6 @@
     <Compile Include="Reactive\ReactiveCollection.cs" />
     <Compile Include="Reactive\ReactivePrimitive.cs" />
     <Compile Include="Reactive\StateUpdate.cs" />
-    <Compile Include="BrowserInterop\WebSocket.cs" />
     <Compile Include="LedColors\LedColorHSV.cs" />
     <Compile Include="LedColors\LedColorRGB.cs" />
     <Compile Include="LedColors\LedColorRGBf.cs" />
@@ -95,12 +88,6 @@
     <Compile Include="Nodes\NodeModels\ColorRampNode.cs" />
     <Compile Include="Nodes\NodeModels\MixColorNode.cs" />
     <Compile Include="Nodes\NodeModels\ColorStopViewModel.cs" />
-    <Compile Include="Nodes\NodeViews\OutputSelection.xaml.cs">
-      <DependentUpon>OutputSelection.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Nodes\NodeViews\VstSelection.xaml.cs">
-      <DependentUpon>VstSelection.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Nodes\NodeModels\OutputNode.cs" />
     <Compile Include="Nodes\NodeModels\ParticleNode.cs" />
     <Compile Include="Nodes\NodeModels\ValueNodes.cs" />
@@ -109,7 +96,7 @@
     <Compile Include="Outputs\OutputBase.cs" />
     <Compile Include="Outputs\OutputModels\TcpOutput.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
-    <Compile Include="NodeEditor\NodeEditorViewModel.cs" />
+    <Compile Include="NodeEditor\Scene.cs" />
     <None Include="Nodes\NodeOption.cs" />
     <Compile Include="ViewModels\ProgressViewModel.cs" />
     <Compile Include="VstInterop\Note.cs" />
@@ -124,14 +111,6 @@
     <Compile Include="NodeConnection\Connection.cs" />
     <Compile Include="Nodes\NodeModels\DotNode.cs" />
     <Compile Include="GlobalProperties.cs" />
-    <Page Include="Nodes\NodeViews\OutputSelection.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Nodes\NodeViews\VstSelection.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LedColors\LedColor.cs" />

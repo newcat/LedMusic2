@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,7 +10,7 @@ namespace LedMusic2.Reactive
 
         public virtual string __Type { get; }
         private readonly Dictionary<string, IReactive> children = new Dictionary<string, IReactive>();
-        private readonly Dictionary<string, Action<object>> commandHandlers = new Dictionary<string, Action<object>>();
+        private readonly Dictionary<string, Action<JToken>> commandHandlers = new Dictionary<string, Action<JToken>>();
 
         public ReactiveObject()
         {
@@ -27,7 +28,7 @@ namespace LedMusic2.Reactive
             __Type = GetType().ToString();
         }
 
-        public void RegisterCommand(string command, Action<object> handler)
+        public void RegisterCommand(string command, Action<JToken> handler)
         {
             commandHandlers.Add(command, handler);
         }
@@ -62,7 +63,7 @@ namespace LedMusic2.Reactive
             return updates;
         }
 
-        public void HandleCommand(string command, object payload)
+        public void HandleCommand(string command, JToken payload)
         {
             if (command.Contains("."))
             {

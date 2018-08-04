@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace LedMusic2.Reactive
@@ -9,6 +11,8 @@ namespace LedMusic2.Reactive
     {
 
         public string __Type { get; }
+
+        public Action<string, JToken, ReactiveCollection<T>> CommandHandler { get; set; }
 
         private readonly List<T> addedItems = new List<T>();
         private readonly List<T> removedItems = new List<T>();
@@ -42,6 +46,16 @@ namespace LedMusic2.Reactive
             removeOperation(item);
         }
 
+        public T FindById(string id)
+        {
+            return FindById(Guid.Parse(id));
+        }
+
+        public T FindById(Guid id)
+        {
+            return Find((x) => x.Id == id);
+        }
+
         public StateUpdateCollection GetFullState()
         {
             var updates = new StateUpdateCollection(new StateUpdate<string>("__Type", __Type));
@@ -68,9 +82,23 @@ namespace LedMusic2.Reactive
             return updates.Count > 0 ? updates : null;
         }
 
-        public void HandleCommand(string command, object payload)
+        public void HandleCommand(string command, JToken payload)
         {
-            // TODO
+            if (command.Contains("."))
+            {
+                // This is a command for a child, so propagate to the appropriate child
+                var parts = command.Split('.');
+                var childName = parts[0];
+                var remainder = string.Join(".", parts.Skip(1));
+                var child = FindById(childName);
+                if (child != null)
+                    child.HandleCommand(remainder, payload);
+                else
+                    throw new KeyNotFoundException($"Cannot find element with name {childName} in reactive collection");
+            } else
+            {
+                CommandHandler?.Invoke(command, payload, this);
+            }
         }
 
         private void addOperation(T item)

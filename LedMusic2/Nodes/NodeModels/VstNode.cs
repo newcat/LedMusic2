@@ -1,9 +1,6 @@
-﻿using LedMusic2.NodeEditor;
-using LedMusic2.Nodes.NodeViews;
+﻿using LedMusic2.Nodes.NodeOptions;
 using LedMusic2.VstInterop;
-using System.Windows;
 using System;
-using LedMusic2.Nodes.NodeOptions;
 
 namespace LedMusic2.Nodes.NodeModels
 {

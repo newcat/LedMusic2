@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 
 namespace LedMusic2.Reactive
 {
@@ -10,7 +11,7 @@ namespace LedMusic2.Reactive
 
         public abstract StateUpdateCollection GetStateUpdates();
         public abstract StateUpdateCollection GetFullState();
-        public abstract void HandleCommand(string command, object payload);
+        public abstract void HandleCommand(string command, JToken payload);
 
     }
 
@@ -68,14 +69,15 @@ namespace LedMusic2.Reactive
             );
         }
 
-        public override void HandleCommand(string command, object payload)
+        public override void HandleCommand(string command, JToken payload)
         {
             if (command != "set")
                 throw new InvalidOperationException($"Command '{command}' is not supported by ReactiveProperty");
-            else if (payload.GetType() != typeof(T))
-                throw new ArgumentException("Type does not match type of reactive property", "payload");
+            //TODO
+            //else if ((payload as JValue).Type .GetType() != typeof(T))
+            //    throw new ArgumentException("Type does not match type of reactive property", "payload");
             else
-                Set((T)payload);
+                Set((payload as JValue).Value<T>());
         }
 
     }

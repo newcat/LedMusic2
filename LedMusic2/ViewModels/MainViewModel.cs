@@ -1,15 +1,14 @@
-﻿using LedMusic2.Reactive;
-using LedMusic2.NodeEditor;
+﻿using LedMusic2.NodeEditor;
 using LedMusic2.Nodes.NodeModels;
 using LedMusic2.Outputs;
 using LedMusic2.Outputs.OutputModels;
+using LedMusic2.Reactive;
 using LedMusic2.VstInterop;
-using Microsoft.Win32;
+using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Linq;
-using System.Windows;
-using System.Windows.Threading;
+using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -21,44 +20,35 @@ namespace LedMusic2.ViewModels
     public class MainViewModel : ReactiveObject, IExportable
     {
 
-        //public static MainViewModel Instance { get; } = new MainViewModel();
-        public static MainViewModel Instance { get; } = null;
+        public static MainViewModel Instance { get; } = new MainViewModel();
 
-        public ReactivePrimitive<int> ActiveSceneIndex { get; }
-            = new ReactivePrimitive<int>(0);
+        public ReactivePrimitive<Guid> ActiveSceneId { get; }
+            = new ReactivePrimitive<Guid>(Guid.Empty);
 
-        public ReactivePrimitive<int> DisplayedSceneIndex { get; }
-            = new ReactivePrimitive<int>(0);
+        public ReactivePrimitive<Guid> DisplayedSceneId { get; }
+            = new ReactivePrimitive<Guid>(Guid.Empty);
 
         public ReactivePrimitive<bool> IsRunning { get; }
             = new ReactivePrimitive<bool>(true);
 
-        public ReactiveCollection<NodeEditorViewModel> Scenes { get; }
-            = new ReactiveCollection<NodeEditorViewModel>();
+        public ReactiveCollection<Scene> Scenes { get; }
+            = new ReactiveCollection<Scene>();
 
         public ReactiveCollection<ProgressViewModel> Progress { get; }
             = new ReactiveCollection<ProgressViewModel>();
 
         public OutputManager OutputManager { get; } = new OutputManager();
 
-        private DispatcherTimer calculationTimer;
-
         public MainViewModel() {
-
-            calculationTimer = new DispatcherTimer(DispatcherPriority.Normal)
-            {
-                Interval = TimeSpan.FromMilliseconds(1000 / GlobalProperties.Instance.FPS)
-            };
-            calculationTimer.Tick += OnCalculationTimerTick;
 
             OutputManager.FillOutputTypes();
             OutputManager.Outputs.Add(new DummyOutput());
 
-            Scenes.Add(new NodeEditorViewModel());
+            Scenes.CommandHandler = new Action<string, JToken, ReactiveCollection<Scene>>(scenesCommandHandler);
+            addScene();
+            Scenes[0].Name.Set("Global Scene");
             Scenes[0].Nodes.Add(new OutputNode());
-            DisplayedSceneIndex.Set(0);
-
-            StartProcessing();
+            DisplayedSceneId.Set(Scenes[0].Id);
 
         }
 
@@ -67,39 +57,65 @@ namespace LedMusic2.ViewModels
             foreach (var s in Scenes)
                 s.Dispose();
             VstInputManager.Instance.Shutdown();
-        }
+        }        
 
-        public void SelectScene(NodeEditorViewModel scene)
-        {
-            if (Scenes.IndexOf(scene) >= 0)
-                DisplayedSceneIndex.Set(Scenes.IndexOf(scene));
-        }
-
-        public void StartProcessing()
-        {
-            calculationTimer.Start();
-            IsRunning.Set(true);
-        }
-
-        public void StopProcessing()
-        {
-            calculationTimer.Stop();
-            IsRunning.Set(false);
-        }
-
-        public void CalculateAllNodes()
-        {
-            Scenes[0].CalculateAllNodes();
-            if (ActiveSceneIndex.Get() > 0)
-                Scenes[ActiveSceneIndex.Get()].CalculateAllNodes();
-            if (DisplayedSceneIndex.Get() > 0 && DisplayedSceneIndex != ActiveSceneIndex)
-                Scenes[DisplayedSceneIndex.Get()].CalculateAllNodes();
-        }
-
-        public void OnCalculationTimerTick(object sender, EventArgs e)
+        public void Tick()
         {
             VstInputManager.Instance.UpdateValues();
-            CalculateAllNodes();
+            calculateAllNodes();
+        }
+
+        private void scenesCommandHandler(string command, JToken payload, ReactiveCollection<Scene> coll)
+        {
+            var id = "";
+            switch (command)
+            {
+                case "add":
+                    addScene();
+                    break;
+                case "delete":
+                    id = (payload as JValue).Value<string>();
+                    if (!string.IsNullOrEmpty(id))
+                        deleteScene(id);
+                    break;
+                case "select":
+                    id = (payload as JValue).Value<string>();
+                    if (!string.IsNullOrEmpty(id))
+                        selectScene(id);
+                    break;
+            }
+        }
+
+        private void addScene()
+        {
+            var scene = new Scene();
+            Scenes.Add(scene);
+            selectScene(scene.Id.ToString());
+        }
+
+        private void selectScene(string id)
+        {
+            var scene = Scenes.FindById(id);
+            if (scene != null)
+                DisplayedSceneId.Set(scene.Id);
+        }
+
+        private void deleteScene(string id)
+        {
+            var scene = Scenes.FindById(id);
+            if (scene == null || Scenes[0] == scene) return;
+            if (Scenes.FindById(DisplayedSceneId.Get()) == scene)
+                DisplayedSceneId.Set(Scenes[0].Id);
+            Scenes.Remove(scene);
+        }
+
+        private void calculateAllNodes()
+        {
+            Scenes[0].CalculateAllNodes();
+            if (ActiveSceneId.Get() != Guid.Empty)
+                Scenes.FindById(ActiveSceneId.Get()).CalculateAllNodes();
+            if (DisplayedSceneId.Get() != Guid.Empty && DisplayedSceneId != ActiveSceneId)
+                Scenes.FindById(DisplayedSceneId.Get()).CalculateAllNodes();
         }
 
         #region Saving and Loading
@@ -112,7 +128,7 @@ namespace LedMusic2.ViewModels
                 DefaultExt = "lmp",
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
             };
-            if (sfd.ShowDialog() != true) return;
+            if (sfd.ShowDialog() != DialogResult.OK) return;
 
             Stream s = sfd.OpenFile();
 
@@ -134,7 +150,7 @@ namespace LedMusic2.ViewModels
                 Filter = "LedMusic Project File|*.lmp",
                 Multiselect = false
             };
-            if (ofd.ShowDialog() != true)
+            if (ofd.ShowDialog() != DialogResult.OK)
                 return;
 
             Stream s = ofd.OpenFile();
@@ -150,7 +166,7 @@ namespace LedMusic2.ViewModels
 
                 LoadFromXml((XElement)doc.FirstNode);
 
-                CalculateAllNodes();                
+                calculateAllNodes();                
 
             } catch (XmlException e)
             {
@@ -163,7 +179,7 @@ namespace LedMusic2.ViewModels
 
         }
 
-        private void LoadOutput(XElement outputX)
+        private void loadOutput(XElement outputX)
         {
 
             string type = outputX.Attribute("type").Value;
@@ -216,7 +232,7 @@ namespace LedMusic2.ViewModels
                     case "scenes":
                         foreach (var sceneX in n.Elements())
                         {
-                            var scene = new NodeEditorViewModel();
+                            var scene = new Scene();
                             scene.LoadFromXml(sceneX);
                             Scenes.Add(scene);
                         }
@@ -224,7 +240,7 @@ namespace LedMusic2.ViewModels
 
                     case "outputs":
                         foreach (XElement outputX in n.Elements())
-                            LoadOutput(outputX);
+                            loadOutput(outputX);
                         break;
 
                 }

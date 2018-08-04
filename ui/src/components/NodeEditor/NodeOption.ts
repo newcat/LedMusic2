@@ -37,7 +37,7 @@ export default Vue.extend({
 
     render(createElement, context) {
         const opt = context.props.options;
-        const type = opt.type as NodeOptionType;
+        const type = opt.Type as NodeOptionType;
         return createElement(elements[type], {
             props: {
                 data: opt
