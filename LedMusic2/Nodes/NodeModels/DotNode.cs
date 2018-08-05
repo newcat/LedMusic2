@@ -1,9 +1,7 @@
-﻿using LedMusic2.Reactive;
-using LedMusic2.LedColors;
-using LedMusic2.NodeEditor;
+﻿using LedMusic2.LedColors;
 using LedMusic2.Nodes.NodeOptions;
+using LedMusic2.Reactive;
 using System;
-using System.Windows;
 
 namespace LedMusic2.Nodes.NodeModels
 {
@@ -19,7 +17,7 @@ namespace LedMusic2.Nodes.NodeModels
         private NodeInterface<bool> niSymmetric;
         private NodeInterface<LedColor[]> niOutput;
 
-        private SelectOption noGlowType = new SelectOption("Glow Type");
+        private SelectOption<ReactiveListItem<string>> noGlowType = new SelectOption<ReactiveListItem<string>>("Glow Type");
 
         public DotNode() : base()
         {
@@ -34,7 +32,7 @@ namespace LedMusic2.Nodes.NodeModels
 
             foreach (var s in new string[] { "Linear", "Exponential", "Gaussian" })
                 noGlowType.Options.Add(new ReactiveListItem<string>(s));
-            noGlowType.Value.Set("Linear");
+            noGlowType.SelectedId.Set(noGlowType.Options[0].Id.ToString());
             Options.Add(noGlowType);
 
             Calculate();
@@ -46,8 +44,8 @@ namespace LedMusic2.Nodes.NodeModels
 
             int resolution = GlobalProperties.Instance.Resolution;
 
-            double centerPosition = Clamp(niCenterPosition.Value, 0, 1);
-            double alpha = Clamp(niAlpha.Value, 0, 1);
+            double centerPosition = clamp(niCenterPosition.Value, 0, 1);
+            double alpha = clamp(niAlpha.Value, 0, 1);
             double glow = Math.Max(0, niGlow.Value);
             LedColorHSV color = niColor.Value.GetColorHSV();
             bool symmetric = niSymmetric.Value;
@@ -58,14 +56,14 @@ namespace LedMusic2.Nodes.NodeModels
             switch (noGlowType.Value.Get())
             {
                 case "Exponential":
-                    intensity = new Func<double, double, double, double>((a, b, c) => ExponentialIntensity(a, b, c));
+                    intensity = exponentialIntensity;
                     break;
                 case "Gaussian":
-                    intensity = new Func<double, double, double, double>((a, b, c) => GaussianIntensity(a, b, c));
+                    intensity = gaussianIntensity;
                     break;
                 default:
                 case "Linear":
-                    intensity = new Func<double, double, double, double>((a, b, c) => LinearIntensity(a, b, c));
+                    intensity = linearIntensity;
                     break;
             }
 
@@ -73,7 +71,7 @@ namespace LedMusic2.Nodes.NodeModels
             {
                 double position = 1.0 * i / resolution;
                 buffer[i] = new LedColorHSV(color.H, color.S,
-                    alpha * Clamp(intensity(centerPosition, position, glow), 0, 1) * color.V);
+                    alpha * clamp(intensity(centerPosition, position, glow), 0, 1) * color.V);
             }
 
             if (symmetric)
@@ -95,25 +93,22 @@ namespace LedMusic2.Nodes.NodeModels
 
         }
 
-        private double Clamp(double value, double min, double max)
-        {
-            return Math.Max(min, Math.Min(max, value));
-        }
+        private double clamp(double value, double min, double max) => Math.Max(min, Math.Min(max, value));
 
-        private double LinearIntensity(double center, double position, double width)
+        private double linearIntensity(double center, double position, double width)
         {
             if (width == 0.0) return 0.0;
             double distance = Math.Abs(position - center);
             return 1.0 - distance / width;
         }
 
-        private double ExponentialIntensity(double center, double position, double pBase)
+        private double exponentialIntensity(double center, double position, double pBase)
         {
             double distance = Math.Abs(position - center);
             return Math.Pow(pBase, distance);
         }
 
-        private double GaussianIntensity(double center, double position, double stdDeviation)
+        private double gaussianIntensity(double center, double position, double stdDeviation)
         {
             return Math.Exp(-((position - center) * (position - center)) / (2 * stdDeviation * stdDeviation)) / (stdDeviation * Math.Sqrt(2 * Math.PI));
         }

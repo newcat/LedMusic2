@@ -14,17 +14,7 @@ namespace LedMusic2.Reactive
 
         public ReactiveObject()
         {
-            var props = GetType()
-                .GetProperties()
-                .Where(p =>
-                    typeof(IReactive).IsAssignableFrom(p.PropertyType) &&
-                    Attribute.GetCustomAttribute(p, typeof(ReactiveIgnoreAttribute)) == null &&
-                    !p.GetAccessors().Any(a => a.IsStatic)
-                );
-            foreach (var p in props)
-            {
-                children.Add(p.Name, (IReactive)p.GetValue(this));
-            }
+            UpdateReactiveChildren();
             __Type = GetType().ToString();
         }
 
@@ -87,6 +77,20 @@ namespace LedMusic2.Reactive
                 else
                     throw new KeyNotFoundException($"Cannot find command handler for command {command}");
             }
+        }
+
+        protected void UpdateReactiveChildren()
+        {
+            children.Clear();
+            var props = GetType()
+                .GetProperties()
+                .Where(p =>
+                    typeof(IReactive).IsAssignableFrom(p.PropertyType) &&
+                    Attribute.GetCustomAttribute(p, typeof(ReactiveIgnoreAttribute)) == null &&
+                    !p.GetAccessors().Any(a => a.IsStatic)
+                );
+            foreach (var p in props)
+                children.Add(p.Name, (IReactive)p.GetValue(this));
         }
 
     }

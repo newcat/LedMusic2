@@ -22,7 +22,7 @@
         </b-container>
 
         <!--  style="flex: 1 1 auto;" -->
-        <b-container fluid style="flex: 1 1 auto;" class="mt-3" v-else>
+        <div v-else style="flex: 1 1 auto; position: relative;">
                 
                 <editor
                     v-show="$route.name === 'editor'"
@@ -31,7 +31,7 @@
                     rname="Scenes"
                 ></editor>
 
-        </b-container>
+        </div>
 
     </div>
 </template>

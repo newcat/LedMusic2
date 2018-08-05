@@ -9,7 +9,7 @@ namespace LedMusic2.Nodes.NodeModels
     class MathNode : NodeBase
     {
 
-        SelectOption optOperation = new SelectOption("Operation");
+        SelectOption<ReactiveListItem<string>> optOperation = new SelectOption<ReactiveListItem<string>>("Operation");
         BoolOption optClamp = new BoolOption("Clamp");
 
         public MathNode() : base()
@@ -24,7 +24,7 @@ namespace LedMusic2.Nodes.NodeModels
             {
                 optOperation.Options.Add(new ReactiveListItem<string>(s));
             }
-            optOperation.Value.Set("Add");
+            optOperation.SelectedId.Set(optOperation.Options[0].Id.ToString());
 
             Options.Add(optOperation);
             Options.Add(optClamp);
@@ -40,7 +40,7 @@ namespace LedMusic2.Nodes.NodeModels
             double val2 = ((NodeInterface<double>)Inputs.GetNodeInterface("Value 2")).Value;
             double outputVal = 0;
 
-            switch ((string)optOperation.Value.Get())
+            switch (optOperation.Value.Get())
             {
                 case "Add":
                     outputVal = val1 + val2;
@@ -98,7 +98,7 @@ namespace LedMusic2.Nodes.NodeModels
                     break;
             }
 
-            if ((bool)optClamp.Value.Get())
+            if (optClamp.Value.Get())
                 outputVal = Math.Max(0, Math.Min(1, outputVal));
 
             ((NodeInterface<double>)Outputs.GetNodeInterface("Output")).SetValue(outputVal);

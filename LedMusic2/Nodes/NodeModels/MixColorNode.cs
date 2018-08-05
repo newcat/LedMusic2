@@ -10,7 +10,7 @@ namespace LedMusic2.Nodes.NodeModels
     {
 
         private float factor = 0.5f;
-        private SelectOption optMode = new SelectOption("Mode");
+        private SelectOption<ReactiveListItem<string>> optMode = new SelectOption<ReactiveListItem<string>>("Mode");
 
         public MixColorNode() : base()
         {
@@ -25,7 +25,7 @@ namespace LedMusic2.Nodes.NodeModels
             {
                 optMode.Options.Add(new ReactiveListItem<string>(s));
             }
-            optMode.Value.Set("Overlay");
+            optMode.SelectedId.Set(optMode.Options[0].Id.ToString());
             Options.Add(optMode);
 
             Calculate();
@@ -35,14 +35,14 @@ namespace LedMusic2.Nodes.NodeModels
         public override bool Calculate()
         {
 
-            LedColor[] colorsA = (LedColor[])Inputs.GetNodeInterface("Color 1").GetValue();
-            LedColor[] colorsB = (LedColor[])Inputs.GetNodeInterface("Color 2").GetValue();
+            LedColor[] colorsA = Inputs.GetNodeInterface<LedColor[]>("Color 1").Value;
+            LedColor[] colorsB = Inputs.GetNodeInterface<LedColor[]>("Color 2").Value;
 
             if (colorsA == null || colorsB == null)
                 return false;
 
-            factor = (float)(double)Inputs.GetNodeInterface("Factor").GetValue();
-            string mode = (string)optMode.Value.Get();
+            factor = (float)Inputs.GetNodeInterface<double>("Factor").Value;
+            string mode = optMode.Value.Get();
 
             int length = Math.Max(colorsA.Length, colorsB.Length);
             LedColor[] result = new LedColor[length];

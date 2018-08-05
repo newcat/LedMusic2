@@ -5,7 +5,7 @@ using System.Xml.Linq;
 
 namespace LedMusic2.Outputs
 {
-    public abstract class OutputBase : ReactiveObject, IReactiveListItem, IExportable
+    public abstract class OutputBase : ReactiveObject, ICombinedReactive, IExportable
     {
 
         public Guid Id { get; set; } = Guid.NewGuid();

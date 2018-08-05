@@ -42,7 +42,7 @@ namespace LedMusic2.ViewModels
         public MainViewModel() {
 
             OutputManager.FillOutputTypes();
-            OutputManager.Outputs.Add(new DummyOutput());
+            OutputManager.AddOutput(new DummyOutput());
 
             Scenes.CommandHandler = new Action<string, JToken, ReactiveCollection<Scene>>(scenesCommandHandler);
             addScene();
@@ -189,7 +189,7 @@ namespace LedMusic2.ViewModels
                 {
                     OutputBase outputInstance = (OutputBase)t.T.GetConstructor(Type.EmptyTypes).Invoke(null);
                     outputInstance.LoadFromXml(outputX);
-                    OutputManager.Outputs.Add(outputInstance);
+                    OutputManager.AddOutput(outputInstance);
                 }
             }
 
@@ -205,7 +205,7 @@ namespace LedMusic2.ViewModels
                 scenesX.Add(sc.GetXmlElement());
 
             XElement outputsX = new XElement("outputs");
-            foreach (OutputBase o in OutputManager.Outputs)
+            foreach (var o in OutputManager.Outputs)
                 outputsX.Add(o.GetXmlElement());
 
             rootX.Add(outputsX);

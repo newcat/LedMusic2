@@ -7,7 +7,7 @@ namespace LedMusic2.Nodes.NodeModels
     class BooleanNode : NodeBase
     {
 
-        SelectOption optOperation = new SelectOption("Operation");
+        SelectOption<ReactiveListItem<string>> optOperation = new SelectOption<ReactiveListItem<string>>("Operation");
         BoolOption optInteger = new BoolOption("Use integer values");
         BoolOption optInvert = new BoolOption("Invert output");
 
@@ -21,7 +21,7 @@ namespace LedMusic2.Nodes.NodeModels
             {
                 optOperation.Options.Add(new ReactiveListItem<string>(s));
             }
-            optOperation.Value.Set("==");
+            optOperation.SelectedId.Set(optOperation.Options[0].Id.ToString());
             Options.Add(optOperation);
             Options.Add(optInteger);
             Options.Add(optInvert);

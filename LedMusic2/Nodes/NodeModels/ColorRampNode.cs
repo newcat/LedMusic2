@@ -20,7 +20,7 @@ namespace LedMusic2.Nodes.NodeModels
         public ColorRampNode() : base()
         {
 
-            AddInput("Factor", ConnectionType.NUMBER);
+            AddInput("Factor", 0.5);
             AddOutput<LedColor[]>("Color Band");
             AddOutput<LedColor>("Single Color");
 

@@ -1,9 +1,7 @@
 ﻿using LedMusic2.LedColors;
 using LedMusic2.Nodes.NodeOptions;
 using LedMusic2.Outputs;
-using LedMusic2.Reactive;
 using LedMusic2.ViewModels;
-using System.Xml.Linq;
 
 namespace LedMusic2.Nodes.NodeModels
 {
@@ -14,10 +12,7 @@ namespace LedMusic2.Nodes.NodeModels
 
         private NodeInterface<LedColor[]> input;
         private PreviewOption preview = new PreviewOption("Preview");
-        private SelectOption outputSelection = new SelectOption("Output");
-
-        [ReactiveIgnore]
-        public OutputBase SelectedOutput { get; set; }
+        private SelectOption<OutputBase> outputSelection = new SelectOption<OutputBase>("Output");
 
         public OutputNode() : base()
         {
@@ -26,41 +21,16 @@ namespace LedMusic2.Nodes.NodeModels
 
             Options.Add(preview);
             Options.Add(outputSelection);
+            //outputSelection.SetOptions(MainViewModel.Instance.OutputManager.Outputs);
 
         }
 
         public override bool Calculate()
         {
             preview.Value.Set(input.Value);
-            SelectedOutput?.CalculationDone(input.Value);
+            outputSelection.Value?.CalculationDone(input.Value);
             return true;
         }
-
-        protected override void SaveAdditionalXmlData(XElement x)
-        {
-            x.Add(new XElement("output", SelectedOutput?.Id));
-        }
-
-        protected override void LoadAdditionalXmlData(XElement x)
-        {
-            foreach (var el in x.Elements())
-            {
-                switch (el.Name.LocalName)
-                {
-                    case "output":
-                        foreach (var o in MainViewModel.Instance.OutputManager.Outputs)
-                        {
-                            if (o.Id.ToString() == el.Value)
-                            {
-                                SelectedOutput = o;
-                                break;
-                            }
-                        }
-                        break;
-                }
-            }
-        }
-
 
     }
 }

@@ -29,19 +29,17 @@ export default Vue.extend({
     functional: true,
 
     props: {
-        options: {
+        data: {
             type: Object,
             required: true
         }
     },
 
     render(createElement, context) {
-        const opt = context.props.options;
-        const type = opt.Type as NodeOptionType;
+        const type = context.props.data.Type as NodeOptionType;
         return createElement(elements[type], {
-            props: {
-                data: opt
-            }
+            props: context.props,
+            staticClass: context.data.staticClass
         });
     }
 

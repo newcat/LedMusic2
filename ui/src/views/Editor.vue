@@ -1,6 +1,6 @@
 <template>
 <b-card class="editor" no-body>
-    <b-tabs id="scenes" card>
+    <b-tabs id="scenes" class="h-100" card>
 
         <template slot="tabs">
             <b-nav-item
@@ -14,7 +14,7 @@
             >+</b-nav-item>
         </template>
 
-        <div v-if="displayedScene" slot="empty" class="no-body">
+        <div v-if="displayedScene" slot="empty" class="no-body h-100">
 
             <!-- Toolbar -->
             <b-navbar type="dark" variant="dark" toggleable>
@@ -52,7 +52,11 @@
                 </b-collapse>
             </b-navbar>
 
-            <node-editor v-if="displayedScene" :scene="displayedScene"></node-editor>
+            <node-editor
+                v-if="displayedScene"
+                :scene="displayedScene"
+                :rname="displayed"
+            ></node-editor>
 
         </div>
 
@@ -113,11 +117,19 @@ export default class Editor extends Vue {
 </script>
 
 <style>
+#scenes > .tab-content {
+    height: 100%;
+}
 #scenes > .tab-content > .card-body {
     padding: 0;
+    height: 100%;
 }
 
 .editor {
-    height: calc(100% - 1rem);
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    position: absolute !important;
 }
 </style>

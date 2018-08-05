@@ -1,4 +1,5 @@
 ﻿using LedMusic2.Nodes.NodeOptions;
+using LedMusic2.Reactive;
 using LedMusic2.VstInterop;
 using System;
 
@@ -10,7 +11,7 @@ namespace LedMusic2.Nodes.NodeModels
 
         private NodeInterface<double> niValue;
         private NodeInterface<double> niNote;
-        private readonly SelectOption channelOption;
+        private readonly SelectOption<ReactiveListItem<string>> channelOption;
         private readonly NumberOption midiChannelOption;
 
         public VstChannel SelectedChannel { get; set; }
@@ -27,7 +28,7 @@ namespace LedMusic2.Nodes.NodeModels
             midiChannelOption.Value.Set(1);
             Options.Add(midiChannelOption);
 
-            channelOption = new SelectOption("Channel");
+            channelOption = new SelectOption<ReactiveListItem<string>>("Channel");
             Options.Add(channelOption);
 
         }

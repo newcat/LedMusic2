@@ -9,12 +9,12 @@ namespace LedMusic2.Nodes
     public abstract class NodeInterface : ReactiveObject, IReactiveListItem
     {
 
-        public Guid Id { get; set; } = new Guid();
-        public string Name { get; private set; }
-        public ConnectionType ConnectionType { get; private set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         public abstract Type NodeType { get; }
         public NodeBase Parent { get; private set; }
 
+        public ReactivePrimitive<string> Name { get; } = new ReactivePrimitive<string>();
+        public ReactivePrimitive<ConnectionType> ConnectionType { get; } = new ReactivePrimitive<ConnectionType>();
         public ReactivePrimitive<bool> IsInput { get; } = new ReactivePrimitive<bool>(false);
         public ReactivePrimitive<bool> IsConnected { get; } = new ReactivePrimitive<bool>(false);
 
@@ -22,8 +22,8 @@ namespace LedMusic2.Nodes
 
         public NodeInterface(string name, ConnectionType ctype, NodeBase parent, bool isInput)
         {
-            Name = name;
-            ConnectionType = ctype;
+            Name.Set(name);
+            ConnectionType.Set(ctype);
             IsInput.Set(isInput);
         }
 
