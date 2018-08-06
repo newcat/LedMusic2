@@ -1,4 +1,5 @@
-﻿using LedMusic2.NodeEditor;
+﻿using LedMusic2.NodeConnection;
+using LedMusic2.NodeEditor;
 using LedMusic2.Nodes.NodeModels;
 using LedMusic2.Outputs;
 using LedMusic2.Outputs.OutputModels;
@@ -46,8 +47,14 @@ namespace LedMusic2.ViewModels
 
             Scenes.CommandHandler = new Action<string, JToken, ReactiveCollection<Scene>>(scenesCommandHandler);
             addScene();
+
+            var outputNode = new OutputNode();
+            var numberNode = new DoubleValueNode();
+            var conn = new Connection(numberNode.Outputs[0], outputNode.Inputs[0]);
             Scenes[0].Name.Set("Global Scene");
-            Scenes[0].Nodes.Add(new OutputNode());
+            Scenes[0].Nodes.Add(outputNode);
+            Scenes[0].Nodes.Add(numberNode);
+            Scenes[0].Connections.Add(conn);
             DisplayedSceneId.Set(Scenes[0].Id);
 
         }

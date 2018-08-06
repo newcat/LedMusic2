@@ -58,6 +58,9 @@ export default class Node extends Vue {
     @Prop({ type: Object })
     nodedata: any;
 
+    @Prop({ type: String })
+    id!: string;
+
     selected = false;
     dragging = false;
     top = 30;
@@ -65,6 +68,11 @@ export default class Node extends Vue {
     width = 200;
 
     mounted() {
+        (this.$parent as any).registerNode(this.id, this);
+    }
+
+    beforeDestroy() {
+        (this.$parent as any).unregisterNode(this.id);
     }
 
     get styles() {
@@ -104,7 +112,7 @@ export default class Node extends Vue {
     background: #3f3f3fcc;
     color: white;
     border-radius: 4px;
-    position: relative;
+    position: absolute;
     filter: drop-shadow(0 0 3px #000000cc);
 
     .__title {

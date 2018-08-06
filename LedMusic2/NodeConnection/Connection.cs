@@ -11,7 +11,19 @@ namespace LedMusic2.NodeConnection
         public Guid Id { get; set; } = Guid.NewGuid();
         public override string __Type => "Connection";
 
+        public ReactivePrimitive<string> InputNodeId { get; }
+            = new ReactivePrimitive<string>();
+        public ReactivePrimitive<string> InputInterfaceId { get; }
+            = new ReactivePrimitive<string>();
+
+        public ReactivePrimitive<string> OutputNodeId { get; }
+            = new ReactivePrimitive<string>();
+        public ReactivePrimitive<string> OutputInterfaceId { get; }
+            = new ReactivePrimitive<string>();
+
+        [ReactiveIgnore]
         public NodeInterface Input { get; private set; }
+        [ReactiveIgnore]
         public NodeInterface Output { get; private set; }
 
         /// <summary>
@@ -51,6 +63,8 @@ namespace LedMusic2.NodeConnection
                 Input.ValueChanged -= input_ValueChanged;
             Input = ni;
             ni.ValueChanged += input_ValueChanged;
+            InputNodeId.Set(ni.Parent.Id.ToString());
+            InputInterfaceId.Set(ni.Id.ToString());
         }
 
         public void SetOutput(NodeInterface ni)
@@ -59,6 +73,8 @@ namespace LedMusic2.NodeConnection
                 Output.IsConnected.Set(false);
             Output = ni;
             Output.IsConnected.Set(true);
+            OutputNodeId.Set(ni.Parent.Id.ToString());
+            OutputInterfaceId.Set(ni.Id.ToString());
         }
 
         private void input_ValueChanged(object sender, EventArgs e)
