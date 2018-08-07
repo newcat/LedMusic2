@@ -1,11 +1,20 @@
 <template>
-    <div class="node-editor">
+    <div
+        class="node-editor"
+        @mousemove="mouseMoveHandler"
+        @mousedown="mouseDown"
+        @mouseup="mouseUp"
+    >
         <svg class="connections-container">
             <connection
                 v-for="c in connections"
                 :key="c.id"
                 :data="c"
             ></connection>
+            <temp-connection
+                v-if="temporaryConnection"
+                :data="temporaryConnection"
+            ></temp-connection>
         </svg>
         <node
             v-for="(value, key) in scene.Nodes"
@@ -18,15 +27,18 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from "vue-property-decorator";
+import { Component, Vue, Prop, Provide } from "vue-property-decorator";
 import * as _ from "lodash";
 import Node from "./Node.vue";
-import Connection from "./Connection.vue";
+import Connection from "./ConnectionWrapper.vue";
+import TempConnection from "./TemporaryConnection.vue";
+import NodeInterface from "./NodeInterface.vue";
 
 @Component({
     components: {
         "node": Node,
-        "connection": Connection
+        "connection": Connection,
+        "temp-connection": TempConnection
     }
 })
 export default class NodeEditor extends Vue {
@@ -35,6 +47,11 @@ export default class NodeEditor extends Vue {
     scene!: any;
 
     nodes: Record<string, any> = {};
+    temporaryConnection: any = null;
+    hoveringOver?: NodeInterface|null = null;
+
+    @Provide("nodeeditor")
+    nodeeditor: NodeEditor = this;
 
     registerNode(id: string, node: any) {
         this.$set(this.nodes, id, node);
@@ -42,6 +59,42 @@ export default class NodeEditor extends Vue {
 
     unregisterNode(id: string) {
         this.$delete(this.nodes, id);
+    }
+
+    hoveredOver(ni: NodeInterface|undefined) {
+        this.hoveringOver = ni;
+        if (ni && this.temporaryConnection && this.temporaryConnection.startInterface !== ni) {
+            this.temporaryConnection.targetNode = ni.$parent;
+            this.temporaryConnection.targetInterface = ni;
+        } else if (!ni && this.temporaryConnection) {
+            this.$set(this.temporaryConnection, "targetNode", undefined);
+            this.$set(this.temporaryConnection, "targetInterface", undefined);
+        }
+    }
+
+    mouseMoveHandler(ev: MouseEvent) {
+        if (!this.temporaryConnection) { return; }
+        this.temporaryConnection.mx = ev.offsetX;
+        this.temporaryConnection.my = ev.offsetY;
+    }
+
+    mouseDown(ev: MouseEvent) {
+        if (this.hoveringOver) {
+            this.temporaryConnection = {
+                startNode: this.hoveringOver.$parent,
+                startInterface: this.hoveringOver,
+                mx: ev.x,
+                my: ev.y
+            };
+        }
+    }
+
+    mouseUp(ev: MouseEvent) {
+        const tc = this.temporaryConnection;
+        if (this.hoveringOver && this.hoveringOver !== (tc.outputNode || tc.inputNode)) {
+            // TODO: Create
+        }
+        this.temporaryConnection = null;
     }
 
     get connections() {
@@ -77,6 +130,11 @@ export default class NodeEditor extends Vue {
     position: relative;
     overflow: hidden;
     @include backgroundpattern();
+
+    & > * {
+        user-select: none;
+    }
+
 }
 
 .connections-container {

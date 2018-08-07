@@ -1,4 +1,5 @@
 ﻿using LedMusic2.BrowserInterop;
+using LedMusic2.NodeConnection;
 using LedMusic2.Nodes;
 using LedMusic2.Nodes.NodeModels;
 using LedMusic2.ViewModels;
@@ -20,11 +21,21 @@ namespace LedMusic2
 
         private App()
         {
+
             var mvInstance = MainViewModel.Instance;
+
+            var outputNode = new OutputNode();
+            var numberNode = new DoubleValueNode();
+            var conn = new Connection(numberNode.Outputs[0], outputNode.Inputs[0]);
+            mvInstance.Scenes[0].Nodes.Add(outputNode);
+            mvInstance.Scenes[0].Nodes.Add(numberNode);
+            mvInstance.Scenes[0].Connections.Add(conn);
+
             browserAgent = new BrowserAgent();
             browserAgent.Connected += clientConnected;
             browserAgent.MessageReceived += messageReceived;
             timer = new Timer(new TimerCallback(tick), null, 0, 1000 / GlobalProperties.Instance.FPS);
+
         }
 
         public static void Main(string[] args)

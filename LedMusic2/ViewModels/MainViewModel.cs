@@ -47,14 +47,7 @@ namespace LedMusic2.ViewModels
 
             Scenes.CommandHandler = new Action<string, JToken, ReactiveCollection<Scene>>(scenesCommandHandler);
             addScene();
-
-            var outputNode = new OutputNode();
-            var numberNode = new DoubleValueNode();
-            var conn = new Connection(numberNode.Outputs[0], outputNode.Inputs[0]);
             Scenes[0].Name.Set("Global Scene");
-            Scenes[0].Nodes.Add(outputNode);
-            Scenes[0].Nodes.Add(numberNode);
-            Scenes[0].Connections.Add(conn);
             DisplayedSceneId.Set(Scenes[0].Id);
 
         }

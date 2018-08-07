@@ -11,8 +11,8 @@ namespace LedMusic2.Outputs
         public Guid Id { get; set; } = Guid.NewGuid();
 
         public abstract string DefaultName { get; }
-        public ReactivePrimitive<string> Name = new ReactivePrimitive<string>();
-
+        public ReactivePrimitive<string> Name { get; }
+            = new ReactivePrimitive<string>();
 
         protected OutputBase()
         {

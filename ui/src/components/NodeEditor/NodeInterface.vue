@@ -1,11 +1,16 @@
 <template>
-    <div :class="['node-interface', { '--input': isInput, '--output': !isInput }]">
+    <div
+        :class="['node-interface', { '--input': isInput, '--output': !isInput }]"
+        @mouseover="startHover"
+        @mouseout="endHover"
+    >
         <span class="align-middle">{{ state.Name }}</span>
     </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from "vue-property-decorator";
+import { Component, Vue, Prop, Inject } from "vue-property-decorator";
+import NodeEditor from "./NodeEditor.vue";
 
 @Component
 export default class NodeInterface extends Vue {
@@ -15,6 +20,16 @@ export default class NodeInterface extends Vue {
 
     @Prop({ type: Object, default: () => {} })
     state!: any;
+
+    @Inject()
+    nodeeditor!: NodeEditor;
+
+    startHover() {
+        this.nodeeditor.hoveredOver(this);
+    }
+    endHover() {
+        this.nodeeditor.hoveredOver(undefined);
+    }
 
 }
 </script>
