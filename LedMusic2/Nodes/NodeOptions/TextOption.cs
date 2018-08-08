@@ -9,5 +9,10 @@ namespace LedMusic2.Nodes.NodeOptions
 
         public TextOption(string name) : base(name, NodeOptionType.TEXT) { }
 
+        public override object GetValue()
+        {
+            return Value.Get();
+        }
+
     }
 }

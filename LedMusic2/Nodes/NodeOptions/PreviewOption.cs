@@ -10,5 +10,10 @@ namespace LedMusic2.Nodes.NodeOptions
 
         public PreviewOption(string name) : base(name, NodeOptionType.PREVIEW) { }
 
+        public override object GetValue()
+        {
+            return Value.Get();
+        }
+
     }
 }

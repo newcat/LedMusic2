@@ -12,10 +12,19 @@ namespace LedMusic2.Nodes.NodeOptions
         public ReactivePrimitive<string> Name { get; } = new ReactivePrimitive<string>("");
         public ReactivePrimitive<NodeOptionType> Type { get; } = new ReactivePrimitive<NodeOptionType>(NodeOptionType.BOOL);
 
+        public event EventHandler ValueChanged;
+
         public BaseOption(string name, NodeOptionType type)
         {
             Name.Set(name);
             Type.Set(type);
+        }
+
+        public abstract object GetValue();
+
+        protected void RaiseValueChanged()
+        {
+            ValueChanged?.Invoke(this, new EventArgs());
         }
 
         public virtual XElement GetXmlElement()

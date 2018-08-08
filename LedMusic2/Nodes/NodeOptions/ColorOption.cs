@@ -10,5 +10,10 @@ namespace LedMusic2.Nodes.NodeOptions
 
         public ColorOption(string name) : base(name, NodeOptionType.COLOR) { }
 
+        public override object GetValue()
+        {
+            return Value.Get();
+        }
+
     }
 }

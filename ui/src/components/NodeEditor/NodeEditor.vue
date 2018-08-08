@@ -1,6 +1,6 @@
 <template>
     <div
-        class="node-editor"
+        :class="['node-editor', { 'ignore-mouse': !!temporaryConnection }]"
         @mousemove="mouseMoveHandler"
         @mousedown="mouseDown"
         @mouseup="mouseUp"
@@ -119,37 +119,3 @@ export default class NodeEditor extends Vue {
 
 }
 </script>
-
-
-<style lang="scss" scoped>
-@import "../../styles/imports";
-
-.node-editor {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    overflow: hidden;
-    @include backgroundpattern();
-
-    & > * {
-        user-select: none;
-    }
-
-}
-
-.connections-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-
-    & > path {
-        stroke: white;
-        stroke-width: 2px;
-        fill: none;
-    }
-
-}
-</style>

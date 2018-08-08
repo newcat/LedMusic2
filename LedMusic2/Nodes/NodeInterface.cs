@@ -2,6 +2,7 @@
 using LedMusic2.NodeConnection;
 using System;
 using System.Xml.Linq;
+using LedMusic2.Nodes.NodeOptions;
 
 namespace LedMusic2.Nodes
 {
@@ -18,6 +19,7 @@ namespace LedMusic2.Nodes
         public ReactivePrimitive<ConnectionType> ConnectionType { get; } = new ReactivePrimitive<ConnectionType>();
         public ReactivePrimitive<bool> IsInput { get; } = new ReactivePrimitive<bool>(false);
         public ReactivePrimitive<bool> IsConnected { get; } = new ReactivePrimitive<bool>(false);
+        public BaseOption Option { get; }
 
         public event EventHandler ValueChanged;
 
@@ -27,6 +29,33 @@ namespace LedMusic2.Nodes
             Name.Set(name);
             ConnectionType.Set(ctype);
             IsInput.Set(isInput);
+
+            if (isInput)
+            {
+                switch (ctype)
+                {
+                    case NodeConnection.ConnectionType.BOOL:
+                        Option = new BoolOption(name);
+                        break;
+                    case NodeConnection.ConnectionType.COLOR:
+                        Option = new ColorOption(name);
+                        break;
+                    case NodeConnection.ConnectionType.NUMBER:
+                        Option = new NumberOption(name);
+                        break;
+                }
+                if (Option != null)
+                {
+                    Option.ValueChanged += option_ValueChanged;
+                    UpdateReactiveChildren();
+                }
+            }
+
+        }
+
+        private void option_ValueChanged(object sender, EventArgs e)
+        {
+            SetValue(Option.GetValue());
         }
 
         public XElement GetXmlElement()

@@ -23,9 +23,9 @@ export default class ConnectionWrapper extends Vue {
         const oi = this.data.outputInterface;
         if (inode && onode) {
             const x1 = inode.left + inode.$el.clientWidth;
-            const y1 = inode.top + ii.$el.offsetTop + ii.$el.clientHeight / 2 + 2;
+            const y1 = inode.top + ii.$el.offsetTop + ii.$el.clientHeight / 2;
             const x2 = onode.left;
-            const y2 = onode.top + oi.$el.offsetTop + oi.$el.clientHeight / 2 + 2;
+            const y2 = onode.top + oi.$el.offsetTop + oi.$el.clientHeight / 2;
             return { x1, y1, x2, y2 };
         } else {
             return { x1: 0, y1: 0, x2: 0, y2: 0 };

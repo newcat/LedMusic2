@@ -17,5 +17,10 @@ namespace LedMusic2.Nodes.NodeOptions
             Value.Set(min);
         }
 
+        public override object GetValue()
+        {
+            return Value.Get();
+        }
+
     }
 }

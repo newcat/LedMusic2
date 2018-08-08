@@ -34,5 +34,10 @@ namespace LedMusic2.Nodes.NodeOptions
             UpdateReactiveChildren();
         }
 
+        public override object GetValue()
+        {
+            return Value;
+        }
+
     }
 }

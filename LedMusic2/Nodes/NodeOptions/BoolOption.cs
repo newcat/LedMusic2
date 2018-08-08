@@ -9,5 +9,10 @@ namespace LedMusic2.Nodes.NodeOptions
 
         public BoolOption(string name) : base(name, NodeOptionType.BOOL) { }
 
+        public override object GetValue()
+        {
+            return Value.Get();
+        }
+
     }
 }
