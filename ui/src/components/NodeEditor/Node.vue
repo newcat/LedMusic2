@@ -8,7 +8,7 @@
             class="__title"
             @mousedown.prevent="startDrag"
         >
-            Node
+            {{ nodedata.Name }}
         </div>
 
         <div class="__content">
@@ -46,6 +46,7 @@
 import { Component, Vue, Prop } from "vue-property-decorator";
 import NodeOption from "./NodeOption";
 import NodeInterface from "./NodeInterface.vue";
+import { INode } from "@/types/nodes/node";
 
 @Component({
     components: {
@@ -56,7 +57,7 @@ import NodeInterface from "./NodeInterface.vue";
 export default class Node extends Vue {
 
     @Prop({ type: Object })
-    nodedata: any;
+    nodedata!: INode;
 
     @Prop({ type: String })
     id!: string;

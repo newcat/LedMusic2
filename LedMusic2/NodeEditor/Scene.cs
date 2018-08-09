@@ -17,7 +17,12 @@ namespace LedMusic2.NodeEditor
         public Guid Id { get; set; } = Guid.NewGuid();
 
         private NodeTreeBuilder ntb = new NodeTreeBuilder();
-        public ReactivePrimitive<string> Name { get; } = new ReactivePrimitive<string>("Scene");
+
+        public ReactivePrimitive<string> Name { get; }
+            = new ReactivePrimitive<string>("Scene");
+        public ReactivePrimitive<TemporaryConnectionState> TemporaryConnectionState { get; }
+            = new ReactivePrimitive<TemporaryConnectionState>(NodeEditor.TemporaryConnectionState.NONE);
+
         public ReactiveCollection<NodeBase> Nodes { get; } = new ReactiveCollection<NodeBase>();
         public ReactiveCollection<Connection> Connections { get; } = new ReactiveCollection<Connection>();
         public ReactiveCollection<NodeType> NodeTypes { get; } = new ReactiveCollection<NodeType>();
@@ -27,11 +32,34 @@ namespace LedMusic2.NodeEditor
             fillNodeCategories();
             RegisterCommand("addNode", (t) => addNode(t));
             RegisterCommand("deleteNode", (id) => deleteNode(id));
+            RegisterCommand("checkTemporaryConnection", (p) => canConnect(p));
+            RegisterCommand("addConnection", (p) => createConnection(p));
+            RegisterCommand("deleteConnection", (cid) => deleteConnection(cid));
         }
 
-        public void CreateConnection()
+        private void createConnection(JToken payload)
         {
-            throw new NotImplementedException();
+            canConnect(payload);
+            var request = (JObject)payload;
+            if (TemporaryConnectionState.Get() == NodeEditor.TemporaryConnectionState.ALLOWED)
+            {
+                var origin = findInterfaceById(Guid.Parse((string)request["originInterfaceId"]));
+                var target = findInterfaceById(Guid.Parse((string)request["targetInterfaceId"]));
+                var input = origin.IsInput.Get() ? target : origin;
+                var output = origin.IsInput.Get() ? origin : target;
+                Connections.Add(new Connection(input, output));
+            }
+        }
+
+        private void deleteConnection(JToken payload)
+        {
+            var cid = payload.Value<string>();
+            var conn = Connections.FindById(cid);
+            if (conn != null)
+            {
+                Connections.Remove(conn);
+                conn.Dispose();
+            }
         }
 
         private void fillNodeCategories()
@@ -46,6 +74,68 @@ namespace LedMusic2.NodeEditor
                 var attribute = (NodeAttribute)node.GetCustomAttribute(typeof(NodeAttribute));
                 NodeTypes.Add(new NodeType(attribute.Name, attribute.Category, node));
             }
+
+        }
+
+        private void canConnect(JToken payload)
+        {
+
+            if (payload == null)
+            {
+                TemporaryConnectionState.Set(NodeEditor.TemporaryConnectionState.NONE);
+                return;
+            }
+
+            var request = (JObject)payload;
+
+            var origin = findInterfaceById(Guid.Parse((string)request["originInterfaceId"]));
+            var target = findInterfaceById(Guid.Parse((string)request["targetInterfaceId"]));
+
+            if (origin == null || target == null || origin == target ||
+                origin.Parent == target.Parent || origin.IsInput.Get() == target.IsInput.Get())
+            {
+                TemporaryConnectionState.Set(NodeEditor.TemporaryConnectionState.FORBIDDEN);
+                return;
+            }
+
+            var input = origin.IsInput.Get() ? target : origin;
+            var output = origin.IsInput.Get() ? origin : target;
+
+            if (canConnect(input, output))
+                TemporaryConnectionState.Set(NodeEditor.TemporaryConnectionState.ALLOWED);
+            else
+                TemporaryConnectionState.Set(NodeEditor.TemporaryConnectionState.FORBIDDEN);
+
+        }
+
+        private bool canConnect(NodeInterface input, NodeInterface output)
+        {
+
+            if (!TypeConverter.CanConvert(input.NodeType, output.NodeType))
+                return false;
+
+            //Build a temporary node tree with the connection established and see, if this would
+            //lead to a recursion in the tree.
+            //Using the ToList()-Method for creating a shallow copy, since we dont want to add
+            //the temporary connection to the real node tree.
+            var tempConnections = Connections.ToList();
+            var connectionToTest = new Connection(input, output);
+            tempConnections.Add(connectionToTest);
+            try
+            {
+                NodeTreeBuilder ntb = new NodeTreeBuilder();
+                ntb.Build(Nodes, tempConnections);
+            }
+            catch (CyclicGraphException)
+            {
+                return false;
+            }
+            finally
+            {
+                connectionToTest.Dispose();
+            }
+
+            return true;
 
         }
 

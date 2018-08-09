@@ -2,6 +2,8 @@
     <connection-view
         :x1="d.input.x" :y1="d.input.y"
         :x2="d.output.x" :y2="d.output.y"
+        :state="status"
+        is-temporary
     ></connection-view>
 </template>
 
@@ -10,8 +12,8 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import ConnectionView from "./ConnectionView.vue";
 
 enum ConnectionStatus {
+    NONE,
     ALLOWED,
-    LOADING,
     FORBIDDEN
 }
 
@@ -25,7 +27,8 @@ export default class TemporaryConnection extends Vue {
     @Prop({ type: Object })
     data!: any;
 
-    status: ConnectionStatus = ConnectionStatus.ALLOWED;
+    @Prop({ type: Number })
+    status!: ConnectionStatus;
 
     get d() {
 

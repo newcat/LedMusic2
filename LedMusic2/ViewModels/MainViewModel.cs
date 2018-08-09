@@ -42,6 +42,8 @@ namespace LedMusic2.ViewModels
 
         public MainViewModel() {
 
+            TypeConverter.Initialize();
+
             OutputManager.FillOutputTypes();
             OutputManager.AddOutput(new DummyOutput());
 

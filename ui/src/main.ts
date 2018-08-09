@@ -1,7 +1,7 @@
 import Vue from "vue";
 import App from "./App.vue";
-import router from "./router";
-import store from "./store";
+import router from "@/router";
+import store from "@/store";
 
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
@@ -11,7 +11,7 @@ import "./styles/styles.scss";
 
 Vue.config.productionTip = false;
 
-import commandMixin from "./commandMixin";
+import commandMixin from "@/commandMixin";
 Vue.mixin(commandMixin);
 
 new Vue({

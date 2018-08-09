@@ -14,6 +14,7 @@
             <temp-connection
                 v-if="temporaryConnection"
                 :data="temporaryConnection"
+                :status="scene.TemporaryConnectionState"
             ></temp-connection>
         </svg>
         <node
@@ -33,6 +34,16 @@ import Node from "./Node.vue";
 import Connection from "./ConnectionWrapper.vue";
 import TempConnection from "./TemporaryConnection.vue";
 import NodeInterface from "./NodeInterface.vue";
+import { IScene } from "@/types/scene";
+
+interface ITemporaryConnection {
+    startNode?: Node;
+    startInterface?: NodeInterface;
+    targetNode?: Node;
+    targetInterface?: NodeInterface;
+    mx?: number;
+    my?: number;
+}
 
 @Component({
     components: {
@@ -44,10 +55,10 @@ import NodeInterface from "./NodeInterface.vue";
 export default class NodeEditor extends Vue {
 
     @Prop({ type: Object, default: () => {} })
-    scene!: any;
+    scene!: IScene;
 
-    nodes: Record<string, any> = {};
-    temporaryConnection: any = null;
+    nodes: Record<string, Node> = {};
+    temporaryConnection: ITemporaryConnection|null = null;
     hoveringOver?: NodeInterface|null = null;
 
     @Provide("nodeeditor")
@@ -64,11 +75,16 @@ export default class NodeEditor extends Vue {
     hoveredOver(ni: NodeInterface|undefined) {
         this.hoveringOver = ni;
         if (ni && this.temporaryConnection && this.temporaryConnection.startInterface !== ni) {
-            this.temporaryConnection.targetNode = ni.$parent;
+            this.temporaryConnection.targetNode = ni.$parent as Node;
             this.temporaryConnection.targetInterface = ni;
+            this.sendCommand("checkTemporaryConnection", {
+                originInterfaceId: this.getIdOfInterface(this.temporaryConnection.startInterface!),
+                targetInterfaceId: this.getIdOfInterface(this.temporaryConnection.targetInterface!)
+            });
         } else if (!ni && this.temporaryConnection) {
             this.$set(this.temporaryConnection, "targetNode", undefined);
             this.$set(this.temporaryConnection, "targetInterface", undefined);
+            this.sendCommand("checkTemporaryConnection");
         }
     }
 
@@ -80,19 +96,37 @@ export default class NodeEditor extends Vue {
 
     mouseDown(ev: MouseEvent) {
         if (this.hoveringOver) {
-            this.temporaryConnection = {
-                startNode: this.hoveringOver.$parent,
-                startInterface: this.hoveringOver,
-                mx: ev.x,
-                my: ev.y
-            };
+
+            // if this interface is an input and already has a connection
+            // to it, remove the connection and make it temporary
+            if (this.hoveringOver.state.IsInput && this.hoveringOver.state.IsConnected) {
+                // find connection
+                const conn = this.connections.find((c: any) => c.outputInterface === this.hoveringOver);
+                this.temporaryConnection = {
+                    startNode: conn.inputNode,
+                    startInterface: conn.inputInterface
+                };
+                this.sendCommand("deleteConnection", conn.id);
+            } else {
+                this.temporaryConnection = {
+                    startNode: this.hoveringOver.$parent as Node,
+                    startInterface: this.hoveringOver
+                };
+            }
+
+            this.$set(this.temporaryConnection, "mx", ev.x);
+            this.$set(this.temporaryConnection, "my", ev.y);
+
         }
     }
 
     mouseUp(ev: MouseEvent) {
         const tc = this.temporaryConnection;
-        if (this.hoveringOver && this.hoveringOver !== (tc.outputNode || tc.inputNode)) {
-            // TODO: Create
+        if (tc && this.hoveringOver) {
+            this.sendCommand("addConnection", {
+                originInterfaceId: this.getIdOfInterface(tc.startInterface!),
+                targetInterfaceId: this.getIdOfInterface(tc.targetInterface!)
+            });
         }
         this.temporaryConnection = null;
     }
@@ -115,6 +149,10 @@ export default class NodeEditor extends Vue {
     getInterface(node: any, nodeId: string, interfaceId: string, isInput: boolean) {
         const io = isInput ? "Inputs" : "Outputs";
         if (node) { return node.$children.find((i: any) => i.state === this.scene.Nodes[nodeId][io][interfaceId]); }
+    }
+
+    getIdOfInterface(intf: NodeInterface) {
+        return intf.rname.split(".")[1];
     }
 
 }

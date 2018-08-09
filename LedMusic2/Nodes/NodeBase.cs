@@ -24,9 +24,15 @@ namespace LedMusic2.Nodes
             }
         }
 
+        public ReactivePrimitive<string> Name { get; } = new ReactivePrimitive<string>();
         public NodeInterfaceList Inputs { get; } = new NodeInterfaceList();
         public NodeInterfaceList Outputs { get; } = new NodeInterfaceList();
         public ReactiveCollection<BaseOption> Options { get; } = new ReactiveCollection<BaseOption>();
+
+        protected NodeBase()
+        {
+            Name.Set(NodeName);
+        }
 
         public abstract bool Calculate();
 

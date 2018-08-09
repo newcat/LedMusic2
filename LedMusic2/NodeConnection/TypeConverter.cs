@@ -59,7 +59,7 @@ namespace LedMusic2.NodeConnection
             converters.Add(boolToDouble);
 
             //Colors
-            var doubleToColor = new SingleTypeConverter(typeof(double), typeof(LedColors.LedColor),
+            var doubleToColor = new SingleTypeConverter(typeof(double), typeof(LedColor),
                 (x) =>
                 {
                     byte v = (byte)Math.Max(0, Math.Min(255, (double)x * 255));
@@ -67,14 +67,14 @@ namespace LedMusic2.NodeConnection
                 });
             converters.Add(doubleToColor);
 
-            var colorArrayToColor = new SingleTypeConverter(typeof(LedColors.LedColor[]), typeof(LedColors.LedColor),
+            var colorArrayToColor = new SingleTypeConverter(typeof(LedColor[]), typeof(LedColor),
                 (x) =>
                 {
 
                     if (x == null)
                         return new LedColorRGB(0, 0, 0);
 
-                    var arr = (LedColors.LedColor[])x;
+                    var arr = (LedColor[])x;
                     if (arr.Length > 0)
                         return arr[0];
                     else
@@ -83,11 +83,11 @@ namespace LedMusic2.NodeConnection
             converters.Add(colorArrayToColor);
 
             //Color Array
-            var colorToColorArray = new SingleTypeConverter(typeof(LedColors.LedColor), typeof(LedColors.LedColor[]),
-                (x) => (new LedColors.LedColor[] { (LedColors.LedColor)x }));
+            var colorToColorArray = new SingleTypeConverter(typeof(LedColor), typeof(LedColor[]),
+                (x) => (new LedColor[] { (LedColor)x }));
             converters.Add(colorToColorArray);
 
-            var doubleToColorArray = new ConverterCombination(typeof(double), typeof(LedColors.LedColor[]));
+            var doubleToColorArray = new ConverterCombination(typeof(double), typeof(LedColor[]));
             doubleToColorArray.Converters.Add(doubleToColor);
             doubleToColorArray.Converters.Add(colorToColorArray);
             combinations.Add(doubleToColorArray);
@@ -112,10 +112,7 @@ namespace LedMusic2.NodeConnection
 
         private class ConverterCombination
         {
-
-            private List<SingleTypeConverter> _converters = new List<SingleTypeConverter>();
-            public List<SingleTypeConverter> Converters { get { return _converters; } }
-
+            public List<SingleTypeConverter> Converters { get; } = new List<SingleTypeConverter>();
             public Type InputType { get; private set; }
             public Type OutputType { get; private set; }
 

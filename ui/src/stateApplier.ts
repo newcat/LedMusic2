@@ -2,7 +2,8 @@ import Vue from "vue";
 
 const primitiveTypes = [
     "System.Int32", "System.Boolean", "System.String", "LedMusic2.Nodes.NodeCategory",
-    "LedMusic2.Nodes.NodeOptions.NodeOptionType", "System.Guid", "LedMusic2.NodeConnection.ConnectionType"
+    "LedMusic2.Nodes.NodeOptions.NodeOptionType", "System.Guid", "LedMusic2.NodeConnection.ConnectionType",
+    "LedMusic2.NodeEditor.TemporaryConnectionState"
 ];
 
 export default function apply(state: Record<string, any>, obj: Record<string, any>) {
