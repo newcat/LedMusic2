@@ -7,14 +7,14 @@
     position: absolute;
     filter: drop-shadow(0 0 3px #000000cc);
 
-    .__title {
+    & > .__title {
         background: black;
         color: white;
         padding: 0.4em 0.75em;
         border-radius: 4px 4px 0 0;
     }
 
-    .__content {
+    & > .__content {
         padding: 0.75em;
 
         & > div {

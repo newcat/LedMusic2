@@ -67,15 +67,15 @@ namespace LedMusic2.NodeConnection
                 });
             converters.Add(doubleToColor);
 
-            var colorArrayToColor = new SingleTypeConverter(typeof(LedColor[]), typeof(LedColor),
+            var colorArrayToColor = new SingleTypeConverter(typeof(LedColorArray), typeof(LedColor),
                 (x) =>
                 {
 
                     if (x == null)
                         return new LedColorRGB(0, 0, 0);
 
-                    var arr = (LedColor[])x;
-                    if (arr.Length > 0)
+                    var arr = (LedColorArray)x;
+                    if (arr.Count > 0)
                         return arr[0];
                     else
                         return new LedColorRGB(0, 0, 0);
@@ -83,11 +83,11 @@ namespace LedMusic2.NodeConnection
             converters.Add(colorArrayToColor);
 
             //Color Array
-            var colorToColorArray = new SingleTypeConverter(typeof(LedColor), typeof(LedColor[]),
-                (x) => (new LedColor[] { (LedColor)x }));
+            var colorToColorArray = new SingleTypeConverter(typeof(LedColor), typeof(LedColorArray),
+                (x) => (new LedColorArray { (LedColor)x }));
             converters.Add(colorToColorArray);
 
-            var doubleToColorArray = new ConverterCombination(typeof(double), typeof(LedColor[]));
+            var doubleToColorArray = new ConverterCombination(typeof(double), typeof(LedColorArray));
             doubleToColorArray.Converters.Add(doubleToColor);
             doubleToColorArray.Converters.Add(colorToColorArray);
             combinations.Add(doubleToColorArray);

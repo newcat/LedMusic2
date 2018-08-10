@@ -48,6 +48,7 @@ namespace LedMusic2.Reactive
 
         public T FindById(string id)
         {
+            if (id == null) return default(T);
             return FindById(Guid.Parse(id));
         }
 

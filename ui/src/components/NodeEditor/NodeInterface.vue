@@ -2,7 +2,7 @@
     <div :class="['node-interface', typeClass, { '--input': isInput, '--output': !isInput }]">
         <div class="__port" @mouseover="startHover" @mouseout="endHover"></div>
         <span v-if="!state.IsInput || state.IsConnected || !state.Option" class="align-middle">{{ state.Name }}</span>
-        <node-option v-else :data="state.Option"></node-option>
+        <node-option v-else rname="Option" :data="state.Option"></node-option>
     </div>
 </template>
 

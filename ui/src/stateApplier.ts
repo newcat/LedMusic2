@@ -1,11 +1,5 @@
 import Vue from "vue";
 
-const primitiveTypes = [
-    "System.Int32", "System.Boolean", "System.String", "LedMusic2.Nodes.NodeCategory",
-    "LedMusic2.Nodes.NodeOptions.NodeOptionType", "System.Guid", "LedMusic2.NodeConnection.ConnectionType",
-    "LedMusic2.NodeEditor.TemporaryConnectionState"
-];
-
 export default function apply(state: Record<string, any>, obj: Record<string, any>) {
     Object.keys(state).forEach((k) => {
         const v = state[k];
@@ -17,7 +11,7 @@ export default function apply(state: Record<string, any>, obj: Record<string, an
         } else if (v === null) {
             Vue.set(obj, k, null);
         } else if (v.__Type) {
-            if (primitiveTypes.indexOf(v.__Type) > -1) {
+            if (v.__IsPrimitive) {
                 Vue.set(obj, k, v.Value);
             } else {
                 const r = {};

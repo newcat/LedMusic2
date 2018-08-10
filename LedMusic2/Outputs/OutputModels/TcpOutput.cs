@@ -1,6 +1,4 @@
 ﻿using LedMusic2.LedColors;
-using System;
-using System.Windows;
 using System.Xml.Linq;
 
 namespace LedMusic2.Outputs.OutputModels
@@ -14,7 +12,7 @@ namespace LedMusic2.Outputs.OutputModels
         
         public int Port { get; set; } = 4444;
 
-        public override void CalculationDone(LedColor[] calculationResult)
+        public override void CalculationDone(LedColorArray calculationResult)
         {
             //TODO
             return;

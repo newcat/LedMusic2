@@ -10,14 +10,14 @@ namespace LedMusic2.Nodes.NodeModels
     public class OutputNode : NodeBase
     {
 
-        private NodeInterface<LedColor[]> input;
+        private NodeInterface<LedColorArray> input;
         private PreviewOption preview = new PreviewOption("Preview");
         private SelectOption<OutputBase> outputSelection = new SelectOption<OutputBase>("Output");
 
         public OutputNode() : base()
         {
 
-            input = AddInput<LedColor[]>("Color");
+            input = AddInput<LedColorArray>("Color");
 
             Options.Add(preview);
             Options.Add(outputSelection);

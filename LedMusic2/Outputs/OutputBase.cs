@@ -19,7 +19,7 @@ namespace LedMusic2.Outputs
             Name.Set(DefaultName);
         }
 
-        public abstract void CalculationDone(LedColor[] calculationResult);
+        public abstract void CalculationDone(LedColorArray calculationResult);
 
         public XElement GetXmlElement()
         {

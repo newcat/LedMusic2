@@ -65,5 +65,12 @@ namespace LedMusic2.LedColors
 
         }
 
+        protected override void SetRGB(byte r, byte g, byte b)
+        {
+            R = r;
+            G = g;
+            B = b;
+        }
+
     }
 }

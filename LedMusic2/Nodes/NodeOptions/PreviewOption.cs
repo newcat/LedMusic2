@@ -6,7 +6,7 @@ namespace LedMusic2.Nodes.NodeOptions
     class PreviewOption : BaseOption
     {
 
-        public ReactivePrimitive<LedColor[]> Value { get; } = new ReactivePrimitive<LedColor[]>();
+        public ReactivePrimitive<LedColorArray> Value { get; } = new ReactivePrimitive<LedColorArray>();
 
         public PreviewOption(string name) : base(name, NodeOptionType.PREVIEW) { }
 

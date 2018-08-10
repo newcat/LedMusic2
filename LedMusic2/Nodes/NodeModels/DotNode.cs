@@ -15,7 +15,7 @@ namespace LedMusic2.Nodes.NodeModels
         private NodeInterface<LedColor> niColor;
         private NodeInterface<double> niGlow;
         private NodeInterface<bool> niSymmetric;
-        private NodeInterface<LedColor[]> niOutput;
+        private NodeInterface<LedColorArray> niOutput;
 
         private SelectOption<ReactiveListItem<string>> noGlowType = new SelectOption<ReactiveListItem<string>>("Glow Type");
 
@@ -28,7 +28,7 @@ namespace LedMusic2.Nodes.NodeModels
             niGlow = AddInput("Glow", 0.0);
             niSymmetric = AddInput("Symmetric", false);
 
-            niOutput = AddOutput<LedColor[]>("Colors");
+            niOutput = AddOutput<LedColorArray>("Colors");
 
             foreach (var s in new string[] { "Linear", "Exponential", "Gaussian" })
                 noGlowType.Options.Add(new ReactiveListItem<string>(s));
@@ -87,7 +87,7 @@ namespace LedMusic2.Nodes.NodeModels
                 }
             }
 
-            niOutput.SetValue(buffer);
+            niOutput.SetValue(new LedColorArray(buffer));
 
             return true;
 

@@ -63,7 +63,7 @@ namespace LedMusic2.Nodes
                 return ConnectionType.NUMBER;
             else if (typeof(T) == typeof(LedColor))
                 return ConnectionType.COLOR;
-            else if (typeof(T) == typeof(LedColor[]))
+            else if (typeof(T) == typeof(LedColorArray))
                 return ConnectionType.COLOR_ARRAY;
             else if (typeof(T) == typeof(bool))
                 return ConnectionType.BOOL;

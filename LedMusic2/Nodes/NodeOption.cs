@@ -85,7 +85,7 @@ namespace LedMusic2.Nodes
         private LedColor _valColor = new LedColorRGB(0, 0, 0);
         private bool _valBool = false;
         private string _valString = "";
-        private LedColor[] _valColorArray = { new LedColorRGB(0, 0, 0) };
+        private LedColorArray _valColorArray = { new LedColorRGB(0, 0, 0) };
         #endregion
 
         public NodeOption(NodeOptionType type, string name)
@@ -163,7 +163,7 @@ namespace LedMusic2.Nodes
                     _valString = (string)value;
                     break;
                 case NodeOptionType.PREVIEW:
-                    _valColorArray = (LedColor[])value;
+                    _valColorArray = (LedColorArray)value;
                     //CalcPreviewBrush();
                     break;
             }

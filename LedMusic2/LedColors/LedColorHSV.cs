@@ -56,5 +56,15 @@ namespace LedMusic2.LedColors
         }
 
         public override LedColorHSV GetColorHSV() { return this; }
+
+        protected override void SetRGB(byte r, byte g, byte b)
+        {
+            var c = new LedColorRGB(r, g, b);
+            var h = c.GetColorHSV();
+            H = h.H;
+            S = h.S;
+            V = h.V;
+        }
+
     }
 }

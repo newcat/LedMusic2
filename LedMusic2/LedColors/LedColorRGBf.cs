@@ -39,9 +39,11 @@ namespace LedMusic2.LedColors
             return GetColorRGB().GetColorHSV();
         }
 
-        private float GetValue()
+        protected override void SetRGB(byte r, byte g, byte b)
         {
-            return Math.Max(Math.Max(R, G), B);
+            R = r / 255f;
+            G = g / 255f;
+            B = b / 255f;
         }
 
     }

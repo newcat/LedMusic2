@@ -55,10 +55,12 @@
     <Compile Include="App.cs" />
     <Compile Include="BrowserInterop\BrowserAgent.cs" />
     <Compile Include="BrowserInterop\MessageReceivedEventArgs.cs" />
+    <Compile Include="LedColors\LedColorArray.cs" />
     <Compile Include="NodeEditor\TemporaryConnectionState.cs" />
     <Compile Include="Reactive\ICombinedReactive.cs" />
     <Compile Include="Reactive\IReactive.cs" />
     <Compile Include="Reactive\IReactiveListItem.cs" />
+    <Compile Include="Reactive\ISerializable.cs" />
     <Compile Include="Reactive\ReactiveIgnoreAttribute.cs" />
     <Compile Include="Reactive\ReactiveListItem.cs" />
     <Compile Include="Reactive\ReactiveObject.cs" />

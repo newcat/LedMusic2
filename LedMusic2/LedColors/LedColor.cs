@@ -1,17 +1,45 @@
-﻿using System;
+﻿using LedMusic2.Reactive;
+using System;
 
 namespace LedMusic2.LedColors
 {
-    public abstract class LedColor
+    public abstract class LedColor : ISerializable, IEquatable<LedColor>
     {
 
         public abstract LedColorRGB GetColorRGB();
         public abstract LedColorHSV GetColorHSV();
 
+        protected abstract void SetRGB(byte r, byte g, byte b);
+
+        public string Serialize()
+        {
+            var c = GetColorRGB();
+            return Convert.ToBase64String(new byte[] { c.R, c.G, c.B });
+        }
+
+        public void Deserialize(string s)
+        {
+            var bytes = Convert.FromBase64String(s);
+            SetRGB(bytes[0], bytes[1], bytes[2]);
+        }
+
         public override string ToString()
         {
             LedColorRGB c = GetColorRGB();
             return string.Format("{0},{1},{2}", c.R, c.G, c.B);
+        }
+
+        public bool Equals(LedColor obj)
+        {
+            var a = GetColorRGB();
+            var b = obj.GetColorRGB();
+            return a.R == b.R && a.G == b.G && a.B == b.B;
+        }
+
+        public override int GetHashCode()
+        {
+            var c = GetColorRGB();
+            return c.R ^ c.G ^ c.B;
         }
 
         #region Mixing

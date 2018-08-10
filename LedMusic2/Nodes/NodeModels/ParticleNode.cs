@@ -1,8 +1,6 @@
 ﻿using LedMusic2.LedColors;
-using LedMusic2.NodeEditor;
 using System;
 using System.Collections.Generic;
-using System.Windows;
 
 namespace LedMusic2.Nodes.NodeModels
 {
@@ -23,7 +21,7 @@ namespace LedMusic2.Nodes.NodeModels
         private NodeInterface<double> niLifetime;
         private NodeInterface<LedColor> niStartColor;
         private NodeInterface<LedColor> niEndColor;
-        private NodeInterface<LedColor[]> niOutput;
+        private NodeInterface<LedColorArray> niOutput;
 
         public ParticleNode() : base()
         {
@@ -38,7 +36,7 @@ namespace LedMusic2.Nodes.NodeModels
             niStartColor = AddInput<LedColor>("Start Color");
             niEndColor = AddInput<LedColor>("End Color");
 
-            niOutput = AddOutput<LedColor[]>("Output");
+            niOutput = AddOutput<LedColorArray>("Output");
 
         }
 

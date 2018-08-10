@@ -1,13 +1,12 @@
 <template>
-<!--<div>
-    <span>{{ data.Name }}</span>
-    <b-form-select v-model="selected" :options="data.Options || []"></b-form-select>
-</div>-->
 <div
-    :class="['node-option-select', { '--open': open }]"
+    :class="['dark-select', { '--open': open }]"
     @click="open = !open"
 >
-    <div class="__selected">{{ selectedName }}</div>
+    <div class="__selected">
+        <div class="__text">{{ selectedName }}</div>
+        <div class="__icon"><i class="material-icons md-18">keyboard_arrow_down</i></div>
+    </div>
     <div class="__dropdown">
         <div class="item --header">{{ data.Name }}</div>
         <div

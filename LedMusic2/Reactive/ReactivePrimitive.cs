@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace LedMusic2.Reactive
 {
@@ -19,7 +21,7 @@ namespace LedMusic2.Reactive
     {
 
         private T value;
-        private StateUpdate<T> stateUpdate;
+        private IStateUpdate stateUpdate;
 
         public override string __Type => typeof(T).ToString();
         public Func<T, T> CustomGetter { get; set; }
@@ -48,14 +50,18 @@ namespace LedMusic2.Reactive
             if (!newValue.Equals(value))
             {
                 value = newValue;
-                stateUpdate = new StateUpdate<T>("Value", value);
+                stateUpdate = getStateUpdate();
             }
 
         }
 
         public override StateUpdateCollection GetStateUpdates()
         {
-            var res = stateUpdate != null ? new StateUpdateCollection(stateUpdate) : null;
+            var res = stateUpdate != null ? new StateUpdateCollection(
+                new StateUpdate<string>("__Type", __Type),
+                new StateUpdate<bool>("__IsPrimitive", true),
+                stateUpdate
+            ) : null;
             stateUpdate = null;
             return res;
         }
@@ -65,7 +71,8 @@ namespace LedMusic2.Reactive
             stateUpdate = null;
             return new StateUpdateCollection(
                 new StateUpdate<string>("__Type", __Type),
-                new StateUpdate<T>("Value", Get())
+                new StateUpdate<bool>("__IsPrimitive", true),
+                getStateUpdate()
             );
         }
 
@@ -77,7 +84,30 @@ namespace LedMusic2.Reactive
             //else if ((payload as JValue).Type .GetType() != typeof(T))
             //    throw new ArgumentException("Type does not match type of reactive property", "payload");
             else
-                Set((payload as JValue).Value<T>());
+            {
+                if (typeof(ISerializable).IsAssignableFrom(typeof(T)))
+                {
+                    (Get() as ISerializable).Deserialize(payload.Value<string>());
+                } else
+                {
+                    Set((payload as JValue).Value<T>());
+                }
+            }
+                
+        }
+
+        private IStateUpdate getStateUpdate()
+        {
+            if (EqualityComparer<T>.Default.Equals(Get(), default(T)))
+                return new StateUpdate<T>("Value", Get());
+
+            if (typeof(ISerializable).IsAssignableFrom(typeof(T)))
+            {
+                return new StateUpdate<string>("Value", (Get() as ISerializable).Serialize());
+            } else
+            {
+                return new StateUpdate<T>("Value", Get());
+            }
         }
 
     }

@@ -21,7 +21,7 @@ namespace LedMusic2.Nodes.NodeModels
         {
 
             AddInput("Factor", 0.5);
-            AddOutput<LedColor[]>("Color Band");
+            AddOutput<LedColorArray>("Color Band");
             AddOutput<LedColor>("Single Color");
 
             //Options.Add(new NodeOption(NodeOptionType.CUSTOM, "Test", typeof(NodeViews.ColorRampNode), this));

@@ -48,6 +48,7 @@ namespace LedMusic2.NodeEditor
                 var input = origin.IsInput.Get() ? target : origin;
                 var output = origin.IsInput.Get() ? origin : target;
                 Connections.Add(new Connection(input, output));
+                ntb.Build(Nodes, Connections);
             }
         }
 
