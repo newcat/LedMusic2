@@ -1,6 +1,6 @@
 <template>
     <div
-        class="node" 
+        class="node --selected" 
         :style="styles"
     >
 

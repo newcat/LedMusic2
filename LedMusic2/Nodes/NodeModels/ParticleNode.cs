@@ -110,7 +110,7 @@ namespace LedMusic2.Nodes.NodeModels
 
             }
 
-            Outputs[0].SetValue(rendered);
+            Outputs[0].SetValue(new LedColorArray(rendered));
 
             return true;
 

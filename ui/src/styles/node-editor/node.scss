@@ -7,6 +7,11 @@
     position: absolute;
     filter: drop-shadow(0 0 3px #000000cc);
 
+    &.--selected {
+        z-index: 5;
+        border: 1px solid orange;
+    }
+
     & > .__title {
         background: black;
         color: white;

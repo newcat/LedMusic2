@@ -1,5 +1,8 @@
 <template>
-    <b-checkbox>{{ data.Name }}</b-checkbox>
+    <b-checkbox
+        :value="data.Value"
+        @input="sendCommand('setValue', $event)"
+    >{{ data.Name }}</b-checkbox>
 </template>
 
 <script lang="ts">
