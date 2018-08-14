@@ -6,6 +6,7 @@ using LedMusic2.ViewModels;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -40,7 +41,12 @@ namespace LedMusic2
 
         public static void Main(string[] args)
         {
-            new App();
+            var app = new App();
+            var data = File.ReadAllText("../../test.json");
+            var test = Reactive.ReactiveObject.FromJson<MainViewModel>(JObject.Parse(data));
+            Console.WriteLine(test.GetFullState().ToJson().ToString());
+            Console.ReadLine();
+            Console.WriteLine(MainViewModel.Instance.GetFullState().ToJson().ToString());
             Console.ReadLine();
         }
 

@@ -10,6 +10,7 @@ namespace LedMusic2.Outputs
         public ReactivePrimitive<string> Name { get; } = new ReactivePrimitive<string>();
         public Type T { get; set; }
 
+        public OutputType() { }
 
         public OutputType(string name, Type t)
         {

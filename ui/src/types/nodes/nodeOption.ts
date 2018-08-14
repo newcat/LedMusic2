@@ -1,3 +1,5 @@
+import { IReactiveObject } from "@/types/reactiveObject";
+
 export enum NodeOptionType {
     NUMBER,
     COLOR,
@@ -8,7 +10,7 @@ export enum NodeOptionType {
     CUSTOM
 }
 
-export interface INodeOption {
+export interface INodeOption extends IReactiveObject {
     Name: string;
     Type: NodeOptionType;
 }

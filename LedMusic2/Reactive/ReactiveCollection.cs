@@ -6,7 +6,7 @@ using System.Linq;
 namespace LedMusic2.Reactive
 {
 
-    public class ReactiveCollection<T> : List<T>, IReactive
+    public class ReactiveCollection<T> : List<T>, IReactive, IReactiveCollection
         where T : IReactive, IReactiveListItem
     {
 
@@ -100,6 +100,34 @@ namespace LedMusic2.Reactive
             {
                 CommandHandler?.Invoke(command, payload, this);
             }
+        }
+
+        public void LoadFromJson(JToken j)
+        {
+
+            Clear();
+
+            foreach (var item in (JObject)j)
+            {
+
+                if (item.Key == "__Type")
+                    continue;
+
+                var id = Guid.Parse(item.Key);
+                var itemObject = (JObject)item.Value;
+
+                var type = Type.GetType((string)itemObject["__Type"]);
+
+                if (type == null)
+                    throw new TypeLoadException($"Could not find type '{(string)itemObject["__Type"]}'");
+
+                var jsonToObjectMethod = typeof(ReactiveObject).GetMethod("FromJson");
+                var m = jsonToObjectMethod.MakeGenericMethod(type);
+                var instance = m.Invoke(null, new object[] { itemObject });
+                Add((T)instance);
+
+            }
+
         }
 
         private void addOperation(T item)

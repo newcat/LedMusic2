@@ -12,6 +12,8 @@
                     <b-nav-item to="editor">Editor</b-nav-item>
                     <b-nav-item>Outputs</b-nav-item>
                     <b-nav-item>VST Channels</b-nav-item>
+                    <b-nav-item>Load</b-nav-item>
+                    <b-nav-item>Save</b-nav-item>
                 </b-navbar-nav>
             </b-collapse>
 
@@ -77,7 +79,6 @@ export default class App extends Vue {
 
         switch (msg.type) {
             case "state":
-                console.log("Received state update");
                 apply(msg.state, this.state);
                 break;
             default:

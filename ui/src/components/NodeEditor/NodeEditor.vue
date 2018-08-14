@@ -1,9 +1,11 @@
 <template>
     <div
+        tabindex="0"
         :class="['node-editor', { 'ignore-mouse': !!temporaryConnection }]"
         @mousemove="mouseMoveHandler"
         @mousedown="mouseDown"
         @mouseup="mouseUp"
+        @keydown="keyDown"
     >
         <svg class="connections-container">
             <connection
@@ -22,7 +24,10 @@
             :key="key"
             :id="key"
             :rname="'Nodes.' + key"
-            :nodedata="value">
+            :nodedata="value"
+            :selected="selectedNode ? selectedNode.id === key : false"
+            @select="selectedNode = $event"
+        >
         </node>
     </div>
 </template>
@@ -45,6 +50,14 @@ interface ITemporaryConnection {
     my?: number;
 }
 
+interface IVisualConnection {
+    id: string;
+    inputNode: Node;
+    outputNode: Node;
+    inputInterface: NodeInterface;
+    outputInterface: NodeInterface;
+}
+
 @Component({
     components: {
         "node": Node,
@@ -57,14 +70,41 @@ export default class NodeEditor extends Vue {
     @Prop({ type: Object, default: () => {} })
     scene!: IScene;
 
+    globalLeft = 0;
+    globalTop = 0;
+
     nodes: Record<string, Node> = {};
     temporaryConnection: ITemporaryConnection|null = null;
     hoveringOver?: NodeInterface|null = null;
+    selectedNode: Node|null = null;
 
     @Provide("nodeeditor")
     nodeeditor: NodeEditor = this;
 
-    registerNode(id: string, node: any) {
+    get connections() {
+        const arr: IVisualConnection[] = [];
+        for (const pair of _.toPairs(this.scene.Connections)) {
+            const [id, value] = pair as [string, any];
+            const inputNode = this.nodes[value.InputNodeId];
+            const outputNode = this.nodes[value.OutputNodeId];
+            const inputInterface = this.getInterface(inputNode, value.InputNodeId, value.InputInterfaceId, false);
+            const outputInterface = this.getInterface(outputNode, value.OutputNodeId, value.OutputInterfaceId, true);
+            if (inputNode && outputNode && inputInterface && outputInterface) {
+                arr.push({ id, inputNode, outputNode, inputInterface, outputInterface });
+            }
+        }
+        return arr;
+    }
+
+    mounted() {
+        if (this.scene.VisualState) {
+            const vs = JSON.parse(this.scene.VisualState);
+            this.globalLeft = vs.globalLeft;
+            this.globalTop = vs.globalTop;
+        }
+    }
+
+    registerNode(id: string, node: Node) {
         this.$set(this.nodes, id, node);
     }
 
@@ -101,12 +141,12 @@ export default class NodeEditor extends Vue {
             // to it, remove the connection and make it temporary
             if (this.hoveringOver.state.IsInput && this.hoveringOver.state.IsConnected) {
                 // find connection
-                const conn = this.connections.find((c: any) => c.outputInterface === this.hoveringOver);
+                const conn = this.connections.find((c) => c.outputInterface === this.hoveringOver);
                 this.temporaryConnection = {
-                    startNode: conn.inputNode,
-                    startInterface: conn.inputInterface
+                    startNode: conn!.inputNode,
+                    startInterface: conn!.inputInterface
                 };
-                this.sendCommand("deleteConnection", conn.id);
+                this.sendCommand("deleteConnection", conn!.id);
             } else {
                 this.temporaryConnection = {
                     startNode: this.hoveringOver.$parent as Node,
@@ -117,6 +157,8 @@ export default class NodeEditor extends Vue {
             this.$set(this.temporaryConnection, "mx", ev.x);
             this.$set(this.temporaryConnection, "my", ev.y);
 
+        } else {
+            this.selectedNode = null;
         }
     }
 
@@ -131,19 +173,10 @@ export default class NodeEditor extends Vue {
         this.temporaryConnection = null;
     }
 
-    get connections() {
-        const arr: any = [];
-        for (const pair of _.toPairs(this.scene.Connections)) {
-            const [id, value] = pair as [string, any];
-            const inputNode = this.nodes[value.InputNodeId];
-            const outputNode = this.nodes[value.OutputNodeId];
-            const inputInterface = this.getInterface(inputNode, value.InputNodeId, value.InputInterfaceId, false);
-            const outputInterface = this.getInterface(outputNode, value.OutputNodeId, value.OutputInterfaceId, true);
-            if (inputNode && outputNode && inputInterface && outputInterface) {
-                arr.push({ id, inputNode, outputNode, inputInterface, outputInterface });
-            }
+    keyDown(ev: KeyboardEvent) {
+        if (ev.key === "Delete" && this.selectedNode) {
+            this.sendCommand("deleteNode", this.selectedNode.id);
         }
-        return arr;
     }
 
     getInterface(node: any, nodeId: string, interfaceId: string, isInput: boolean) {
@@ -153,6 +186,13 @@ export default class NodeEditor extends Vue {
 
     getIdOfInterface(intf: NodeInterface) {
         return intf.rname.split(".")[1];
+    }
+
+    sendVisualState() {
+        this.sendCommand("setVisualState", JSON.stringify({
+            globalLeft: this.globalLeft,
+            globalTop: this.globalTop
+        }));
     }
 
 }

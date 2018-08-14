@@ -89,37 +89,6 @@ namespace LedMusic2.Nodes.NodeModels
 
         }
 
-        protected override void LoadAdditionalXmlData(XElement x)
-        {
-            ColorStops.Clear();
-            SelectedColorStop = null;
-            foreach (XElement el in x.Elements())
-            {
-                if (el.Name.LocalName == "colorstops")
-                {
-                    foreach (XElement colorStopX in el.Elements())
-                    {
-                        double pos = double.Parse(colorStopX.Attribute("position").Value, CultureInfo.InvariantCulture);
-                        LedColorRGB c = LedColorRGB.Parse(colorStopX.Value);
-                        ColorStopViewModel cvm = new ColorStopViewModel(c, pos);
-                        ColorStops.Add(cvm);
-                    }
-                }
-            }
-        }
-
-        protected override void SaveAdditionalXmlData(XElement x)
-        {
-            XElement colorStopsX = new XElement("colorstops");
-            foreach (ColorStopViewModel cvm in ColorStops)
-            {
-                XElement colorStopX = new XElement("colorstop", cvm.Color);
-                colorStopX.SetAttributeValue("position", cvm.Position);
-                colorStopsX.Add(colorStopX);
-            }
-            x.Add(colorStopsX);
-        }
-
     }
 
 }

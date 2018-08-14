@@ -178,19 +178,9 @@ namespace LedMusic2.NodeEditor
             ntb.Build(Nodes, Connections);
         }
 
-        public void CalculateNodes(NodeBase startingNode)
-        {
-            ntb.Calculate(startingNode);
-        }
-
-        public void CalculateNodes(int startingIndex)
-        {
-            ntb.Calculate(startingIndex);
-        }
-
         public void CalculateAllNodes()
         {
-            CalculateNodes(0);
+            ntb.Calculate(0);
         }
         #endregion
 
@@ -203,14 +193,14 @@ namespace LedMusic2.NodeEditor
             XElement nodesX = new XElement("nodes");
             foreach (NodeBase n in Nodes)
             {
-                nodesX.Add(n.GetXmlElement());
+                //nodesX.Add(n.GetXmlElement());
             }
             rootX.Add(nodesX);
 
             XElement connectionsX = new XElement("connections");
             foreach (Connection c in Connections)
             {
-                connectionsX.Add(c.GetXmlElement());
+                //connectionsX.Add(c.GetXmlElement());
             }
             rootX.Add(connectionsX);
 
@@ -254,7 +244,7 @@ namespace LedMusic2.NodeEditor
                     break;
                 }
             }
-            if (nodeInstance != null) nodeInstance.LoadFromXml(nodeX);
+            //if (nodeInstance != null) nodeInstance.LoadFromXml(nodeX);
 
         }
 

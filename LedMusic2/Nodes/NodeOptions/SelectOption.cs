@@ -1,4 +1,5 @@
 ﻿using LedMusic2.Reactive;
+using Newtonsoft.Json.Linq;
 using System;
 
 namespace LedMusic2.Nodes.NodeOptions
@@ -26,12 +27,24 @@ namespace LedMusic2.Nodes.NodeOptions
             }
         }
 
+        public SelectOption() : base() { }
         public SelectOption(string name) : base(name, NodeOptionType.SELECT) { }
 
         public void SetOptions(ReactiveCollection<T> newOptions)
         {
             Options = newOptions;
             UpdateReactiveChildren();
+        }
+
+        protected override void Initialize()
+        {
+            base.Initialize();
+            SelectedId.CustomSetter = (x) => throw new InvalidOperationException();
+        }
+
+        protected override void SetValue(JToken value)
+        {
+            SelectedId.Set((string)value);
         }
 
         public override object GetValue()

@@ -1,4 +1,5 @@
 ﻿using LedMusic2.Reactive;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Xml.Linq;
 
@@ -14,13 +15,24 @@ namespace LedMusic2.Nodes.NodeOptions
 
         public event EventHandler ValueChanged;
 
+        public BaseOption() { }
+
         public BaseOption(string name, NodeOptionType type)
         {
             Name.Set(name);
             Type.Set(type);
         }
 
+        protected override void Initialize()
+        {
+            RegisterCommand("setValue", (p) => {
+                SetValue(p);
+                RaiseValueChanged();
+            });
+        }
+
         public abstract object GetValue();
+        protected abstract void SetValue(JToken value);
 
         protected void RaiseValueChanged()
         {

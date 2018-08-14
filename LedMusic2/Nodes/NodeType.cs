@@ -13,6 +13,8 @@ namespace LedMusic2.Nodes
 
         public Type T { get; set; }
 
+        public NodeType() { }
+
         public NodeType(string name, NodeCategory category, Type t)
         {
             Name.Set(name);

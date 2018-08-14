@@ -45,7 +45,7 @@ namespace LedMusic2.Nodes.NodeModels
             string mode = optMode.Value.Get();
 
             int length = Math.Max(colorsA.Count, colorsB.Count);
-            LedColorArray result = new LedColorArray(length);
+            LedColorArray result = new LedColorArray(new LedColor[length]);
 
             for (int i = 0; i < length; i++)
             {

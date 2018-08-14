@@ -59,6 +59,7 @@
     <Compile Include="NodeEditor\TemporaryConnectionState.cs" />
     <Compile Include="Reactive\ICombinedReactive.cs" />
     <Compile Include="Reactive\IReactive.cs" />
+    <Compile Include="Reactive\IReactiveCollection.cs" />
     <Compile Include="Reactive\IReactiveListItem.cs" />
     <Compile Include="Reactive\ISerializable.cs" />
     <Compile Include="Reactive\ReactiveIgnoreAttribute.cs" />
@@ -115,6 +116,7 @@
     <Compile Include="NodeConnection\Connection.cs" />
     <Compile Include="Nodes\NodeModels\DotNode.cs" />
     <Compile Include="GlobalProperties.cs" />
+    <None Include="test.json" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LedColors\LedColor.cs" />

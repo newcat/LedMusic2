@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Xml.Linq;
 
 namespace LedMusic2.Reactive
 {
@@ -11,11 +13,15 @@ namespace LedMusic2.Reactive
         public virtual string __Type { get; }
         private readonly Dictionary<string, IReactive> children = new Dictionary<string, IReactive>();
         private readonly Dictionary<string, Action<JToken>> commandHandlers = new Dictionary<string, Action<JToken>>();
+        public ReactivePrimitive<string> VisualState { get; } = new ReactivePrimitive<string>();
+
+        protected virtual void Initialize() { }
 
         public ReactiveObject()
         {
             UpdateReactiveChildren();
             __Type = GetType().ToString();
+            RegisterCommand("setVisualState", (p) => VisualState.Set(p.Value<string>()));
         }
 
         public void RegisterCommand(string command, Action<JToken> handler)
@@ -91,6 +97,113 @@ namespace LedMusic2.Reactive
                 );
             foreach (var p in props)
                 children.Add(p.Name, (IReactive)p.GetValue(this));
+        }
+
+        public static T FromJson<T>(JToken j) where T : ReactiveObject
+        {
+
+            T obj = Activator.CreateInstance<T>();
+
+            var state = (JObject)j;
+            foreach (var prop in state.Properties())
+            {
+
+                if (!obj.children.ContainsKey(prop.Name) || prop.Value.Type == JTokenType.Null)
+                    continue;
+
+                var reactiveProperty = obj.children[prop.Name];
+
+                var value = (JObject)prop.Value;
+                if (value.ContainsKey("__IsPrimitive") && (bool)value["__IsPrimitive"])
+                {
+
+                    var primitiveValue = value["Value"];
+
+                    switch (primitiveValue.Type)
+                    {
+                        case JTokenType.Boolean:
+                            getTypedProperty<bool>(reactiveProperty).Set((bool)primitiveValue);
+                            break;
+                        case JTokenType.Float:
+                            if (typeof(ReactivePrimitive<float>) == reactiveProperty.GetType())
+                                ((ReactivePrimitive<float>)reactiveProperty).Set((float)primitiveValue);
+                            else if (typeof(ReactivePrimitive<double>) == reactiveProperty.GetType())
+                                ((ReactivePrimitive<double>)reactiveProperty).Set((double)primitiveValue);
+                            else
+                                throw new ArgumentException($"Expected type {typeof(ReactivePrimitive<T>)}, got {reactiveProperty.GetType()}.");
+                            break;
+                        case JTokenType.Guid:
+                            getTypedProperty<Guid>(reactiveProperty).Set((Guid)primitiveValue);
+                            break;
+                        case JTokenType.Integer:
+                            if (Type.GetType((string)value["__Type"]).IsEnum)
+                                ((ReactivePrimitive)reactiveProperty).Set((int)primitiveValue);
+                            else
+                                getTypedProperty<int>(reactiveProperty).Set((int)primitiveValue);
+                            break;
+                        case JTokenType.Null:
+                            ((ReactivePrimitive)reactiveProperty).Set(null);
+                            break;
+                        case JTokenType.String:
+                            if (typeof(ReactivePrimitive<string>) == reactiveProperty.GetType())
+                                ((ReactivePrimitive<string>)reactiveProperty).Set((string)primitiveValue);
+                            else
+                            {
+                                var primitiveType = Type.GetType((string)value["__Type"]);
+                                var parseMethod = primitiveType.GetMethod("Parse");
+                                if (parseMethod != null)
+                                    ((ReactivePrimitive)reactiveProperty).Set(parseMethod.Invoke(null, new object[] { (string)primitiveValue }));
+                                else
+                                    throw new ArgumentException($"Type {reactiveProperty.GetType()} of reactive property {prop.Name} has no Parse(string) method.");
+                            }
+                            break;
+                        default:
+                            throw new ArgumentException($"Disallowed type: {primitiveValue.Type}");
+                    }
+
+                }
+                else if (isSubclassOfRawGeneric(typeof(ReactiveCollection<>), obj.children[prop.Name].GetType()))
+                {
+                    ((IReactiveCollection)reactiveProperty).LoadFromJson(value);
+                } else
+                {
+                    var type = Type.GetType((string)value["__Type"]);
+                    var jsonToObjectMethod = typeof(ReactiveObject).GetMethod("FromJson");
+                    var m = jsonToObjectMethod.MakeGenericMethod(type);
+                    var instance = m.Invoke(null, new object[] { value });
+                    obj.GetType().InvokeMember(prop.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.SetProperty,
+                        Type.DefaultBinder, obj, new object[] { instance });
+                }
+
+            }
+
+            obj.UpdateReactiveChildren();
+            obj.Initialize();
+
+            return obj;
+
+        }
+
+        private static ReactivePrimitive<T> getTypedProperty<T>(IReactive actual)
+        {
+            if (typeof(ReactivePrimitive<T>) != actual.GetType())
+                throw new ArgumentException($"Expected type {typeof(ReactivePrimitive<T>)}, got {actual}.");
+
+            return (ReactivePrimitive<T>)actual;
+        }
+
+        private static bool isSubclassOfRawGeneric(Type generic, Type toCheck)
+        {
+            while (toCheck != null && toCheck != typeof(object))
+            {
+                var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
+                if (generic == cur)
+                {
+                    return true;
+                }
+                toCheck = toCheck.BaseType;
+            }
+            return false;
         }
 
     }

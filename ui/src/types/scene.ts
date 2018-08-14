@@ -1,6 +1,7 @@
 import { INodeType } from "@/types/nodes/nodeType";
 import { INode } from "@/types/nodes/node";
 import { IConnection } from "@/types/connections/connection";
+import { IReactiveObject } from "@/types/reactiveObject";
 
 export enum TemporaryConnectionState {
     NONE,
@@ -8,7 +9,7 @@ export enum TemporaryConnectionState {
     FORBIDDEN
 }
 
-export interface IScene {
+export interface IScene extends IReactiveObject {
     Name: string;
     TemporaryConnectionState: TemporaryConnectionState;
     Nodes: Record<string, INode>;

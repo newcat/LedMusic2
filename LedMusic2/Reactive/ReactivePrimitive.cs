@@ -15,6 +15,8 @@ namespace LedMusic2.Reactive
         public abstract StateUpdateCollection GetFullState();
         public abstract void HandleCommand(string command, JToken payload);
 
+        public abstract void Set(object value);
+
     }
 
     public class ReactivePrimitive<T> : ReactivePrimitive
@@ -47,12 +49,26 @@ namespace LedMusic2.Reactive
             if (CustomSetter != null)
                 newValue = CustomSetter(newValue);
 
-            if (!newValue.Equals(value))
+            if ((isNullOrDefault(newValue) && !isNullOrDefault(value)) ||
+                (!isNullOrDefault(newValue) && isNullOrDefault(value)) ||
+                (!isNullOrDefault(newValue) && !isNullOrDefault(value) && !newValue.Equals(value)))
             {
                 value = newValue;
                 stateUpdate = getStateUpdate();
             }
 
+        }
+
+        public override void Set(object value)
+        {
+            if (value == null)
+                Set(default(T));
+            else if (typeof(T).IsEnum && typeof(int).IsAssignableFrom(value.GetType()))
+                Set((T)value);
+            else if (!typeof(T).IsAssignableFrom(value.GetType()))
+                throw new ArgumentException($"Expected type {typeof(T)}, got {value.GetType()}");
+            else
+                Set((T)value);
         }
 
         public override StateUpdateCollection GetStateUpdates()
@@ -98,7 +114,7 @@ namespace LedMusic2.Reactive
 
         private IStateUpdate getStateUpdate()
         {
-            if (EqualityComparer<T>.Default.Equals(Get(), default(T)))
+            if (isNullOrDefault(Get()))
                 return new StateUpdate<T>("Value", Get());
 
             if (typeof(ISerializable).IsAssignableFrom(typeof(T)))
@@ -108,6 +124,11 @@ namespace LedMusic2.Reactive
             {
                 return new StateUpdate<T>("Value", Get());
             }
+        }
+
+        private bool isNullOrDefault(T val)
+        {
+            return EqualityComparer<T>.Default.Equals(val, default(T));
         }
 
     }

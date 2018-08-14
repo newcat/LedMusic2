@@ -1,12 +1,12 @@
 <template>
     <div
-        class="node --selected" 
+        :class="['node', { '--selected': selected }]" 
         :style="styles"
     >
 
         <div
             class="__title"
-            @mousedown.prevent="startDrag"
+            @mousedown.prevent.stop="startDrag"
         >
             {{ nodedata.Name }}
         </div>
@@ -46,6 +46,7 @@
 import { Component, Vue, Prop } from "vue-property-decorator";
 import NodeOption from "./NodeOption";
 import NodeInterface from "./NodeInterface.vue";
+import NodeEditor from "./NodeEditor.vue";
 import { INode } from "@/types/nodes/node";
 
 @Component({
@@ -62,24 +63,36 @@ export default class Node extends Vue {
     @Prop({ type: String })
     id!: string;
 
-    selected = false;
+    @Prop({ type: Boolean, default: false })
+    selected!: boolean;
+
     dragging = false;
     top = 30;
     left = 30;
     width = 200;
 
+    get parent() {
+        return this.$parent as NodeEditor;
+    }
+
     mounted() {
-        (this.$parent as any).registerNode(this.id, this);
+        this.parent.registerNode(this.id, this);
+        if (this.nodedata.VisualState) {
+            const vs = JSON.parse(this.nodedata.VisualState);
+            this.top = vs.top;
+            this.left = vs.left;
+            this.width = vs.width;
+        }
     }
 
     beforeDestroy() {
-        (this.$parent as any).unregisterNode(this.id);
+        this.parent.unregisterNode(this.id);
     }
 
     get styles() {
         return {
-            top: `${this.top}px`,
-            left: `${this.left}px`,
+            top: `${this.top + this.parent.globalTop}px`,
+            left: `${this.left + this.parent.globalLeft}px`,
             width: `${this.width}px`,
         };
     }
@@ -88,12 +101,26 @@ export default class Node extends Vue {
         this.dragging = true;
         document.addEventListener("mousemove", this.handleMove);
         document.addEventListener("mouseup", this.stopDrag);
+        this.select();
+    }
+
+    select() {
+        this.$emit("select", this);
     }
 
     stopDrag() {
         this.dragging = false;
         document.removeEventListener("mousemove", this.handleMove);
         document.removeEventListener("mouseup", this.stopDrag);
+        this.sendVisualState();
+    }
+
+    sendVisualState() {
+        this.sendCommand("setVisualState", JSON.stringify({
+            top: this.top,
+            left: this.left,
+            width: this.width
+        }));
     }
 
     handleMove(ev: MouseEvent) {

@@ -1,0 +1,555 @@
+﻿{
+  "__Type": "LedMusic2.ViewModels.MainViewModel",
+  "ActiveSceneId": {
+    "__Type": "System.Guid",
+    "__IsPrimitive": true,
+    "Value": "00000000-0000-0000-0000-000000000000"
+  },
+  "DisplayedSceneId": {
+    "__Type": "System.Guid",
+    "__IsPrimitive": true,
+    "Value": "db6b3ede-8734-416f-a3ef-a4232900af50"
+  },
+  "IsRunning": {
+    "__Type": "System.Boolean",
+    "__IsPrimitive": true,
+    "Value": true
+  },
+  "Scenes": {
+    "__Type": "LedMusic2.Reactive.ReactiveCollection`1[LedMusic2.NodeEditor.Scene]",
+    "db6b3ede-8734-416f-a3ef-a4232900af50": {
+      "__Type": "LedMusic2.NodeEditor.Scene",
+      "Name": {
+        "__Type": "System.String",
+        "__IsPrimitive": true,
+        "Value": "Global Scene"
+      },
+      "TemporaryConnectionState": {
+        "__Type": "LedMusic2.NodeEditor.TemporaryConnectionState",
+        "__IsPrimitive": true,
+        "Value": 0
+      },
+      "Nodes": {
+        "__Type": "LedMusic2.Reactive.ReactiveCollection`1[LedMusic2.Nodes.NodeBase]",
+        "21e0d452-465a-451f-939b-107e703f6ca5": {
+          "__Type": "LedMusic2.Nodes.NodeModels.OutputNode",
+          "Name": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": "Output"
+          },
+          "Inputs": {
+            "__Type": "LedMusic2.Nodes.NodeInterfaceList",
+            "6e808674-e75a-44ec-ad8c-991ec3bc09c7": {
+              "__Type": "LedMusic2.Nodes.NodeInterface`1[LedMusic2.LedColors.LedColorArray]",
+              "Name": {
+                "__Type": "System.String",
+                "__IsPrimitive": true,
+                "Value": "Color"
+              },
+              "ConnectionType": {
+                "__Type": "LedMusic2.NodeConnection.ConnectionType",
+                "__IsPrimitive": true,
+                "Value": 2
+              },
+              "IsInput": {
+                "__Type": "System.Boolean",
+                "__IsPrimitive": true,
+                "Value": true
+              },
+              "IsConnected": {
+                "__Type": "System.Boolean",
+                "__IsPrimitive": true,
+                "Value": true
+              },
+              "Option": null,
+              "VisualState": {
+                "__Type": "System.String",
+                "__IsPrimitive": true,
+                "Value": null
+              }
+            }
+          },
+          "Outputs": {
+            "__Type": "LedMusic2.Nodes.NodeInterfaceList"
+          },
+          "Options": {
+            "__Type": "LedMusic2.Reactive.ReactiveCollection`1[LedMusic2.Nodes.NodeOptions.BaseOption]",
+            "e5a4286f-a31a-45a6-8137-4d194f8bdec1": {
+              "__Type": "LedMusic2.Nodes.NodeOptions.PreviewOption",
+              "Value": {
+                "__Type": "LedMusic2.LedColors.LedColorArray",
+                "__IsPrimitive": true,
+                "Value": null
+              },
+              "Name": {
+                "__Type": "System.String",
+                "__IsPrimitive": true,
+                "Value": "Preview"
+              },
+              "Type": {
+                "__Type": "LedMusic2.Nodes.NodeOptions.NodeOptionType",
+                "__IsPrimitive": true,
+                "Value": 4
+              },
+              "VisualState": {
+                "__Type": "System.String",
+                "__IsPrimitive": true,
+                "Value": null
+              }
+            },
+            "d7c3d24c-6579-4409-897d-f034918164dc": {
+              "__Type": "LedMusic2.Nodes.NodeOptions.SelectOption`1[LedMusic2.Outputs.OutputBase]",
+              "Options": {
+                "__Type": "LedMusic2.Reactive.ReactiveCollection`1[LedMusic2.Outputs.OutputBase]",
+                "f836530b-e7ea-4c16-bf83-f5621598d122": {
+                  "__Type": "LedMusic2.Outputs.OutputModels.DummyOutput",
+                  "Name": {
+                    "__Type": "System.String",
+                    "__IsPrimitive": true,
+                    "Value": "Dummy"
+                  },
+                  "VisualState": {
+                    "__Type": "System.String",
+                    "__IsPrimitive": true,
+                    "Value": null
+                  }
+                }
+              },
+              "SelectedId": {
+                "__Type": "System.String",
+                "__IsPrimitive": true,
+                "Value": null
+              },
+              "ItemDisplayPropertyName": {
+                "__Type": "System.String",
+                "__IsPrimitive": true,
+                "Value": "Name"
+              },
+              "Name": {
+                "__Type": "System.String",
+                "__IsPrimitive": true,
+                "Value": "Output"
+              },
+              "Type": {
+                "__Type": "LedMusic2.Nodes.NodeOptions.NodeOptionType",
+                "__IsPrimitive": true,
+                "Value": 3
+              },
+              "VisualState": {
+                "__Type": "System.String",
+                "__IsPrimitive": true,
+                "Value": null
+              }
+            }
+          },
+          "VisualState": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": null
+          }
+        },
+        "0ed818c2-e966-4cd2-bf22-761b094e8dff": {
+          "__Type": "LedMusic2.Nodes.NodeModels.DoubleValueNode",
+          "Name": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": "Numeric value"
+          },
+          "Inputs": {
+            "__Type": "LedMusic2.Nodes.NodeInterfaceList"
+          },
+          "Outputs": {
+            "__Type": "LedMusic2.Nodes.NodeInterfaceList",
+            "c420ad2a-c5cb-48a0-b9d2-c1d260f3f5c1": {
+              "__Type": "LedMusic2.Nodes.NodeInterface`1[System.Double]",
+              "Name": {
+                "__Type": "System.String",
+                "__IsPrimitive": true,
+                "Value": "Value"
+              },
+              "ConnectionType": {
+                "__Type": "LedMusic2.NodeConnection.ConnectionType",
+                "__IsPrimitive": true,
+                "Value": 0
+              },
+              "IsInput": {
+                "__Type": "System.Boolean",
+                "__IsPrimitive": true,
+                "Value": false
+              },
+              "IsConnected": {
+                "__Type": "System.Boolean",
+                "__IsPrimitive": true,
+                "Value": false
+              },
+              "Option": null,
+              "VisualState": {
+                "__Type": "System.String",
+                "__IsPrimitive": true,
+                "Value": null
+              }
+            }
+          },
+          "Options": {
+            "__Type": "LedMusic2.Reactive.ReactiveCollection`1[LedMusic2.Nodes.NodeOptions.BaseOption]",
+            "1d5cbd61-0939-4ba0-9d9c-68743089e924": {
+              "__Type": "LedMusic2.Nodes.NodeOptions.NumberOption",
+              "Value": {
+                "__Type": "System.Double",
+                "__IsPrimitive": true,
+                "Value": 0.0
+              },
+              "MinValue": {
+                "__Type": "System.Double",
+                "__IsPrimitive": true,
+                "Value": 0.0
+              },
+              "MaxValue": {
+                "__Type": "System.Double",
+                "__IsPrimitive": true,
+                "Value": 1.0
+              },
+              "Name": {
+                "__Type": "System.String",
+                "__IsPrimitive": true,
+                "Value": "Value"
+              },
+              "Type": {
+                "__Type": "LedMusic2.Nodes.NodeOptions.NodeOptionType",
+                "__IsPrimitive": true,
+                "Value": 0
+              },
+              "VisualState": {
+                "__Type": "System.String",
+                "__IsPrimitive": true,
+                "Value": null
+              }
+            }
+          },
+          "VisualState": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": null
+          }
+        }
+      },
+      "Connections": {
+        "__Type": "LedMusic2.Reactive.ReactiveCollection`1[LedMusic2.NodeConnection.Connection]",
+        "26c67d84-633b-4489-976b-07f5104a199b": {
+          "__Type": "LedMusic2.NodeConnection.Connection",
+          "InputNodeId": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": "0ed818c2-e966-4cd2-bf22-761b094e8dff"
+          },
+          "InputInterfaceId": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": "c420ad2a-c5cb-48a0-b9d2-c1d260f3f5c1"
+          },
+          "OutputNodeId": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": "21e0d452-465a-451f-939b-107e703f6ca5"
+          },
+          "OutputInterfaceId": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": "6e808674-e75a-44ec-ad8c-991ec3bc09c7"
+          },
+          "VisualState": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": null
+          }
+        }
+      },
+      "NodeTypes": {
+        "__Type": "LedMusic2.Reactive.ReactiveCollection`1[LedMusic2.Nodes.NodeType]",
+        "b26ac00f-7c3d-4ca7-80e5-e020af9ea55e": {
+          "__Type": "LedMusic2.Nodes.NodeType",
+          "Name": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": "Scene Switcher"
+          },
+          "Category": {
+            "__Type": "LedMusic2.Nodes.NodeCategory",
+            "__IsPrimitive": true,
+            "Value": 1
+          },
+          "VisualState": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": null
+          }
+        },
+        "689c6377-91ed-4aba-8245-f0ce7070d447": {
+          "__Type": "LedMusic2.Nodes.NodeType",
+          "Name": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": "Boolean"
+          },
+          "Category": {
+            "__Type": "LedMusic2.Nodes.NodeCategory",
+            "__IsPrimitive": true,
+            "Value": 3
+          },
+          "VisualState": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": null
+          }
+        },
+        "006cd4f8-5f89-4634-8862-105d94879527": {
+          "__Type": "LedMusic2.Nodes.NodeType",
+          "Name": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": "Color Ramp"
+          },
+          "Category": {
+            "__Type": "LedMusic2.Nodes.NodeCategory",
+            "__IsPrimitive": true,
+            "Value": 2
+          },
+          "VisualState": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": null
+          }
+        },
+        "6dd90593-a331-4c2f-9341-457900a7ce6a": {
+          "__Type": "LedMusic2.Nodes.NodeType",
+          "Name": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": "Mix Color"
+          },
+          "Category": {
+            "__Type": "LedMusic2.Nodes.NodeCategory",
+            "__IsPrimitive": true,
+            "Value": 2
+          },
+          "VisualState": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": null
+          }
+        },
+        "ee18852e-57d8-4de2-8e12-6e627e90461a": {
+          "__Type": "LedMusic2.Nodes.NodeType",
+          "Name": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": "Output"
+          },
+          "Category": {
+            "__Type": "LedMusic2.Nodes.NodeCategory",
+            "__IsPrimitive": true,
+            "Value": 1
+          },
+          "VisualState": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": null
+          }
+        },
+        "cb26faef-12c5-428b-98ac-1243cb504800": {
+          "__Type": "LedMusic2.Nodes.NodeType",
+          "Name": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": "Particle"
+          },
+          "Category": {
+            "__Type": "LedMusic2.Nodes.NodeCategory",
+            "__IsPrimitive": true,
+            "Value": 4
+          },
+          "VisualState": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": null
+          }
+        },
+        "63c9826f-b564-42f5-8170-dca6514cfcf1": {
+          "__Type": "LedMusic2.Nodes.NodeType",
+          "Name": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": "Numeric value"
+          },
+          "Category": {
+            "__Type": "LedMusic2.Nodes.NodeCategory",
+            "__IsPrimitive": true,
+            "Value": 0
+          },
+          "VisualState": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": null
+          }
+        },
+        "3dda6366-0bac-43d4-b219-5849ba9273c2": {
+          "__Type": "LedMusic2.Nodes.NodeType",
+          "Name": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": "Boolean value"
+          },
+          "Category": {
+            "__Type": "LedMusic2.Nodes.NodeCategory",
+            "__IsPrimitive": true,
+            "Value": 0
+          },
+          "VisualState": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": null
+          }
+        },
+        "dc77917d-a06c-4cba-9e61-6cc28585366c": {
+          "__Type": "LedMusic2.Nodes.NodeType",
+          "Name": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": "Color value"
+          },
+          "Category": {
+            "__Type": "LedMusic2.Nodes.NodeCategory",
+            "__IsPrimitive": true,
+            "Value": 0
+          },
+          "VisualState": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": null
+          }
+        },
+        "3a70aa1f-db1a-4bb5-9ac3-84dd67986ed0": {
+          "__Type": "LedMusic2.Nodes.NodeType",
+          "Name": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": "VST Channel"
+          },
+          "Category": {
+            "__Type": "LedMusic2.Nodes.NodeCategory",
+            "__IsPrimitive": true,
+            "Value": 0
+          },
+          "VisualState": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": null
+          }
+        },
+        "e8e0124d-ff2e-4e5d-80c5-d962af00b49e": {
+          "__Type": "LedMusic2.Nodes.NodeType",
+          "Name": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": "Dot"
+          },
+          "Category": {
+            "__Type": "LedMusic2.Nodes.NodeCategory",
+            "__IsPrimitive": true,
+            "Value": 4
+          },
+          "VisualState": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": null
+          }
+        },
+        "df2d2b4d-bcd5-46bc-b154-7b787cc43797": {
+          "__Type": "LedMusic2.Nodes.NodeType",
+          "Name": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": "Math"
+          },
+          "Category": {
+            "__Type": "LedMusic2.Nodes.NodeCategory",
+            "__IsPrimitive": true,
+            "Value": 3
+          },
+          "VisualState": {
+            "__Type": "System.String",
+            "__IsPrimitive": true,
+            "Value": null
+          }
+        }
+      },
+      "VisualState": {
+        "__Type": "System.String",
+        "__IsPrimitive": true,
+        "Value": null
+      }
+    }
+  },
+  "Progress": {
+    "__Type": "LedMusic2.Reactive.ReactiveCollection`1[LedMusic2.ViewModels.ProgressViewModel]"
+  },
+  "OutputManager": {
+    "__Type": "LedMusic2.Outputs.OutputManager",
+    "Outputs": {
+      "__Type": "LedMusic2.Reactive.ReactiveCollection`1[LedMusic2.Outputs.OutputBase]",
+      "f836530b-e7ea-4c16-bf83-f5621598d122": {
+        "__Type": "LedMusic2.Outputs.OutputModels.DummyOutput",
+        "Name": {
+          "__Type": "System.String",
+          "__IsPrimitive": true,
+          "Value": "Dummy"
+        },
+        "VisualState": {
+          "__Type": "System.String",
+          "__IsPrimitive": true,
+          "Value": null
+        }
+      }
+    },
+    "OutputTypes": {
+      "__Type": "LedMusic2.Reactive.ReactiveCollection`1[LedMusic2.Outputs.OutputType]",
+      "7fd801ac-c1b1-43df-b677-30b17fa86641": {
+        "__Type": "LedMusic2.Outputs.OutputType",
+        "Name": {
+          "__Type": "System.String",
+          "__IsPrimitive": true,
+          "Value": "Dummy"
+        },
+        "VisualState": {
+          "__Type": "System.String",
+          "__IsPrimitive": true,
+          "Value": null
+        }
+      },
+      "a3ed90c4-35cb-46d7-9a46-4c9bfc75ed8f": {
+        "__Type": "LedMusic2.Outputs.OutputType",
+        "Name": {
+          "__Type": "System.String",
+          "__IsPrimitive": true,
+          "Value": "TCP"
+        },
+        "VisualState": {
+          "__Type": "System.String",
+          "__IsPrimitive": true,
+          "Value": null
+        }
+      }
+    },
+    "VisualState": {
+      "__Type": "System.String",
+      "__IsPrimitive": true,
+      "Value": null
+    }
+  },
+  "VisualState": {
+    "__Type": "System.String",
+    "__IsPrimitive": true,
+    "Value": null
+  }
+}

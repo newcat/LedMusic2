@@ -9,7 +9,7 @@
 
     &.--selected {
         z-index: 5;
-        border: 1px solid orange;
+        box-shadow: 0 0 0 1px orange;
     }
 
     & > .__title {

@@ -38,7 +38,7 @@ namespace LedMusic2.ViewModels
         public ReactiveCollection<ProgressViewModel> Progress { get; }
             = new ReactiveCollection<ProgressViewModel>();
 
-        public OutputManager OutputManager { get; } = new OutputManager();
+        public OutputManager OutputManager { get; set; } = new OutputManager();
 
         public MainViewModel() {
 

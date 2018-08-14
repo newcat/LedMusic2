@@ -1,3 +1,5 @@
+import { IReactiveObject } from "@/types/reactiveObject";
+
 export enum NodeCategory {
     INPUT,
     OUTPUT,
@@ -6,7 +8,7 @@ export enum NodeCategory {
     GENERATOR
 }
 
-export interface INodeType {
+export interface INodeType extends IReactiveObject {
     Name: string;
     Category: NodeCategory;
 }

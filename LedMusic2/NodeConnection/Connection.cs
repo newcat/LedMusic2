@@ -5,11 +5,10 @@ using System.Xml.Linq;
 
 namespace LedMusic2.NodeConnection
 {
-    public class Connection : ReactiveObject, IReactiveListItem, IExportable, IDisposable
+    public class Connection : ReactiveObject, IReactiveListItem, IDisposable
     {
 
         public Guid Id { get; set; } = Guid.NewGuid();
-        public override string __Type => "Connection";
 
         public ReactivePrimitive<string> InputNodeId { get; }
             = new ReactivePrimitive<string>();
@@ -26,6 +25,8 @@ namespace LedMusic2.NodeConnection
         [ReactiveIgnore]
         public NodeInterface Output { get; private set; }
 
+        public Connection() { }
+
         /// <summary>
         /// Creates a connection between two node interfaces.
         /// </summary>
@@ -36,25 +37,6 @@ namespace LedMusic2.NodeConnection
             SetInput(input);
             SetOutput(output);
             transferData();
-        }
-
-        public XElement GetXmlElement()
-        {
-            XElement connectionX = new XElement("connection");
-
-            XElement inputX = new XElement("input");
-            inputX.SetAttributeValue("interfaceid", Input.Id);
-
-            XElement outputX = new XElement("output");
-            outputX.SetAttributeValue("interfaceid", Output.Id);
-
-            connectionX.Add(inputX, outputX);
-            return connectionX;
-        }
-
-        public void LoadFromXml(XElement element)
-        {
-            throw new NotImplementedException("Connections cannot be loaded directly from xml.");
         }
 
         public void SetInput(NodeInterface ni)
