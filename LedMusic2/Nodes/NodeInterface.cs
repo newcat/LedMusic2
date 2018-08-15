@@ -13,7 +13,7 @@ namespace LedMusic2.Nodes
         public Guid Id { get; set; } = Guid.NewGuid();
         public abstract Type NodeType { get; }
         [ReactiveIgnore]
-        public NodeBase Parent { get; private set; }
+        public NodeBase Parent { get; set; }
 
         public ReactivePrimitive<string> Name { get; } = new ReactivePrimitive<string>();
         public ReactivePrimitive<ConnectionType> ConnectionType { get; } = new ReactivePrimitive<ConnectionType>();

@@ -6,7 +6,7 @@ namespace LedMusic2.ViewModels
     public class ProgressViewModel : ReactiveObject, IReactiveListItem
     {
 
-        public Guid Id { get; } = Guid.NewGuid();
+        public Guid Id { get; set; } = Guid.NewGuid();
         public ReactivePrimitive<string> Description = new ReactivePrimitive<string>();
         public ReactivePrimitive<int> Progress = new ReactivePrimitive<int>(0);
 

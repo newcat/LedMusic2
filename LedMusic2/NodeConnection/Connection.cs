@@ -5,7 +5,7 @@ using System.Xml.Linq;
 
 namespace LedMusic2.NodeConnection
 {
-    public class Connection : ReactiveObject, IReactiveListItem, IDisposable
+    public class Connection : ReactiveObject, IReactiveListItem
     {
 
         public Guid Id { get; set; } = Guid.NewGuid();
@@ -39,6 +39,18 @@ namespace LedMusic2.NodeConnection
             transferData();
         }
 
+        public void Destroy()
+        {
+            if (Output != null)
+                Output.IsConnected.Set(false);
+
+            if (Input != null)
+                Input.ValueChanged -= input_ValueChanged;
+
+            Input = null;
+            Output = null;
+        }
+
         public void SetInput(NodeInterface ni)
         {
             if (Input != null)
@@ -68,36 +80,6 @@ namespace LedMusic2.NodeConnection
         {
             Output.SetValue(TypeConverter.Convert(Input.NodeType, Output.NodeType, Input.GetValue()));
         }
-
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-
-                    if (Output != null)
-                        Output.IsConnected.Set(false);
-
-                    if (Input != null)
-                        Input.ValueChanged -= input_ValueChanged;
-
-                    Input = null;
-                    Output = null;
-
-                }
-
-                disposedValue = true;
-            }
-        }
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-        #endregion
 
     }
 

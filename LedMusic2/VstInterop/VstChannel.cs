@@ -1,36 +1,45 @@
-﻿using System;
+﻿using LedMusic2.Reactive;
+using System;
 using System.Diagnostics;
 using System.IO.MemoryMappedFiles;
 
 namespace LedMusic2.VstInterop
 {
 
-    public class VstChannel : IDisposable
+    public class VstChannel : ReactiveObject, IReactiveListItem, ICombinedReactive, IDisposable
     {
 
         private const int MIDI_PACKET_COUNT = 5;
-
-        public Guid Id { get; }
-        public VstChannelType Type { get; }
-        public string Name { get; private set; }
+        
+        public Guid Id { get; set; }
+        public ReactivePrimitive<VstChannelType> Type { get; } = new ReactivePrimitive<VstChannelType>();
+        public ReactivePrimitive<string> Name { get; } = new ReactivePrimitive<string>();
         public double Value { get; private set; }
         public Note[] Notes { get; private set; } = new Note[16];
 
-        private readonly MemoryMappedFile mf;
-        private readonly MemoryMappedViewAccessor va;
+        private MemoryMappedFile mf;
+        private MemoryMappedViewAccessor va;
+
+        public VstChannel() { }
 
         public VstChannel(Guid id, VstChannelType type)
         {
             Id = id;
-            Type = type;
-            Name = id.ToString();
-            mf = MemoryMappedFile.CreateNew("LedMusicVST_" + id.ToString(), calcFileSize());
+            Type.Set(type);
+            Name.Set(id.ToString());
+            Initialize();
+        }
+
+        protected override void Initialize()
+        {
+            base.Initialize();
+            mf = MemoryMappedFile.CreateNew("LedMusicVST_" + Id.ToString(), calcFileSize());
             va = mf.CreateViewAccessor();
         }
 
         public void UpdateValues()
         {
-            switch (Type)
+            switch (Type.Get())
             {
                 case VstChannelType.MIDI:
                     parseMidi();
@@ -71,7 +80,7 @@ namespace LedMusic2.VstInterop
 
         private int calcFileSize()
         {
-            switch (Type)
+            switch (Type.Get())
             {
                 case VstChannelType.MIDI:
                     return 3 * MIDI_PACKET_COUNT;

@@ -11,7 +11,7 @@ namespace LedMusic2.Nodes.NodeModels
 
         private NodeInterface<double> niValue;
         private NodeInterface<double> niNote;
-        private readonly SelectOption<ReactiveListItem<string>> channelOption;
+        private readonly SelectOption<VstChannel> channelOption;
         private readonly NumberOption midiChannelOption;
 
         public VstChannel SelectedChannel { get; set; }
@@ -28,7 +28,9 @@ namespace LedMusic2.Nodes.NodeModels
             midiChannelOption.Value.Set(1);
             Options.Add(midiChannelOption);
 
-            channelOption = new SelectOption<ReactiveListItem<string>>("Channel");
+            channelOption = new SelectOption<VstChannel>("Channel");
+            channelOption.SetOptions(App.VM.VstManager.Channels);
+            channelOption.ItemDisplayPropertyName.Set("Name");
             Options.Add(channelOption);
 
         }
@@ -41,7 +43,7 @@ namespace LedMusic2.Nodes.NodeModels
 
             var changed = false;
 
-            if (SelectedChannel.Type == VstChannelType.MIDI)
+            if (SelectedChannel.Type.Get() == VstChannelType.MIDI)
             {
                 var midiChannel = (int)midiChannelOption.Value.Get() - 1;
                 midiChannel = Math.Min(15, Math.Max(0, midiChannel));

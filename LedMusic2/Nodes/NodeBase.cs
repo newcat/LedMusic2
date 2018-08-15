@@ -34,6 +34,17 @@ namespace LedMusic2.Nodes
             Name.Set(NodeName);
         }
 
+        protected override void Initialize()
+        {
+            base.Initialize();
+
+            foreach (var ni in Inputs)
+                ni.Parent = this;
+            foreach (var ni in Outputs)
+                ni.Parent = this;
+
+        }
+
         public abstract bool Calculate();
 
         protected NodeInterface<T> AddInput<T>(string name)

@@ -111,6 +111,10 @@ namespace LedMusic2.Reactive
                 if (!obj.children.ContainsKey(prop.Name) || prop.Value.Type == JTokenType.Null)
                     continue;
 
+                var reflectedProperty = obj.GetType().GetProperty(prop.Name);
+                if (reflectedProperty == null || reflectedProperty.GetCustomAttribute<IgnoreOnLoadAttribute>() != null)
+                    continue;
+
                 var reactiveProperty = obj.children[prop.Name];
 
                 var value = (JObject)prop.Value;
@@ -150,11 +154,19 @@ namespace LedMusic2.Reactive
                             else
                             {
                                 var primitiveType = Type.GetType((string)value["__Type"]);
-                                var parseMethod = primitiveType.GetMethod("Parse");
-                                if (parseMethod != null)
-                                    ((ReactivePrimitive)reactiveProperty).Set(parseMethod.Invoke(null, new object[] { (string)primitiveValue }));
+
+                                if (typeof(ISerializable).IsAssignableFrom(primitiveType))
+                                {
+                                    
+                                }
                                 else
-                                    throw new ArgumentException($"Type {reactiveProperty.GetType()} of reactive property {prop.Name} has no Parse(string) method.");
+                                {
+                                    var parseMethod = primitiveType.GetMethod("Parse");
+                                    if (parseMethod != null)
+                                        ((ReactivePrimitive)reactiveProperty).Set(parseMethod.Invoke(null, new object[] { (string)primitiveValue }));
+                                    else
+                                        throw new ArgumentException($"Type {reactiveProperty.GetType()} of reactive property {prop.Name} has no Parse(string) method.");
+                                }
                             }
                             break;
                         default:

@@ -58,6 +58,7 @@
     <Compile Include="LedColors\LedColorArray.cs" />
     <Compile Include="NodeEditor\TemporaryConnectionState.cs" />
     <Compile Include="Reactive\ICombinedReactive.cs" />
+    <Compile Include="Reactive\IgnoreOnLoadAttribute.cs" />
     <Compile Include="Reactive\IReactive.cs" />
     <Compile Include="Reactive\IReactiveCollection.cs" />
     <Compile Include="Reactive\IReactiveListItem.cs" />
@@ -83,7 +84,6 @@
     <Compile Include="Outputs\OutputAttribute.cs" />
     <Compile Include="Nodes\NodeOptions\NodeOptionType.cs" />
     <Compile Include="NodeTree\CyclicGraphException.cs" />
-    <Compile Include="NodeConnection\NodeConnectionHelper.cs" />
     <Compile Include="NodeTree\NodeTreeBuilder.cs" />
     <Compile Include="IExportable.cs" />
     <Compile Include="Nodes\NodeType.cs" />

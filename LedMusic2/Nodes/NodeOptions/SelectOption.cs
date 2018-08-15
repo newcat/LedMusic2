@@ -39,7 +39,6 @@ namespace LedMusic2.Nodes.NodeOptions
         protected override void Initialize()
         {
             base.Initialize();
-            SelectedId.CustomSetter = (x) => throw new InvalidOperationException();
         }
 
         protected override void SetValue(JToken value)

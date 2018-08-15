@@ -13,7 +13,7 @@
             v-for="(value, key) in data.Options"
             :key="key"
             :class="['item', { '--active': data.SelectedId === key }]"
-            @click="sendCommand('SelectedId.set', key)"
+            @click="sendCommand('setValue', key)"
         >
             {{ data.ItemDisplayPropertyName ? value[data.ItemDisplayPropertyName] : value }}
         </div>

@@ -123,8 +123,9 @@ namespace LedMusic2.Reactive
 
                 var jsonToObjectMethod = typeof(ReactiveObject).GetMethod("FromJson");
                 var m = jsonToObjectMethod.MakeGenericMethod(type);
-                var instance = m.Invoke(null, new object[] { itemObject });
-                Add((T)instance);
+                var instance = (T)m.Invoke(null, new object[] { itemObject });
+                instance.Id = Guid.Parse(item.Key);
+                Add(instance);
 
             }
 

@@ -8,7 +8,7 @@ namespace LedMusic2.Nodes.NodeOptions
     public abstract class BaseOption : ReactiveObject, IReactiveListItem, IExportable
     {
 
-        public Guid Id { get; } = Guid.NewGuid();
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         public ReactivePrimitive<string> Name { get; } = new ReactivePrimitive<string>("");
         public ReactivePrimitive<NodeOptionType> Type { get; } = new ReactivePrimitive<NodeOptionType>(NodeOptionType.BOOL);
@@ -21,6 +21,7 @@ namespace LedMusic2.Nodes.NodeOptions
         {
             Name.Set(name);
             Type.Set(type);
+            Initialize();
         }
 
         protected override void Initialize()

@@ -11,7 +11,7 @@ using Newtonsoft.Json.Linq;
 
 namespace LedMusic2.NodeEditor
 {
-    public class Scene : ReactiveObject, IReactiveListItem, IExportable, IDisposable
+    public class Scene : ReactiveObject, IReactiveListItem
     {
 
         public Guid Id { get; set; } = Guid.NewGuid();
@@ -25,16 +25,48 @@ namespace LedMusic2.NodeEditor
 
         public ReactiveCollection<NodeBase> Nodes { get; } = new ReactiveCollection<NodeBase>();
         public ReactiveCollection<Connection> Connections { get; } = new ReactiveCollection<Connection>();
+
+        [IgnoreOnLoad]
         public ReactiveCollection<NodeType> NodeTypes { get; } = new ReactiveCollection<NodeType>();
 
         public Scene()
         {
-            fillNodeCategories();
             RegisterCommand("addNode", (t) => addNode(t));
             RegisterCommand("deleteNode", (id) => deleteNode(id));
             RegisterCommand("checkTemporaryConnection", (p) => canConnect(p));
             RegisterCommand("addConnection", (p) => createConnection(p));
             RegisterCommand("deleteConnection", (cid) => deleteConnection(cid));
+            Initialize();
+        }
+
+        protected override void Initialize()
+        {
+            base.Initialize();            
+
+            // Fill node types
+            NodeTypes.Clear();
+            var nodeClasses = Assembly.GetCallingAssembly().GetTypes().Where((t) => string.Equals(t.Namespace, "LedMusic2.Nodes.NodeModels") && !t.IsAbstract);
+            NodeTypes.AddRange(nodeClasses
+                .Where((t) => t.GetCustomAttribute(typeof(NodeAttribute)) != null)
+                .Select((node) => {
+                    var attribute = (NodeAttribute)node.GetCustomAttribute(typeof(NodeAttribute));
+                    return new NodeType(attribute.Name, attribute.Category, node);
+                }
+            ));
+
+            // Load Connections
+            foreach (var connection in Connections)
+            {
+                var input = findInterfaceById(Guid.Parse(connection.InputInterfaceId.Get()));
+                var output = findInterfaceById(Guid.Parse(connection.OutputInterfaceId.Get()));
+
+                if (input == null || output == null)
+                    throw new Exception("Could not find node interface to load connection.");
+
+                connection.SetInput(input);
+                connection.SetOutput(output);
+            }
+
         }
 
         private void createConnection(JToken payload)
@@ -59,23 +91,8 @@ namespace LedMusic2.NodeEditor
             if (conn != null)
             {
                 Connections.Remove(conn);
-                conn.Dispose();
+                conn.Destroy();
             }
-        }
-
-        private void fillNodeCategories()
-        {
-
-            //Get all node classes
-            var nodeClasses = Assembly.GetCallingAssembly().GetTypes().Where((t) => string.Equals(t.Namespace, "LedMusic2.Nodes.NodeModels") && !t.IsAbstract);
-
-            var nodes = nodeClasses.Where((t) => t.GetCustomAttribute(typeof(NodeAttribute)) != null);
-            foreach (var node in nodes)
-            {
-                var attribute = (NodeAttribute)node.GetCustomAttribute(typeof(NodeAttribute));
-                NodeTypes.Add(new NodeType(attribute.Name, attribute.Category, node));
-            }
-
         }
 
         private void canConnect(JToken payload)
@@ -133,7 +150,7 @@ namespace LedMusic2.NodeEditor
             }
             finally
             {
-                connectionToTest.Dispose();
+                connectionToTest.Destroy();
             }
 
             return true;
@@ -153,7 +170,7 @@ namespace LedMusic2.NodeEditor
             foreach (Connection c in toDelete)
             {
                 Connections.Remove(c);
-                c.Dispose();
+                c.Destroy();
             }
 
             Nodes.Remove(node);
@@ -183,70 +200,6 @@ namespace LedMusic2.NodeEditor
             ntb.Calculate(0);
         }
         #endregion
-
-        #region Save and Load
-        public XElement GetXmlElement()
-        {
-
-            var rootX = new XElement("scene");
-
-            XElement nodesX = new XElement("nodes");
-            foreach (NodeBase n in Nodes)
-            {
-                //nodesX.Add(n.GetXmlElement());
-            }
-            rootX.Add(nodesX);
-
-            XElement connectionsX = new XElement("connections");
-            foreach (Connection c in Connections)
-            {
-                //connectionsX.Add(c.GetXmlElement());
-            }
-            rootX.Add(connectionsX);
-
-            return rootX;
-
-        }
-
-        public void LoadFromXml(XElement element)
-        {
-
-            foreach (XElement n in element.Elements())
-            {
-                switch (n.Name.LocalName)
-                {
-
-                    case "nodes":
-                        foreach (XElement nodeX in n.Elements())
-                            loadNode(nodeX);
-                        break;
-
-                    case "connections":
-                        foreach (XElement connectionX in n.Elements())
-                            loadConnection(connectionX);
-                        break;
-
-                }
-            }
-
-        }
-
-        private void loadNode(XElement nodeX)
-        {
-
-            string type = nodeX.Attribute("type").Value;
-            NodeBase nodeInstance = null;
-            foreach (NodeType n in NodeTypes)
-            {
-                if (n.Name.Get() == type)
-                {
-                    nodeInstance = addNode(n.Id);
-                    break;
-                }
-            }
-            //if (nodeInstance != null) nodeInstance.LoadFromXml(nodeX);
-
-        }
 
         private void loadConnection(XElement connectionX)
         {
@@ -292,32 +245,6 @@ namespace LedMusic2.NodeEditor
             }
             return null;
         }
-        #endregion
-
-        #region IDisposable Support
-        private bool disposedValue = false;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    foreach (Connection c in Connections)
-                        c.Dispose();
-                    Connections.Clear();
-                    Nodes.Clear();
-                }
-
-                disposedValue = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-        #endregion
 
     }
 }

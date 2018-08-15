@@ -18,12 +18,15 @@ namespace LedMusic2.BrowserInterop
         public event EventHandler Connected;
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
+        public MainViewModel VM { get; set; }
+
         private WebSocket ws;
         private readonly object lockObject = new object();
         private readonly Thread listenerThread;
 
-        public BrowserAgent()
+        public BrowserAgent(MainViewModel vm)
         {
+            VM = vm;
             listenerThread = new Thread(new ThreadStart(listenAsync));
             listenerThread.Start();
         }
@@ -34,7 +37,7 @@ namespace LedMusic2.BrowserInterop
             {
                 sendJson(new JObject(
                     new JProperty("type", "state"),
-                    new JProperty("state", MainViewModel.Instance.GetFullState().ToJson())
+                    new JProperty("state", VM.GetFullState().ToJson())
                 ));
             }
         }
@@ -44,7 +47,7 @@ namespace LedMusic2.BrowserInterop
             lock (lockObject)
             {
                 if (ws == null || ws.State != WebSocketState.Open) return;
-                var updates = MainViewModel.Instance.GetStateUpdates();
+                var updates = VM.GetStateUpdates();
                 if (updates == null || updates.Count == 0) return;
                 sendJson(new JObject(
                     new JProperty("type", "state"),

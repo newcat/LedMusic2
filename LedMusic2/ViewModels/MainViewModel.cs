@@ -18,10 +18,8 @@ using System.Xml.Linq;
 
 namespace LedMusic2.ViewModels
 {
-    public class MainViewModel : ReactiveObject, IExportable
+    public class MainViewModel : ReactiveObject
     {
-
-        public static MainViewModel Instance { get; } = new MainViewModel();
 
         public ReactivePrimitive<Guid> ActiveSceneId { get; }
             = new ReactivePrimitive<Guid>(Guid.Empty);
@@ -39,31 +37,41 @@ namespace LedMusic2.ViewModels
             = new ReactiveCollection<ProgressViewModel>();
 
         public OutputManager OutputManager { get; set; } = new OutputManager();
+        public VstInputManager VstManager { get; set; } = new VstInputManager();
 
         public MainViewModel() {
+        }
 
-            TypeConverter.Initialize();
+        public new void Initialize()
+        {
 
             OutputManager.FillOutputTypes();
             OutputManager.AddOutput(new DummyOutput());
 
             Scenes.CommandHandler = new Action<string, JToken, ReactiveCollection<Scene>>(scenesCommandHandler);
             addScene();
-            Scenes[0].Name.Set("Global Scene");
-            DisplayedSceneId.Set(Scenes[0].Id);
+            var globalScene = Scenes[0];
+            globalScene.Name.Set("Global Scene");
+
+            var outputNode = new OutputNode();
+            var numberNode = new DoubleValueNode();
+            var conn = new Connection(numberNode.Outputs[0], outputNode.Inputs[0]);
+            globalScene.Nodes.Add(outputNode);
+            globalScene.Nodes.Add(numberNode);
+            globalScene.Connections.Add(conn);
+
+            DisplayedSceneId.Set(globalScene.Id);
 
         }
 
         public void End()
         {
-            foreach (var s in Scenes)
-                s.Dispose();
-            VstInputManager.Instance.Shutdown();
+            VstManager.Shutdown();
         }        
 
         public void Tick()
         {
-            VstInputManager.Instance.UpdateValues();
+            VstManager.UpdateValues();
             calculateAllNodes();
         }
 
@@ -119,143 +127,6 @@ namespace LedMusic2.ViewModels
             if (DisplayedSceneId.Get() != Guid.Empty && DisplayedSceneId != ActiveSceneId)
                 Scenes.FindById(DisplayedSceneId.Get()).CalculateAllNodes();
         }
-
-        #region Saving and Loading
-        private void save()
-        {
-
-            SaveFileDialog sfd = new SaveFileDialog
-            {
-                AddExtension = true,
-                DefaultExt = "lmp",
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-            };
-            if (sfd.ShowDialog() != DialogResult.OK) return;
-
-            Stream s = sfd.OpenFile();
-
-            XDocument doc = new XDocument
-            {
-                Declaration = new XDeclaration("1.0", "UTF-8", "yes")
-            };
-            doc.Add(GetXmlElement());
-            doc.Save(s);
-            s.Close();
-
-        }
-
-        private void load()
-        {
-
-            OpenFileDialog ofd = new OpenFileDialog
-            {
-                Filter = "LedMusic Project File|*.lmp",
-                Multiselect = false
-            };
-            if (ofd.ShowDialog() != DialogResult.OK)
-                return;
-
-            Stream s = ofd.OpenFile();
-
-            try
-            {
-
-                XDocument doc = XDocument.Load(s);
-
-                foreach (var sc in Scenes) sc.Dispose();
-                Scenes.Clear();
-                OutputManager.Outputs.Clear();
-
-                LoadFromXml((XElement)doc.FirstNode);
-
-                calculateAllNodes();                
-
-            } catch (XmlException e)
-            {
-                MessageBox.Show("Failed to open project file: " + e.Message);
-                Console.WriteLine(e.StackTrace);
-            } finally
-            {
-                s.Close();
-            }
-
-        }
-
-        private void loadOutput(XElement outputX)
-        {
-
-            string type = outputX.Attribute("type").Value;
-            foreach (var t in OutputManager.OutputTypes)
-            {
-                if (t.Name.Get() == type)
-                {
-                    OutputBase outputInstance = (OutputBase)t.T.GetConstructor(Type.EmptyTypes).Invoke(null);
-                    outputInstance.LoadFromXml(outputX);
-                    OutputManager.AddOutput(outputInstance);
-                }
-            }
-
-        }
-
-        public XElement GetXmlElement()
-        {
-
-            XElement rootX = new XElement("ledmusicproject");
-
-            XElement scenesX = new XElement("scenes");
-            foreach (var sc in Scenes)
-                scenesX.Add(sc.GetXmlElement());
-
-            XElement outputsX = new XElement("outputs");
-            foreach (var o in OutputManager.Outputs)
-                outputsX.Add(o.GetXmlElement());
-
-            rootX.Add(outputsX);
-
-            return rootX;
-
-        }
-
-        public void LoadFromXml(XElement rootX)
-        {
-
-            ProgressViewModel prg = new ProgressViewModel("Loading project");
-            Progress.Add(prg);
-                        
-            int totalElements = rootX.Elements().Count();
-            int counter = 0;
-
-            foreach (XElement n in rootX.Elements())
-            {
-
-                switch (n.Name.LocalName)
-                {
-
-                    case "scenes":
-                        foreach (var sceneX in n.Elements())
-                        {
-                            var scene = new Scene();
-                            scene.LoadFromXml(sceneX);
-                            Scenes.Add(scene);
-                        }
-                        break;
-
-                    case "outputs":
-                        foreach (XElement outputX in n.Elements())
-                            loadOutput(outputX);
-                        break;
-
-                }
-
-                counter++;
-                prg.Progress.Set((int)(1.0 * counter / totalElements) * 100);
-
-            }
-
-            Progress.Remove(prg);
-
-        }
-        #endregion
 
     }
 }

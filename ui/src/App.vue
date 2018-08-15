@@ -12,8 +12,8 @@
                     <b-nav-item to="editor">Editor</b-nav-item>
                     <b-nav-item>Outputs</b-nav-item>
                     <b-nav-item>VST Channels</b-nav-item>
-                    <b-nav-item>Load</b-nav-item>
-                    <b-nav-item>Save</b-nav-item>
+                    <b-nav-item @click="sendLoadCommand">Load</b-nav-item>
+                    <b-nav-item @click="sendSaveCommand">Save</b-nav-item>
                 </b-navbar-nav>
             </b-collapse>
 
@@ -62,14 +62,28 @@ export default class App extends Vue {
         this.ws.onmessage = this.handleMessage;
     }
 
-    sendCommand(command: string, payload: any) {
+    sendRaw(data: any) {
         if (this.ws && this.ws.readyState === this.ws.OPEN) {
-            this.ws.send(JSON.stringify({
-                type: "command",
-                command,
-                payload
-            }));
+            this.ws.send(JSON.stringify(data));
         }
+    }
+
+    sendCommand(command: string, payload: any) {
+        this.sendRaw({
+            type: "command",
+            command,
+            payload
+        });
+    }
+
+    sendLoadCommand() {
+        const path = prompt("Project Name");
+        this.sendRaw({ type: "load", path });
+    }
+
+    sendSaveCommand() {
+        const path = prompt("Project Name");
+        this.sendRaw({ type: "save", path });
     }
 
     handleMessage(ev: MessageEvent) {

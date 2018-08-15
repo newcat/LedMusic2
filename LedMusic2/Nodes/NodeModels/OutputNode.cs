@@ -21,7 +21,7 @@ namespace LedMusic2.Nodes.NodeModels
 
             Options.Add(preview);
             Options.Add(outputSelection);
-            outputSelection.SetOptions(MainViewModel.Instance.OutputManager.Outputs);
+            outputSelection.SetOptions(App.VM.OutputManager.Outputs);
             outputSelection.ItemDisplayPropertyName.Set("Name");
 
         }

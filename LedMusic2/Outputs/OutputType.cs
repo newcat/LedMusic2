@@ -6,7 +6,7 @@ namespace LedMusic2.Outputs
     public class OutputType : ReactiveObject, ICombinedReactive
     {
 
-        public Guid Id { get; } = Guid.NewGuid();
+        public Guid Id { get; set; } = Guid.NewGuid();
         public ReactivePrimitive<string> Name { get; } = new ReactivePrimitive<string>();
         public Type T { get; set; }
 

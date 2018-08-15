@@ -2,6 +2,8 @@
 using LedMusic2.NodeConnection;
 using LedMusic2.Nodes;
 using LedMusic2.Nodes.NodeModels;
+using LedMusic2.Outputs;
+using LedMusic2.Reactive;
 using LedMusic2.ViewModels;
 using Newtonsoft.Json.Linq;
 using System;
@@ -11,57 +13,52 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace LedMusic2
 {
-    class App
+    static class App
     {
 
-        private readonly BrowserAgent browserAgent;
-        private readonly Timer timer;
+        private static BrowserAgent browserAgent;
+        private static System.Threading.Timer timer;
 
-        private App()
-        {
+        public static MainViewModel VM { get; private set; }
 
-            var mvInstance = MainViewModel.Instance;
-
-            var outputNode = new OutputNode();
-            var numberNode = new DoubleValueNode();
-            var conn = new Connection(numberNode.Outputs[0], outputNode.Inputs[0]);
-            mvInstance.Scenes[0].Nodes.Add(outputNode);
-            mvInstance.Scenes[0].Nodes.Add(numberNode);
-            mvInstance.Scenes[0].Connections.Add(conn);
-
-            browserAgent = new BrowserAgent();
-            browserAgent.Connected += clientConnected;
-            browserAgent.MessageReceived += messageReceived;
-            timer = new Timer(new TimerCallback(tick), null, 0, 1000 / GlobalProperties.Instance.FPS);
-
-        }
-
+        [STAThread]
         public static void Main(string[] args)
         {
-            var app = new App();
-            var data = File.ReadAllText("../../test.json");
-            var test = Reactive.ReactiveObject.FromJson<MainViewModel>(JObject.Parse(data));
-            Console.WriteLine(test.GetFullState().ToJson().ToString());
-            Console.ReadLine();
-            Console.WriteLine(MainViewModel.Instance.GetFullState().ToJson().ToString());
-            Console.ReadLine();
+
+            TypeConverter.Initialize();
+
+            VM = new MainViewModel();
+            VM.Initialize();
+
+            browserAgent = new BrowserAgent(VM);
+            browserAgent.Connected += clientConnected;
+            browserAgent.MessageReceived += messageReceived;
+            timer = new System.Threading.Timer(new TimerCallback(tick), null, 0, 1000 / GlobalProperties.Instance.FPS);
+
         }
 
-        private void clientConnected(object sender, EventArgs e)
+        private static void clientConnected(object sender, EventArgs e)
         {
             browserAgent.SendFullState();
         }
 
-        private void messageReceived(object sender, MessageReceivedEventArgs e)
+        private static void messageReceived(object sender, MessageReceivedEventArgs e)
         {
             var msg = e.Message as JObject;
             switch ((string)msg["type"])
             {
                 case "command":
-                    MainViewModel.Instance.HandleCommand((string)msg["command"], msg["payload"]);
+                    VM.HandleCommand((string)msg["command"], msg["payload"]);
+                    break;
+                case "save":
+                    save((string)msg["path"]);
+                    break;
+                case "load":
+                    load((string)msg["path"]);
                     break;
                 default:
                     Console.WriteLine("Unknown message type: {0}", msg["type"]);
@@ -69,10 +66,26 @@ namespace LedMusic2
             }
         }
 
-        private void tick(object state)
+        private static void tick(object state)
         {
-            MainViewModel.Instance.Tick();
+            VM.Tick();
             browserAgent.SendStateUpdates();
+        }
+
+        private static void save(string path)
+        {
+            File.WriteAllText(path, VM.GetFullState().ToJson().ToString());
+        }
+
+        private static void load(string path)
+        {
+
+            var s = File.ReadAllText(path);
+            var jobj = JObject.Parse(s);
+            var newVm = ReactiveObject.FromJson<MainViewModel>(jobj);
+            VM = newVm;
+            browserAgent.VM = newVm;
+
         }
 
     }

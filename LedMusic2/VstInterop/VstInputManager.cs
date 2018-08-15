@@ -9,33 +9,23 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using LedMusic2.Reactive;
 
 namespace LedMusic2.VstInterop
 {
-    public class VstInputManager
+    public class VstInputManager : ReactiveObject
     {
 
         private const int PORT = 1959;
 
-        #region Singleton
-        private static VstInputManager _instance;
-        public static VstInputManager Instance {
-            get
-            {
-                if (_instance == null) _instance = new VstInputManager();
-                return _instance;
-            }
-        }
-        #endregion
-
         private Dictionary<Guid, VstChannel> channelDictionary = new Dictionary<Guid, VstChannel>();
-        public ObservableCollection<VstChannel> Channels { get; } = new ObservableCollection<VstChannel>();
+        public ReactiveCollection<VstChannel> Channels { get; } = new ReactiveCollection<VstChannel>();
 
         private Thread listenerThread;
         private UdpClient udpClient;
         private readonly ConcurrentQueue<VstChannel> channelsToAdd = new ConcurrentQueue<VstChannel>();
 
-        private VstInputManager()
+        public VstInputManager()
         {
 
             try
@@ -85,7 +75,7 @@ namespace LedMusic2.VstInterop
                 if (channelDictionary.TryGetValue(guid, out VstChannel channel))
                 {
                     // check if types match
-                    if (channel.Type != type)
+                    if (channel.Type.Get() != type)
                     {
                         Debug.WriteLine($"Incompatible types for channel {guid.ToString()}: Expected {channel.Type}, got {type}");
                         continue;
