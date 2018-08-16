@@ -42,26 +42,27 @@ namespace LedMusic2.ViewModels
         public MainViewModel() {
         }
 
-        public new void Initialize()
+        public void InitializeVM() => Initialize();
+        protected override void Initialize()
         {
-
-            OutputManager.FillOutputTypes();
-            OutputManager.AddOutput(new DummyOutput());
+            base.Initialize();
 
             Scenes.CommandHandler = new Action<string, JToken, ReactiveCollection<Scene>>(scenesCommandHandler);
-            addScene();
-            var globalScene = Scenes[0];
-            globalScene.Name.Set("Global Scene");
 
-            var outputNode = new OutputNode();
-            var numberNode = new DoubleValueNode();
-            var conn = new Connection(numberNode.Outputs[0], outputNode.Inputs[0]);
-            globalScene.Nodes.Add(outputNode);
-            globalScene.Nodes.Add(numberNode);
-            globalScene.Connections.Add(conn);
+            if (Scenes.Count == 0)
+            {
+                addScene();
+                var globalScene = Scenes[0];
+                globalScene.Name.Set("Global Scene");
 
-            DisplayedSceneId.Set(globalScene.Id);
+                var outputNode = new OutputNode();
+                var numberNode = new DoubleValueNode();
+                globalScene.Nodes.Add(outputNode);
+                globalScene.Nodes.Add(numberNode);
+                globalScene.Connect(numberNode.Outputs[0], outputNode.Inputs[0]);
 
+                DisplayedSceneId.Set(globalScene.Id);
+            }
         }
 
         public void End()

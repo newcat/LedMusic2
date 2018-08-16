@@ -123,54 +123,26 @@ namespace LedMusic2.Reactive
 
                     var primitiveValue = value["Value"];
 
-                    switch (primitiveValue.Type)
+                    if (primitiveValue.Type == JTokenType.String)
                     {
-                        case JTokenType.Boolean:
-                            getTypedProperty<bool>(reactiveProperty).Set((bool)primitiveValue);
-                            break;
-                        case JTokenType.Float:
-                            if (typeof(ReactivePrimitive<float>) == reactiveProperty.GetType())
-                                ((ReactivePrimitive<float>)reactiveProperty).Set((float)primitiveValue);
-                            else if (typeof(ReactivePrimitive<double>) == reactiveProperty.GetType())
-                                ((ReactivePrimitive<double>)reactiveProperty).Set((double)primitiveValue);
-                            else
-                                throw new ArgumentException($"Expected type {typeof(ReactivePrimitive<T>)}, got {reactiveProperty.GetType()}.");
-                            break;
-                        case JTokenType.Guid:
-                            getTypedProperty<Guid>(reactiveProperty).Set((Guid)primitiveValue);
-                            break;
-                        case JTokenType.Integer:
-                            if (Type.GetType((string)value["__Type"]).IsEnum)
-                                ((ReactivePrimitive)reactiveProperty).Set((int)primitiveValue);
-                            else
-                                getTypedProperty<int>(reactiveProperty).Set((int)primitiveValue);
-                            break;
-                        case JTokenType.Null:
-                            ((ReactivePrimitive)reactiveProperty).Set(null);
-                            break;
-                        case JTokenType.String:
-                            if (typeof(ReactivePrimitive<string>) == reactiveProperty.GetType())
-                                ((ReactivePrimitive<string>)reactiveProperty).Set((string)primitiveValue);
-                            else
-                            {
-                                var primitiveType = Type.GetType((string)value["__Type"]);
+                        var primitiveType = Type.GetType((string)value["__Type"]);
 
-                                if (typeof(ISerializable).IsAssignableFrom(primitiveType))
-                                {
-                                    
-                                }
-                                else
-                                {
-                                    var parseMethod = primitiveType.GetMethod("Parse");
-                                    if (parseMethod != null)
-                                        ((ReactivePrimitive)reactiveProperty).Set(parseMethod.Invoke(null, new object[] { (string)primitiveValue }));
-                                    else
-                                        throw new ArgumentException($"Type {reactiveProperty.GetType()} of reactive property {prop.Name} has no Parse(string) method.");
-                                }
-                            }
-                            break;
-                        default:
-                            throw new ArgumentException($"Disallowed type: {primitiveValue.Type}");
+                        if (typeof(ISerializable).IsAssignableFrom(primitiveType))
+                        {
+                            ISerializable x = (ISerializable)Activator.CreateInstance(primitiveType);
+                            x.Deserialize((string)primitiveValue);
+                        }
+                        else
+                        {
+                            var parseMethod = primitiveType.GetMethod("Parse");
+                            if (parseMethod != null)
+                                ((ReactivePrimitive)reactiveProperty).Set(parseMethod.Invoke(null, new object[] { (string)primitiveValue }));
+                            else
+                                ((ReactivePrimitive)reactiveProperty).Set(primitiveValue);
+                        }
+                    } else
+                    {
+                        ((ReactivePrimitive)reactiveProperty).Set(primitiveValue);
                     }
 
                 }

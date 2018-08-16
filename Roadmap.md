@@ -1,9 +1,8 @@
 # Roadmap
 
 ## High Priority
-- Add loading / saving functionality back and test
 - Global Options UI
-- Add initialize functions and JsonLoadIgnore attributes
+- Multiple References on one Reactive object cause state updates only for one reference
 
 ## Medium Priority
 - Add color picker / rework color option

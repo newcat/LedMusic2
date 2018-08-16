@@ -69,19 +69,23 @@ namespace LedMusic2.NodeEditor
 
         }
 
-        private void createConnection(JToken payload)
+        public void Connect(NodeInterface input, NodeInterface output)
         {
-            canConnect(payload);
-            var request = (JObject)payload;
-            if (TemporaryConnectionState.Get() == NodeEditor.TemporaryConnectionState.ALLOWED)
+            if (canConnect(input, output))
             {
-                var origin = findInterfaceById(Guid.Parse((string)request["originInterfaceId"]));
-                var target = findInterfaceById(Guid.Parse((string)request["targetInterfaceId"]));
-                var input = origin.IsInput.Get() ? target : origin;
-                var output = origin.IsInput.Get() ? origin : target;
                 Connections.Add(new Connection(input, output));
                 ntb.Build(Nodes, Connections);
             }
+        }
+
+        private void createConnection(JToken payload)
+        {
+            var request = (JObject)payload;
+            var origin = findInterfaceById(Guid.Parse((string)request["originInterfaceId"]));
+            var target = findInterfaceById(Guid.Parse((string)request["targetInterfaceId"]));
+            var input = origin.IsInput.Get() ? target : origin;
+            var output = origin.IsInput.Get() ? origin : target;
+            Connect(input, output);
         }
 
         private void deleteConnection(JToken payload)

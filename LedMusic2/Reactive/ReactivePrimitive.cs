@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace LedMusic2.Reactive
@@ -61,14 +62,25 @@ namespace LedMusic2.Reactive
 
         public override void Set(object value)
         {
+
+            if (value != null && value is JValue)
+                value = ((JValue)value).Value;
+
             if (value == null)
+            {
                 Set(default(T));
-            else if (typeof(T).IsEnum && typeof(int).IsAssignableFrom(value.GetType()))
+                return;
+            }
+
+            if (typeof(long) == value.GetType())
+                value = (int)(long)value;
+
+            if (typeof(T).IsEnum && typeof(int).IsAssignableFrom(value.GetType()))
                 Set((T)value);
-            else if (!typeof(T).IsAssignableFrom(value.GetType()))
+            else if (!tryCast(value, out T res))
                 throw new ArgumentException($"Expected type {typeof(T)}, got {value.GetType()}");
             else
-                Set((T)value);
+                Set(res);
         }
 
         public override StateUpdateCollection GetStateUpdates()
@@ -129,6 +141,31 @@ namespace LedMusic2.Reactive
         private bool isNullOrDefault(T val)
         {
             return EqualityComparer<T>.Default.Equals(val, default(T));
+        }
+
+        private bool tryCast<T1>(object obj, out T1 result)
+        {
+            result = default(T1);
+            if (obj is T1)
+            {
+                result = (T1)obj;
+                return true;
+            }
+
+            // If it's null, we can't get the type.
+            if (obj != null)
+            {
+                var converter = TypeDescriptor.GetConverter(typeof(T1));
+                if (converter.CanConvertFrom(obj.GetType()))
+                    result = (T1)converter.ConvertFrom(obj);
+                else
+                    return false;
+
+                return true;
+            }
+
+            //Be permissive if the object was null and the target is a ref-type
+            return !typeof(T).IsValueType;
         }
 
     }

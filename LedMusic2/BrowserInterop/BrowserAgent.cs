@@ -36,7 +36,7 @@ namespace LedMusic2.BrowserInterop
             lock (lockObject)
             {
                 sendJson(new JObject(
-                    new JProperty("type", "state"),
+                    new JProperty("type", "fullstate"),
                     new JProperty("state", VM.GetFullState().ToJson())
                 ));
             }
@@ -50,7 +50,7 @@ namespace LedMusic2.BrowserInterop
                 var updates = VM.GetStateUpdates();
                 if (updates == null || updates.Count == 0) return;
                 sendJson(new JObject(
-                    new JProperty("type", "state"),
+                    new JProperty("type", "stateupdate"),
                     new JProperty("state", updates.ToJson())
                 ));
             }

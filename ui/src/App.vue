@@ -10,7 +10,7 @@
             <b-collapse is-nav id="nav_collapse">
                 <b-navbar-nav>
                     <b-nav-item to="editor">Editor</b-nav-item>
-                    <b-nav-item>Outputs</b-nav-item>
+                    <b-nav-item to="outputs">Outputs</b-nav-item>
                     <b-nav-item>VST Channels</b-nav-item>
                     <b-nav-item @click="sendLoadCommand">Load</b-nav-item>
                     <b-nav-item @click="sendSaveCommand">Save</b-nav-item>
@@ -33,6 +33,12 @@
                     rname="Scenes"
                 ></editor>
 
+                <output-manager
+                    v-show="$route.name === 'outputs'"
+                    :state="state.OutputManager"
+                    rname="OutputManager"
+                ></output-manager>
+
         </div>
 
     </div>
@@ -41,12 +47,14 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import Editor from "./views/Editor.vue";
+import OutputManager from "./views/OutputManager.vue";
 
 import apply from "./stateApplier";
 
 @Component({
     components: {
-        "editor": Editor
+        "editor": Editor,
+        "output-manager": OutputManager
     }
 })
 export default class App extends Vue {
@@ -92,7 +100,11 @@ export default class App extends Vue {
         console.log(msg);
 
         switch (msg.type) {
-            case "state":
+            case "fullstate":
+                this.state = {};
+                apply(msg.state, this.state);
+                break;
+            case "stateupdate":
                 apply(msg.state, this.state);
                 break;
             default:

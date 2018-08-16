@@ -31,6 +31,7 @@ namespace LedMusic2.Nodes
             Name.Set(name);
             ConnectionType.Set(ctype);
             IsInput.Set(isInput);
+            Initialize();
         }
 
         protected override void Initialize()
