@@ -1,5 +1,6 @@
 ﻿using LedMusic2.Nodes.NodeOptions;
 using LedMusic2.ViewModels;
+using Newtonsoft.Json.Linq;
 
 namespace LedMusic2.Nodes.NodeModels
 {
@@ -13,6 +14,11 @@ namespace LedMusic2.Nodes.NodeModels
         public SceneSwitcherNode() : base()
         {
             sceneInput = AddInput<double>("Scene Index");
+        }
+
+        public SceneSwitcherNode(JToken j) : this()
+        {
+            LoadState(j);
         }
 
         public override bool Calculate()

@@ -1,4 +1,5 @@
 ﻿using LedMusic2.LedColors;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 
@@ -38,6 +39,11 @@ namespace LedMusic2.Nodes.NodeModels
 
             niOutput = AddOutput<LedColorArray>("Output");
 
+        }
+
+        public ParticleNode(JToken j) : this()
+        {
+            LoadState(j);
         }
 
         public override bool Calculate()

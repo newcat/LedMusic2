@@ -1,4 +1,6 @@
 ﻿using LedMusic2.LedColors;
+using LedMusic2.Reactive;
+using Newtonsoft.Json.Linq;
 using System.Xml.Linq;
 
 namespace LedMusic2.Outputs.OutputModels
@@ -9,31 +11,19 @@ namespace LedMusic2.Outputs.OutputModels
     {
 
         public override string DefaultName => "TCP";
-        
-        public int Port { get; set; } = 4444;
+
+        public ReactivePrimitive<int> Port { get; } = new ReactivePrimitive<int>(4444);
+
+        public TcpOutput() { }
+        public TcpOutput(JToken j)
+        {
+            LoadState(j);
+        }
 
         public override void CalculationDone(LedColorArray calculationResult)
         {
             //TODO
             return;
-        }
-
-        protected override void SaveAdditionalXmlData(XElement x)
-        {
-            x.Add(new XElement("port", Port));
-        }
-
-        protected override void LoadAdditionalXmlData(XElement x)
-        {
-            foreach (var el in x.Elements())
-            {
-                switch (el.Name.LocalName)
-                {
-                    case "port":
-                        Port = int.Parse(el.Value);
-                        break;
-                }
-            }
         }
 
     }

@@ -19,16 +19,20 @@ namespace LedMusic2.Outputs
 
         public OutputManager()
         {
-            Initialize();
-            RegisterCommand("addOutput", (p) => addOutput(p));
+            initialize();
+            Outputs.Add(new DummyOutput());
         }
 
-        protected override void Initialize()
+        public OutputManager(JToken j)
         {
-            base.Initialize();
+            LoadState(j);
+            initialize();
+        }
+
+        private void initialize()
+        {
             fillOutputTypes();
-            if (Outputs.Count == 0)
-                Outputs.Add(new DummyOutput());
+            RegisterCommand("addOutput", (p) => addOutput(p));                
         }
 
         private void fillOutputTypes()

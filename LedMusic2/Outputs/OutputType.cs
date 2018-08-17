@@ -1,4 +1,5 @@
 ﻿using LedMusic2.Reactive;
+using Newtonsoft.Json.Linq;
 using System;
 
 namespace LedMusic2.Outputs
@@ -16,6 +17,11 @@ namespace LedMusic2.Outputs
         {
             Name.Set(name);
             T = t;
+        }
+
+        public OutputType(JToken j)
+        {
+            throw new NotImplementedException();
         }
 
     }

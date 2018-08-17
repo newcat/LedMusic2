@@ -2,6 +2,7 @@
 using LedMusic2.Nodes;
 using System;
 using System.Xml.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace LedMusic2.NodeConnection
 {
@@ -25,8 +26,6 @@ namespace LedMusic2.NodeConnection
         [ReactiveIgnore]
         public NodeInterface Output { get; private set; }
 
-        public Connection() { }
-
         /// <summary>
         /// Creates a connection between two node interfaces.
         /// </summary>
@@ -37,6 +36,11 @@ namespace LedMusic2.NodeConnection
             SetInput(input);
             SetOutput(output);
             transferData();
+        }
+
+        public Connection(JToken j)
+        {
+            LoadState(j);
         }
 
         public void Destroy()

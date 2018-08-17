@@ -5,7 +5,6 @@ using LedMusic2.NodeTree;
 using System;
 using System.Linq;
 using System.Reflection;
-using System.Windows;
 using System.Xml.Linq;
 using Newtonsoft.Json.Linq;
 
@@ -36,12 +35,6 @@ namespace LedMusic2.NodeEditor
             RegisterCommand("checkTemporaryConnection", (p) => canConnect(p));
             RegisterCommand("addConnection", (p) => createConnection(p));
             RegisterCommand("deleteConnection", (cid) => deleteConnection(cid));
-            Initialize();
-        }
-
-        protected override void Initialize()
-        {
-            base.Initialize();            
 
             // Fill node types
             NodeTypes.Clear();
@@ -53,7 +46,11 @@ namespace LedMusic2.NodeEditor
                     return new NodeType(attribute.Name, attribute.Category, node);
                 }
             ));
+        }
 
+        public Scene(JToken j) : this()
+        {
+            LoadState(j);
             // Load Connections
             foreach (var connection in Connections)
             {
@@ -66,7 +63,6 @@ namespace LedMusic2.NodeEditor
                 connection.SetInput(input);
                 connection.SetOutput(output);
             }
-
         }
 
         public void Connect(NodeInterface input, NodeInterface output)

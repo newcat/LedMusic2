@@ -1,6 +1,7 @@
 ﻿using LedMusic2.Nodes.NodeOptions;
 using LedMusic2.Reactive;
 using LedMusic2.VstInterop;
+using Newtonsoft.Json.Linq;
 using System;
 
 namespace LedMusic2.Nodes.NodeModels
@@ -33,6 +34,11 @@ namespace LedMusic2.Nodes.NodeModels
             channelOption.ItemDisplayPropertyName.Set("Name");
             Options.Add(channelOption);
 
+        }
+
+        public VstNode(JToken j) : this()
+        {
+            LoadState(j);
         }
 
         public override bool Calculate()

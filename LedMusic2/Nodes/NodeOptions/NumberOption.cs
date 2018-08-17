@@ -15,7 +15,7 @@ namespace LedMusic2.Nodes.NodeOptions
         public ReactivePrimitive<bool> UseMinMax { get; }
             = new ReactivePrimitive<bool>(false);
 
-        public NumberOption() : base() { }
+        public NumberOption(JToken j) : base(j) { }
         public NumberOption(string name) : base(name, NodeOptionType.NUMBER) { }
         public NumberOption(string name, double min, double max) : this(name)
         {

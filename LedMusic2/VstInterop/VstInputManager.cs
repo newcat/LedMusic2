@@ -10,6 +10,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using LedMusic2.Reactive;
+using Newtonsoft.Json.Linq;
 
 namespace LedMusic2.VstInterop
 {
@@ -27,7 +28,6 @@ namespace LedMusic2.VstInterop
 
         public VstInputManager()
         {
-
             try
             {
                 udpClient = new UdpClient(PORT);
@@ -37,7 +37,11 @@ namespace LedMusic2.VstInterop
             {
                 Debug.WriteLine("Socket exception");
             }
+        }
 
+        public VstInputManager(JToken j) : this()
+        {
+            LoadState(j);
         }
 
         public void UpdateValues()

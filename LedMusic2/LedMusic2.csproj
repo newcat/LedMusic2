@@ -57,6 +57,7 @@
     <Compile Include="BrowserInterop\MessageReceivedEventArgs.cs" />
     <Compile Include="LedColors\LedColorArray.cs" />
     <Compile Include="NodeEditor\TemporaryConnectionState.cs" />
+    <Compile Include="Reactive\BoundObject.cs" />
     <Compile Include="Reactive\ICombinedReactive.cs" />
     <Compile Include="Reactive\IgnoreOnLoadAttribute.cs" />
     <Compile Include="Reactive\IReactive.cs" />

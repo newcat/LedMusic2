@@ -27,18 +27,13 @@ namespace LedMusic2.Nodes.NodeOptions
             }
         }
 
-        public SelectOption() : base() { }
+        public SelectOption(JToken j) : base(j) { }
         public SelectOption(string name) : base(name, NodeOptionType.SELECT) { }
 
         public void SetOptions(ReactiveCollection<T> newOptions)
         {
             Options = newOptions;
             UpdateReactiveChildren();
-        }
-
-        protected override void Initialize()
-        {
-            base.Initialize();
         }
 
         protected override void SetValue(JToken value)

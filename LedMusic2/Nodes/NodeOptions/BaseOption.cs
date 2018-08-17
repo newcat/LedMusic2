@@ -15,21 +15,23 @@ namespace LedMusic2.Nodes.NodeOptions
 
         public event EventHandler ValueChanged;
 
-        public BaseOption() { }
-
-        public BaseOption(string name, NodeOptionType type)
-        {
-            Name.Set(name);
-            Type.Set(type);
-            Initialize();
-        }
-
-        protected override void Initialize()
+        private BaseOption()
         {
             RegisterCommand("setValue", (p) => {
                 SetValue(p);
                 RaiseValueChanged();
             });
+        }
+
+        public BaseOption(JToken j) : this()
+        {
+            LoadState(j);
+        }
+
+        public BaseOption(string name, NodeOptionType type) : this()
+        {
+            Name.Set(name);
+            Type.Set(type);
         }
 
         public abstract object GetValue();

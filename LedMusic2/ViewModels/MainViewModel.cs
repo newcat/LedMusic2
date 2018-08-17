@@ -39,30 +39,27 @@ namespace LedMusic2.ViewModels
         public OutputManager OutputManager { get; set; } = new OutputManager();
         public VstInputManager VstManager { get; set; } = new VstInputManager();
 
-        public MainViewModel() {
+        public MainViewModel()
+        {
+            Scenes.CommandHandler = new Action<string, JToken, ReactiveCollection<Scene>>(scenesCommandHandler);
         }
 
-        public void InitializeVM() => Initialize();
-        protected override void Initialize()
+        public MainViewModel(JToken j) : this()
         {
-            base.Initialize();
+            LoadState(j);
+        }
 
-            Scenes.CommandHandler = new Action<string, JToken, ReactiveCollection<Scene>>(scenesCommandHandler);
-
-            if (Scenes.Count == 0)
-            {
-                addScene();
-                var globalScene = Scenes[0];
-                globalScene.Name.Set("Global Scene");
-
-                var outputNode = new OutputNode();
-                var numberNode = new DoubleValueNode();
-                globalScene.Nodes.Add(outputNode);
-                globalScene.Nodes.Add(numberNode);
-                globalScene.Connect(numberNode.Outputs[0], outputNode.Inputs[0]);
-
-                DisplayedSceneId.Set(globalScene.Id);
-            }
+        public void Initialize()
+        {
+            addScene();
+            var globalScene = Scenes[0];
+            globalScene.Name.Set("Global Scene");
+            var outputNode = new OutputNode();
+            var numberNode = new DoubleValueNode();
+            globalScene.Nodes.Add(outputNode);
+            globalScene.Nodes.Add(numberNode);
+            globalScene.Connect(numberNode.Outputs[0], outputNode.Inputs[0]);
+            DisplayedSceneId.Set(globalScene.Id);
         }
 
         public void End()

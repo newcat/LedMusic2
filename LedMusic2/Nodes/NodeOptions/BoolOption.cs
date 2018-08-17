@@ -8,7 +8,7 @@ namespace LedMusic2.Nodes.NodeOptions
 
         public ReactivePrimitive<bool> Value = new ReactivePrimitive<bool>(false);
 
-        public BoolOption() : base() { Initialize(); }
+        public BoolOption(JToken j) : base(j) { }
         public BoolOption(string name) : base(name, NodeOptionType.BOOL) { }
 
         protected override void SetValue(JToken payload)

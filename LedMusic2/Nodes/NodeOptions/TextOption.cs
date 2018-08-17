@@ -8,7 +8,7 @@ namespace LedMusic2.Nodes.NodeOptions
 
         public ReactivePrimitive<string> Value { get; } = new ReactivePrimitive<string>();
 
-        public TextOption() : base() { }
+        public TextOption(JToken j) : base(j) { }
         public TextOption(string name) : base(name, NodeOptionType.TEXT) { }
 
         public override object GetValue()

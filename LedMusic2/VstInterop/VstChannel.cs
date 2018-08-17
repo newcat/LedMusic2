@@ -1,4 +1,5 @@
 ﻿using LedMusic2.Reactive;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Diagnostics;
 using System.IO.MemoryMappedFiles;
@@ -20,19 +21,22 @@ namespace LedMusic2.VstInterop
         private MemoryMappedFile mf;
         private MemoryMappedViewAccessor va;
 
-        public VstChannel() { }
+        public VstChannel(JToken j)
+        {
+            LoadState(j);
+            initialize();
+        }
 
         public VstChannel(Guid id, VstChannelType type)
         {
             Id = id;
             Type.Set(type);
             Name.Set(id.ToString());
-            Initialize();
+            initialize();
         }
 
-        protected override void Initialize()
+        private void initialize()
         {
-            base.Initialize();
             mf = MemoryMappedFile.CreateNew("LedMusicVST_" + Id.ToString(), calcFileSize());
             va = mf.CreateViewAccessor();
         }

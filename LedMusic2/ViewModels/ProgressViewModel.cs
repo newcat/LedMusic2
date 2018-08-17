@@ -1,4 +1,5 @@
 ﻿using LedMusic2.Reactive;
+using Newtonsoft.Json.Linq;
 using System;
 
 namespace LedMusic2.ViewModels
@@ -13,6 +14,11 @@ namespace LedMusic2.ViewModels
         public ProgressViewModel(string description)
         {
             Description.Set(description);
+        }
+
+        public ProgressViewModel(JToken j)
+        {
+            LoadState(j);
         }
 
     }

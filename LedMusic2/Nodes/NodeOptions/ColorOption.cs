@@ -9,7 +9,7 @@ namespace LedMusic2.Nodes.NodeOptions
 
         public ReactivePrimitive<LedColor> Value = new ReactivePrimitive<LedColor>(new LedColorRGB(0, 0, 0));
 
-        public ColorOption() : base() { }
+        public ColorOption(JToken j) : base(j) { }
         public ColorOption(string name) : base(name, NodeOptionType.COLOR) { }
 
         public override object GetValue()

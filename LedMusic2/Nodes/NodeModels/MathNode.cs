@@ -1,6 +1,7 @@
 ﻿using LedMusic2.Reactive;
 using LedMusic2.Nodes.NodeOptions;
 using System;
+using Newtonsoft.Json.Linq;
 
 namespace LedMusic2.Nodes.NodeModels
 {
@@ -31,6 +32,11 @@ namespace LedMusic2.Nodes.NodeModels
 
             Calculate();
 
+        }
+
+        public MathNode(JToken j) : this()
+        {
+            LoadState(j);
         }
 
         public override bool Calculate()

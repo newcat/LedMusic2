@@ -1,5 +1,6 @@
 ﻿using LedMusic2.LedColors;
 using LedMusic2.Nodes.NodeOptions;
+using Newtonsoft.Json.Linq;
 
 namespace LedMusic2.Nodes.NodeModels
 {
@@ -11,12 +12,15 @@ namespace LedMusic2.Nodes.NodeModels
         NodeInterface<double> outputInterface;
         NumberOption opt = new NumberOption("Value");
 
-        public DoubleValueNode() : base()
+        public DoubleValueNode()
         {
-
             Options.Add(opt);
-            outputInterface = AddOutput<double>("Value");         
+            outputInterface = AddOutput<double>("Value");
+        }
 
+        public DoubleValueNode(JToken j) : this()
+        {
+            LoadState(j);
         }
 
         public override bool Calculate()
@@ -36,10 +40,13 @@ namespace LedMusic2.Nodes.NodeModels
 
         public BoolValueNode() : base()
         {
-
             Options.Add(opt);
             outputInterface = AddOutput<bool>("Value");
+        }
 
+        public BoolValueNode(JToken j) : this()
+        {
+            LoadState(j);
         }
 
         public override bool Calculate()
@@ -57,12 +64,15 @@ namespace LedMusic2.Nodes.NodeModels
         NodeInterface<LedColor> outputInterface;
         ColorOption opt = new ColorOption("Value");
 
-        public ColorValueNode() : base()
+        public ColorValueNode()
         {
-
             Options.Add(opt);
             outputInterface = AddOutput<LedColor>("Value");
+        }
 
+        public ColorValueNode(JToken j) : this()
+        {
+            LoadState(j);
         }
 
         public override bool Calculate()

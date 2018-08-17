@@ -9,7 +9,7 @@ namespace LedMusic2.Nodes.NodeOptions
 
         public ReactivePrimitive<LedColorArray> Value { get; } = new ReactivePrimitive<LedColorArray>();
 
-        public PreviewOption() : base() { }
+        public PreviewOption(JToken j) : base(j) { }
         public PreviewOption(string name) : base(name, NodeOptionType.PREVIEW) { }
 
         protected override void SetValue(JToken value)

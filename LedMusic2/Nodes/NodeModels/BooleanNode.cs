@@ -1,5 +1,6 @@
 ﻿using LedMusic2.Reactive;
 using LedMusic2.Nodes.NodeOptions;
+using Newtonsoft.Json.Linq;
 
 namespace LedMusic2.Nodes.NodeModels
 {
@@ -11,7 +12,7 @@ namespace LedMusic2.Nodes.NodeModels
         BoolOption optInteger = new BoolOption("Use integer values");
         BoolOption optInvert = new BoolOption("Invert output");
 
-        public BooleanNode() : base()
+        public BooleanNode()
         {
 
             AddInput("Value 1", 0.0);
@@ -28,6 +29,11 @@ namespace LedMusic2.Nodes.NodeModels
 
             AddOutput<bool>("Output");
 
+        }
+
+        public BooleanNode(JToken j) : this()
+        {
+            LoadState(j);
         }
 
         public override bool Calculate()

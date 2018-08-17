@@ -1,4 +1,5 @@
 ﻿using LedMusic2.Reactive;
+using Newtonsoft.Json.Linq;
 using System;
 
 namespace LedMusic2.Nodes
@@ -13,13 +14,16 @@ namespace LedMusic2.Nodes
 
         public Type T { get; set; }
 
-        public NodeType() { }
-
         public NodeType(string name, NodeCategory category, Type t)
         {
             Name.Set(name);
             Category.Set(category);
             T = t;
+        }
+
+        public NodeType(JToken j)
+        {
+            throw new NotImplementedException();
         }
 
     }

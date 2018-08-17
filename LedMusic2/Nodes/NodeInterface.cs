@@ -3,6 +3,7 @@ using LedMusic2.NodeConnection;
 using System;
 using System.Xml.Linq;
 using LedMusic2.Nodes.NodeOptions;
+using Newtonsoft.Json.Linq;
 
 namespace LedMusic2.Nodes
 {
@@ -23,7 +24,11 @@ namespace LedMusic2.Nodes
 
         public event EventHandler ValueChanged;
 
-        public NodeInterface() { }
+        public NodeInterface(JToken j)
+        {
+            LoadState(j);
+            initialize();
+        }
 
         public NodeInterface(string name, ConnectionType ctype, NodeBase parent, bool isInput)
         {
@@ -31,10 +36,10 @@ namespace LedMusic2.Nodes
             Name.Set(name);
             ConnectionType.Set(ctype);
             IsInput.Set(isInput);
-            Initialize();
+            initialize();
         }
 
-        protected override void Initialize()
+        private void initialize()
         {
             if (IsInput.Get())
             {
@@ -79,7 +84,7 @@ namespace LedMusic2.Nodes
         public override Type NodeType { get { return typeof(T); } }
         public T Value { get; private set; }
 
-        public NodeInterface() : base() { }
+        public NodeInterface(JToken j) : base(j) { }
 
         public NodeInterface(string name, ConnectionType cType, NodeBase parent, bool isInput) :
             base(name, cType, parent, isInput)

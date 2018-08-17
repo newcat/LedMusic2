@@ -1,5 +1,6 @@
 ﻿using LedMusic2.LedColors;
 using LedMusic2.NodeConnection;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
@@ -29,6 +30,11 @@ namespace LedMusic2.Nodes.NodeModels
             ColorStops.Add(new ColorStopViewModel(new LedColorRGB(0, 0, 0), 0));
             ColorStops.Add(new ColorStopViewModel(new LedColorRGB(255, 255, 255), 1));
 
+        }
+
+        public ColorRampNode(JToken j) : this()
+        {
+            LoadState(j);
         }
 
         public override bool Calculate()

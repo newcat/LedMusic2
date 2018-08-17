@@ -121,9 +121,7 @@ namespace LedMusic2.Reactive
                 if (type == null)
                     throw new TypeLoadException($"Could not find type '{(string)itemObject["__Type"]}'");
 
-                var jsonToObjectMethod = typeof(ReactiveObject).GetMethod("FromJson");
-                var m = jsonToObjectMethod.MakeGenericMethod(type);
-                var instance = (T)m.Invoke(null, new object[] { itemObject });
+                var instance = (T)Activator.CreateInstance(type, itemObject);
                 instance.Id = Guid.Parse(item.Key);
                 Add(instance);
 

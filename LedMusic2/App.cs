@@ -32,7 +32,7 @@ namespace LedMusic2
             TypeConverter.Initialize();
 
             VM = new MainViewModel();
-            VM.InitializeVM();
+            VM.Initialize();
 
             browserAgent = new BrowserAgent(VM);
             browserAgent.Connected += clientConnected;
@@ -82,7 +82,7 @@ namespace LedMusic2
 
             var s = File.ReadAllText(path);
             var jobj = JObject.Parse(s);
-            var newVm = ReactiveObject.FromJson<MainViewModel>(jobj);
+            var newVm = new MainViewModel(jobj);
             VM = newVm;
             browserAgent.VM = newVm;
             browserAgent.SendFullState();
