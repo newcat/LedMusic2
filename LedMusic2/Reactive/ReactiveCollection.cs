@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using LedMusic2.Reactive.Binding;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Linq;
 namespace LedMusic2.Reactive
 {
 
-    public class ReactiveCollection<T> : List<T>, IReactive, IReactiveCollection
+    public class ReactiveCollection<T> : List<T>, IReactiveCollection<T>, IBindable<BoundCollection<T>>
         where T : IReactive, IReactiveListItem
     {
 
@@ -17,9 +18,12 @@ namespace LedMusic2.Reactive
         private readonly List<T> addedItems = new List<T>();
         private readonly List<T> removedItems = new List<T>();
 
+        private readonly BindHelper<BoundCollection<T>> bindHelper;
+
         public ReactiveCollection()
         {
             __Type = GetType().ToString();
+            bindHelper = new BindHelper<BoundCollection<T>>(() => new BoundCollection<T>(this));
         }
 
         public new void Add(T item)
@@ -59,28 +63,34 @@ namespace LedMusic2.Reactive
 
         public StateUpdateCollection GetFullState()
         {
-            var updates = new StateUpdateCollection(new StateUpdate<string>("__Type", __Type));
-            updates.AddRange((this as IEnumerable<T>)
-                .Select(item => new StateUpdate<StateUpdateCollection>(item.Id.ToString(), item.GetFullState())));
-            addedItems.Clear();
-            removedItems.Clear();
-            return updates;
+            return bindHelper.GetState(() =>
+            {
+                var updates = new StateUpdateCollection(new StateUpdate<string>("__Type", __Type));
+                updates.AddRange((this as IEnumerable<T>)
+                    .Select(item => new StateUpdate<StateUpdateCollection>(item.Id.ToString(), item.GetFullState())));
+                addedItems.Clear();
+                removedItems.Clear();
+                return updates;
+            });
         }
 
         public StateUpdateCollection GetStateUpdates()
         {
-            var updates = new StateUpdateCollection();
-            updates.AddRange(addedItems.Select(item => new StateUpdate<StateUpdateCollection>(item.Id.ToString(), item.GetFullState())));
-            updates.AddRange(removedItems.Select(item => new StateUpdate<string>(item.Id.ToString(), "__Deleted")));
-            addedItems.Clear();
-            removedItems.Clear();
-            foreach (var item in this)
+            return bindHelper.GetState(() =>
             {
-                var itemUpdates = item.GetStateUpdates();
-                if (itemUpdates != null)
-                    updates.Add(new StateUpdate<StateUpdateCollection>(item.Id.ToString(), itemUpdates));
-            }
-            return updates.Count > 0 ? updates : null;
+                var updates = new StateUpdateCollection();
+                updates.AddRange(addedItems.Select(item => new StateUpdate<StateUpdateCollection>(item.Id.ToString(), item.GetFullState())));
+                updates.AddRange(removedItems.Select(item => new StateUpdate<string>(item.Id.ToString(), "__Deleted")));
+                addedItems.Clear();
+                removedItems.Clear();
+                foreach (var item in this)
+                {
+                    var itemUpdates = item.GetStateUpdates();
+                    if (itemUpdates != null)
+                        updates.Add(new StateUpdate<StateUpdateCollection>(item.Id.ToString(), itemUpdates));
+                }
+                return updates.Count > 0 ? updates : null;
+            });
         }
 
         public void HandleCommand(string command, JToken payload)
@@ -128,6 +138,9 @@ namespace LedMusic2.Reactive
             }
 
         }
+
+        public BoundCollection<T> Bind() => bindHelper.Bind();
+        public void Unbind(BoundCollection<T> boundObject) => bindHelper.Unbind(boundObject);
 
         private void addOperation(T item)
         {

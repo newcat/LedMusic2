@@ -8,7 +8,7 @@ namespace LedMusic2.Nodes.NodeOptions
         where T : ICombinedReactive
     {
 
-        public ReactiveCollection<T> Options { get; private set; }
+        public IReactiveCollection<T> Options { get; private set; }
             = new ReactiveCollection<T>();
 
         public ReactivePrimitive<string> SelectedId { get; }
@@ -30,7 +30,7 @@ namespace LedMusic2.Nodes.NodeOptions
         public SelectOption(JToken j) : base(j) { }
         public SelectOption(string name) : base(name, NodeOptionType.SELECT) { }
 
-        public void SetOptions(ReactiveCollection<T> newOptions)
+        public void SetOptions(IReactiveCollection<T> newOptions)
         {
             Options = newOptions;
             UpdateReactiveChildren();

@@ -18,11 +18,13 @@ namespace LedMusic2.Nodes.NodeModels
             AddInput("Value 1", 0.0);
             AddInput("Value 2", 0.0);
 
+            var operationOptions = new ReactiveCollection<ReactiveListItem<string>>();
             foreach (string s in new string[] { "==", ">", "<", ">=", "<=" })
             {
-                optOperation.Options.Add(new ReactiveListItem<string>(s));
+                operationOptions.Add(new ReactiveListItem<string>(s));
             }
-            optOperation.SelectedId.Set(optOperation.Options[0].Id.ToString());
+            optOperation.SetOptions(operationOptions);
+            optOperation.SelectedId.Set(operationOptions[0].Id.ToString());
             Options.Add(optOperation);
             Options.Add(optInteger);
             Options.Add(optInvert);

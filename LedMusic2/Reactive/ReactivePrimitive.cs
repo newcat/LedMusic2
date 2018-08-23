@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using LedMusic2.Reactive.Binding;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,7 +8,7 @@ using System.Linq;
 namespace LedMusic2.Reactive
 {
 
-    public abstract class ReactivePrimitive : IReactive
+    public abstract class ReactivePrimitive : IReactive, IBindable<BoundPrimitive>
     {
 
         public abstract string __Type { get; }
@@ -15,6 +16,8 @@ namespace LedMusic2.Reactive
         public abstract StateUpdateCollection GetStateUpdates();
         public abstract StateUpdateCollection GetFullState();
         public abstract void HandleCommand(string command, JToken payload);
+        public abstract BoundPrimitive Bind();
+        public abstract void Unbind(BoundPrimitive b);
 
         public abstract void Set(object value);
 
@@ -30,8 +33,14 @@ namespace LedMusic2.Reactive
         public Func<T, T> CustomGetter { get; set; }
         public Func<T, T> CustomSetter { get; set; }
 
-        public ReactivePrimitive() { }
-        public ReactivePrimitive(T initialValue)
+        private readonly BindHelper<BoundPrimitive> bindHelper;
+
+        public ReactivePrimitive()
+        {
+            bindHelper = new BindHelper<BoundPrimitive>(() => new BoundPrimitive(this));
+        }
+
+        public ReactivePrimitive(T initialValue) : this()
         {
             Set(initialValue);
         }
@@ -85,32 +94,35 @@ namespace LedMusic2.Reactive
 
         public override StateUpdateCollection GetStateUpdates()
         {
-            var res = stateUpdate != null ? new StateUpdateCollection(
-                new StateUpdate<string>("__Type", __Type),
-                new StateUpdate<bool>("__IsPrimitive", true),
-                stateUpdate
-            ) : null;
-            stateUpdate = null;
-            return res;
+            return bindHelper.GetState(() =>
+            {
+                var x = stateUpdate != null ? new StateUpdateCollection(
+                    new StateUpdate<string>("__Type", __Type),
+                    new StateUpdate<bool>("__IsPrimitive", true),
+                    stateUpdate
+                ) : null;
+                stateUpdate = null;
+                return x;
+            });
         }
 
         public override StateUpdateCollection GetFullState()
         {
-            stateUpdate = null;
-            return new StateUpdateCollection(
-                new StateUpdate<string>("__Type", __Type),
-                new StateUpdate<bool>("__IsPrimitive", true),
-                getStateUpdate()
-            );
+            return bindHelper.GetState(() =>
+            {
+                stateUpdate = null;
+                return new StateUpdateCollection(
+                    new StateUpdate<string>("__Type", __Type),
+                    new StateUpdate<bool>("__IsPrimitive", true),
+                    getStateUpdate()
+                );
+            });
         }
 
         public override void HandleCommand(string command, JToken payload)
         {
             if (command != "set")
                 throw new InvalidOperationException($"Command '{command}' is not supported by ReactiveProperty");
-            //TODO
-            //else if ((payload as JValue).Type .GetType() != typeof(T))
-            //    throw new ArgumentException("Type does not match type of reactive property", "payload");
             else
             {
                 if (typeof(ISerializable).IsAssignableFrom(typeof(T)))
@@ -123,6 +135,9 @@ namespace LedMusic2.Reactive
             }
                 
         }
+
+        public override BoundPrimitive Bind() => bindHelper.Bind();
+        public override void Unbind(BoundPrimitive boundObject) => bindHelper.Unbind(boundObject);
 
         private IStateUpdate getStateUpdate()
         {

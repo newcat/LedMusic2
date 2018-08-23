@@ -3,20 +3,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using LedMusic2.Reactive.Binding;
 
 namespace LedMusic2.Reactive
 {
-    public abstract class ReactiveObject : IReactive
+    public abstract class ReactiveObject : IReactive, IBindable<BoundObject>
     {
 
         public virtual string __Type { get; }
         private readonly Dictionary<string, IReactive> children = new Dictionary<string, IReactive>();
         private readonly Dictionary<string, Action<JToken>> commandHandlers = new Dictionary<string, Action<JToken>>();
 
-        private readonly List<BoundObject> boundObjects = new List<BoundObject>();
-        private StateUpdateCollection cachedUpdates = null;
-        private int sentCounter = 0;
-        
+        private readonly BindHelper<BoundObject> bindHelper;
+
         public ReactivePrimitive<string> VisualState { get; } = new ReactivePrimitive<string>();
 
         protected ReactiveObject()
@@ -24,6 +23,7 @@ namespace LedMusic2.Reactive
             UpdateReactiveChildren();
             __Type = GetType().ToString();
             RegisterCommand("setVisualState", (p) => VisualState.Set(p.Value<string>()));
+            bindHelper = new BindHelper<BoundObject>(() => new BoundObject(this));
         }
 
         protected void LoadState(JToken j)
@@ -90,18 +90,8 @@ namespace LedMusic2.Reactive
 
         }
 
-        protected BoundObject Bind()
-        {
-            var bo = new BoundObject(this);
-            boundObjects.Add(bo);
-            sentCounter++;
-            return bo;
-        }
-
-        internal void Unbind(BoundObject boundObject)
-        {
-            boundObjects.Remove(boundObject);
-        }
+        public BoundObject Bind() => bindHelper.Bind();
+        public void Unbind(BoundObject boundObject) => bindHelper.Unbind(boundObject);
 
         protected void RegisterCommand(string command, Action<JToken> handler)
         {
@@ -115,8 +105,7 @@ namespace LedMusic2.Reactive
 
         public StateUpdateCollection GetStateUpdates()
         {
-
-            if (sentCounter == 0)
+            return bindHelper.GetState(() =>
             {
                 var updates = new StateUpdateCollection();
                 foreach (var child in children)
@@ -125,20 +114,13 @@ namespace LedMusic2.Reactive
                     if (cupdates != null)
                         updates.Add(new StateUpdate<StateUpdateCollection>(child.Key, cupdates));
                 }
-                cachedUpdates = updates.Count > 0 ? updates : null;
-            }
-
-            if (++sentCounter > boundObjects.Count)
-                sentCounter = 0;
-
-            return cachedUpdates;
-
+                return updates.Count > 0 ? updates : null;
+            });
         }
 
         public StateUpdateCollection GetFullState()
         {
-
-            if (sentCounter == 0)
+            return bindHelper.GetState(() =>
             {
                 var updates = new StateUpdateCollection
                 {
@@ -146,14 +128,8 @@ namespace LedMusic2.Reactive
                 };
                 foreach (var child in children)
                     updates.Add(new StateUpdate<StateUpdateCollection>(child.Key, child.Value?.GetFullState()));
-                cachedUpdates = updates;
-            }
-
-            if (++sentCounter > boundObjects.Count)
-                sentCounter = 0;
-
-            return cachedUpdates;
-
+                return updates;
+            });
         }
 
         public void HandleCommand(string command, JToken payload)

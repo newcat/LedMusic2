@@ -31,9 +31,11 @@ namespace LedMusic2.Nodes.NodeModels
 
             niOutput = AddOutput<LedColorArray>("Colors");
 
+            var glowTypes = new ReactiveCollection<ReactiveListItem<string>>();
             foreach (var s in new string[] { "Linear", "Exponential", "Gaussian" })
-                noGlowType.Options.Add(new ReactiveListItem<string>(s));
-            noGlowType.SelectedId.Set(noGlowType.Options[0].Id.ToString());
+                glowTypes.Add(new ReactiveListItem<string>(s));
+            noGlowType.SetOptions(glowTypes);
+            noGlowType.SelectedId.Set(glowTypes[0].Id.ToString());
             Options.Add(noGlowType);
 
             Calculate();

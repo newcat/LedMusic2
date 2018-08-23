@@ -1,6 +1,7 @@
 ﻿using LedMusic2.LedColors;
 using LedMusic2.Nodes.NodeOptions;
 using LedMusic2.Outputs;
+using LedMusic2.Reactive;
 using Newtonsoft.Json.Linq;
 
 namespace LedMusic2.Nodes.NodeModels
@@ -19,8 +20,7 @@ namespace LedMusic2.Nodes.NodeModels
             input = AddInput<LedColorArray>("Color");
             Options.Add(preview);
             Options.Add(outputSelection);
-            //TODO: Bind
-            outputSelection.SetOptions(App.VM.OutputManager.Outputs);
+            outputSelection.SetOptions(App.VM.OutputManager.Outputs.Bind());
             outputSelection.ItemDisplayPropertyName.Set("Name");
         }
 

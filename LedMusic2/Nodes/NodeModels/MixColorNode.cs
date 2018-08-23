@@ -21,12 +21,14 @@ namespace LedMusic2.Nodes.NodeModels
             AddInput<LedColorArray>("Color 2");
             AddOutput<LedColorArray>("Output");
 
+            var modeOptions = new ReactiveCollection<ReactiveListItem<string>>();
             foreach (string s in new string[] { "Mix", "Add", "Multiply", "Subtract", "Screen", "Divide", "Difference", "Darken", "Lighten",
                                                 "Overlay", "Dodge", "Burn", "Hue", "Saturation", "Value", "Color", "Soft Light", "Linear Light"})
             {
-                optMode.Options.Add(new ReactiveListItem<string>(s));
+                modeOptions.Add(new ReactiveListItem<string>(s));
             }
-            optMode.SelectedId.Set(optMode.Options[0].Id.ToString());
+            optMode.SetOptions(modeOptions);
+            optMode.SelectedId.Set(modeOptions[0].Id.ToString());
             Options.Add(optMode);
 
             Calculate();

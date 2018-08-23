@@ -19,13 +19,15 @@ namespace LedMusic2.Nodes.NodeModels
             AddInput("Value 1", 0.0);
             AddInput("Value 2", 0.0);
             AddOutput<double>("Output");
-            
+
+            var operationOptions = new ReactiveCollection<ReactiveListItem<string>>();
             foreach (string s in new string[] { "Add", "Subtract", "Multiply", "Divide", "Sine", "Cosine", "Tangent", "Arcsine", "Arccosine",
                                                 "Arctangent", "Power", "Logarithm", "Minimum", "Maximum", "Round", "Modulo", "Absolute"})
             {
-                optOperation.Options.Add(new ReactiveListItem<string>(s));
+                operationOptions.Add(new ReactiveListItem<string>(s));
             }
-            optOperation.SelectedId.Set(optOperation.Options[0].Id.ToString());
+            optOperation.SetOptions(operationOptions);
+            optOperation.SelectedId.Set(operationOptions[0].Id.ToString());
 
             Options.Add(optOperation);
             Options.Add(optClamp);
