@@ -13,7 +13,6 @@ namespace LedMusic2.Reactive.Binding
         private readonly List<TBound> boundObjects = new List<TBound>();
         private StateUpdateCollection cachedUpdates = null;
         private int sentCounter = 0;
-        private readonly object sync = new object();
         private readonly object stateUpdateInProgress = new object();
 
         private readonly Func<TBound> createBoundObject;
@@ -25,7 +24,6 @@ namespace LedMusic2.Reactive.Binding
 
         public TBound Bind()
         {
-            lock (sync)
             lock (stateUpdateInProgress)
             {
                 var b = createBoundObject();
@@ -36,7 +34,6 @@ namespace LedMusic2.Reactive.Binding
 
         public void Unbind(TBound b)
         {
-            lock (sync)
             lock (stateUpdateInProgress)
             {
                 boundObjects.Remove(b);
@@ -45,22 +42,22 @@ namespace LedMusic2.Reactive.Binding
 
         public StateUpdateCollection GetState(Func<StateUpdateCollection> stateCreator)
         {
-            lock (sync)
+            if (sentCounter == 0)
             {
-                if (sentCounter == 0)
-                {
-                    cachedUpdates = stateCreator();
-                    Monitor.Enter(stateUpdateInProgress);
-                }
-
-                if (++sentCounter > boundObjects.Count)
-                {
-                    sentCounter = 0;
-                    Monitor.Exit(stateUpdateInProgress);
-                }
-
-                return cachedUpdates;
+                cachedUpdates = stateCreator();
+                bool lockTaken = false;
+                Monitor.Enter(stateUpdateInProgress, ref lockTaken);
+                if (!lockTaken)
+                    Console.WriteLine("!!!FAILED TO TAKE LOCK");
             }
+
+            if (++sentCounter > boundObjects.Count)
+            {
+                sentCounter = 0;
+                Monitor.Exit(stateUpdateInProgress);
+            }
+
+            return cachedUpdates;
         }
 
     }

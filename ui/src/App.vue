@@ -50,6 +50,7 @@ import Editor from "./views/Editor.vue";
 import OutputManager from "./views/OutputManager.vue";
 
 import apply from "./stateApplier";
+import { setTimeout } from "timers";
 
 @Component({
     components: {
@@ -65,9 +66,19 @@ export default class App extends Vue {
     state: any = {};
 
     mounted() {
+        this.connect();
+    }
+
+    connect() {
+        this.connecting = true;
         this.ws = new WebSocket("ws://localhost:48235");
         this.ws.onopen = () => { this.connecting = false; };
+        this.ws.onclose = () => this.connect;
         this.ws.onmessage = this.handleMessage;
+        this.ws.onerror = (err) => {
+            console.log(err);
+            setTimeout(this.connect, 1000);
+        };
     }
 
     sendRaw(data: any) {

@@ -18,3 +18,9 @@
 - Improve general connection positioning
 - Complete UI rework using dark controls
 - Fix double conversion bug in number options
+- Include material icons in bundle so no internet connection is required at all
+- Fix "Mix Color" node
+
+## Bugs
+- Add Scene. Create Output Node in new scene.
+- Add a second output node in the default scene.
