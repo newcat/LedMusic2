@@ -1,11 +1,10 @@
 ﻿using LedMusic2.Reactive;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Xml.Linq;
 
 namespace LedMusic2.Nodes.NodeOptions
 {
-    public abstract class BaseOption : ReactiveObject, IReactiveListItem, IExportable
+    public abstract class BaseOption : ReactiveObject, IReactiveListItem
     {
 
         public Guid Id { get; set; } = Guid.NewGuid();
@@ -40,27 +39,6 @@ namespace LedMusic2.Nodes.NodeOptions
         protected void RaiseValueChanged()
         {
             ValueChanged?.Invoke(this, new EventArgs());
-        }
-
-        public virtual XElement GetXmlElement()
-        {
-            XElement nodeOptionX = new XElement("nodeoption");
-            nodeOptionX.SetAttributeValue("type", (int)Type.Get());
-            nodeOptionX.SetAttributeValue("name", Name);
-            return nodeOptionX;
-        }
-
-        public virtual void LoadFromXml(XElement element)
-        {
-            foreach (XElement el in element.Elements())
-            {
-                switch (el.Name.LocalName)
-                {
-                    case "name":
-                        Name.Set(el.Value);
-                        break;
-                }
-            }
         }
 
     }

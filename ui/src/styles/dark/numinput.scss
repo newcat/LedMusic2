@@ -44,6 +44,13 @@
             text-align: right;
         }
 
+        & > input {
+            background-color: $color-control-dark-background;
+            color: $color-control-dark-foreground;
+            caret-color: $color-primary;
+            padding: 0.35em;
+        }
+
     }
 
 }

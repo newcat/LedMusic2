@@ -2,22 +2,25 @@
 <div
     :class="['dark-select', { '--open': open }]"
     @click="open = !open"
+    v-click-outside="() => { open = false; }"
 >
     <div class="__selected">
         <div class="__text">{{ selectedName }}</div>
         <div class="__icon"><i class="material-icons md-18">keyboard_arrow_down</i></div>
     </div>
-    <div class="__dropdown">
-        <div class="item --header">{{ data.Name }}</div>
-        <div
-            v-for="(value, key) in data.Options"
-            :key="key"
-            :class="['item', { '--active': data.SelectedId === key }]"
-            @click="sendCommand('setValue', key)"
-        >
-            {{ data.ItemDisplayPropertyName ? value[data.ItemDisplayPropertyName] : value }}
+    <transition name="slide-fade">
+        <div class="__dropdown" v-show="open">
+            <div class="item --header">{{ data.Name }}</div>
+            <div
+                v-for="(value, key) in data.Options"
+                :key="key"
+                :class="['item', { '--active': data.SelectedId === key }]"
+                @click="sendCommand('setValue', key)"
+            >
+                {{ data.ItemDisplayPropertyName ? value[data.ItemDisplayPropertyName] : value }}
+            </div>
         </div>
-    </div>
+    </transition>
 </div>
 </template>
 

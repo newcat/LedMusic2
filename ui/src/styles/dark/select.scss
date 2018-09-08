@@ -12,9 +12,6 @@
     &.--open > .__selected > .__icon {
         transform: rotate(180deg);
     }
-    &:not(.--open) .__dropdown {
-        display: none;
-    }
 
     & > .__selected {
         background-color: $color-control-dark-background;

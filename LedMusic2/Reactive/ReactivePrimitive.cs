@@ -59,13 +59,21 @@ namespace LedMusic2.Reactive
             if (CustomSetter != null)
                 newValue = CustomSetter(newValue);
 
-            if ((isNullOrDefault(newValue) && !isNullOrDefault(value)) ||
-                (!isNullOrDefault(newValue) && isNullOrDefault(value)) ||
-                (!isNullOrDefault(newValue) && !isNullOrDefault(value) && !newValue.Equals(value)))
+            bool newValueINOD = isNullOrDefault(newValue);
+            bool valueINOD = isNullOrDefault(value);
+
+            if ((newValueINOD && !valueINOD) ||
+                (!newValueINOD && valueINOD) ||
+                (!newValueINOD && !valueINOD && !newValue.Equals(value))) // *
             {
                 value = newValue;
                 stateUpdate = getStateUpdate();
             }
+
+            // * newValue.Equals(value)
+            /* Problem: For reference values this will be false unless the reference has changed
+             * So for LedColors this will return true, because newValue is the same object as value
+            */
 
         }
 
@@ -128,6 +136,7 @@ namespace LedMusic2.Reactive
                 if (typeof(ISerializable).IsAssignableFrom(typeof(T)))
                 {
                     (Get() as ISerializable).Deserialize(payload.Value<string>());
+                    stateUpdate = getStateUpdate();
                 } else
                 {
                     Set((payload as JValue).Value<T>());

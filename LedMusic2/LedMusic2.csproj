@@ -91,7 +91,6 @@
     <Compile Include="Nodes\NodeOptions\NodeOptionType.cs" />
     <Compile Include="NodeTree\CyclicGraphException.cs" />
     <Compile Include="NodeTree\NodeTreeBuilder.cs" />
-    <Compile Include="IExportable.cs" />
     <Compile Include="Nodes\NodeType.cs" />
     <Compile Include="Outputs\OutputManager.cs" />
     <Compile Include="Outputs\OutputType.cs" />

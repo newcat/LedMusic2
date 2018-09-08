@@ -22,6 +22,7 @@ namespace LedMusic2
 
         private static BrowserAgent browserAgent;
         private static System.Threading.Timer timer;
+        private static object timerLock = new object();
 
         public static MainViewModel VM { get; private set; }
 
@@ -68,8 +69,11 @@ namespace LedMusic2
 
         private static void tick(object state)
         {
-            VM.Tick();
-            browserAgent.SendStateUpdates();
+            lock (timerLock)
+            {
+                VM.Tick();
+                browserAgent.SendStateUpdates();
+            }
         }
 
         private static void save(string path)

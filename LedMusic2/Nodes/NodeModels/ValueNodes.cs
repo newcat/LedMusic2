@@ -68,6 +68,7 @@ namespace LedMusic2.Nodes.NodeModels
         {
             Options.Add(opt);
             outputInterface = AddOutput<LedColor>("Value");
+            outputInterface.SetValue(opt.Value.Get());
         }
 
         public ColorValueNode(JToken j) : this()
