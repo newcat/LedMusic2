@@ -3,6 +3,7 @@ using LedMusic2.Nodes.NodeOptions;
 using LedMusic2.Reactive;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Linq;
 
 namespace LedMusic2.Nodes.NodeModels
 {
@@ -25,7 +26,7 @@ namespace LedMusic2.Nodes.NodeModels
 
             niCenterPosition = AddInput("Center Position", 0.0);
             niAlpha = AddInput("Alpha", 1.0);
-            niColor = AddInput<LedColor>("Color", new LedColorRGB(0, 0, 0));
+            niColor = AddInput<LedColor>("Color", new LedColor(0, 0, 0));
             niGlow = AddInput("Glow", 0.0);
             niSymmetric = AddInput("Symmetric", false);
 
@@ -91,11 +92,11 @@ namespace LedMusic2.Nodes.NodeModels
                 }
                 for (int i = 0; i < resolution; i++)
                 {
-                    buffer[i] = buffer[i].Add(reverseColors[i], 0.5).GetColorHSV();
+                    buffer[i] = buffer[i].GetColorRGB().Add(reverseColors[i].GetColorRGB(), 0.5f).GetColorHSV();
                 }
             }
 
-            niOutput.SetValue(new LedColorArray(buffer));
+            niOutput.SetValue(new LedColorArray(buffer.Select(c => c.GetColorRGB())));
 
             return true;
 

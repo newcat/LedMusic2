@@ -58,8 +58,8 @@ namespace LedMusic2.Nodes.NodeModels
             particles.ForEach(p =>
             {
                 double lifeProgress = p.CurrentLifetime * 1.0 / p.TotalLifetime;
-                p.Color = p.StartColor.Mix(p.EndColor, lifeProgress);
-                p.Position += p.StartVelocity + (p.EndVelocity - p.StartVelocity) * lifeProgress;
+                p.Color = p.StartColor.Mix(p.EndColor, (float)lifeProgress);
+                p.Position += p.StartVelocity + (p.EndVelocity - p.StartVelocity) * (float)lifeProgress;
             });
 
             //spawn particles if necessary
@@ -73,8 +73,8 @@ namespace LedMusic2.Nodes.NodeModels
                 var emitterPosition = niEmitterPosition.Value;
                 var symmetric = niSymmetric.Value;
                 var lifetimeInFrames = (int)(niLifetime.Value * fps);
-                var startColor = niStartColor.Value ?? new LedColorRGB(0, 0, 0);
-                var endColor = niEndColor.Value ?? new LedColorRGB(0, 0, 0);
+                var startColor = niStartColor.Value;
+                var endColor = niEndColor.Value;
 
                 particlesToSpawn += rate;
                 while (particlesToSpawn > 1.0)
@@ -100,7 +100,7 @@ namespace LedMusic2.Nodes.NodeModels
             //render the particles
             var rendered = new LedColor[resolution];
             for (int i = 0; i < resolution; i++)
-                rendered[i] = new LedColorRGB(0, 0, 0);
+                rendered[i] = new LedColor(0, 0, 0);
 
             foreach (var p in particles)
             {
@@ -109,10 +109,10 @@ namespace LedMusic2.Nodes.NodeModels
                 var right = left + 1;
 
                 if (left >= 0 && left < resolution)
-                    rendered[left] = rendered[left].Add(p.Color, 1.0 - p.Position * resolution + left);
+                    rendered[left] = rendered[left].Add(p.Color, (float)(1.0 - p.Position * resolution + left));
 
                 if (right >= 0 && right < resolution)
-                    rendered[right] = rendered[right].Add(p.Color, 1.0 - right + p.Position * resolution);
+                    rendered[right] = rendered[right].Add(p.Color, (float)(1.0 - right + p.Position * resolution));
 
             }
 

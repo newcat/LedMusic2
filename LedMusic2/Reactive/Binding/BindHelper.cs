@@ -24,7 +24,7 @@ namespace LedMusic2.Reactive.Binding
 
         public TBound Bind()
         {
-            lock (stateUpdateInProgress)
+            //lock (stateUpdateInProgress)
             {
                 var b = createBoundObject();
                 boundObjects.Add(b);
@@ -34,7 +34,7 @@ namespace LedMusic2.Reactive.Binding
 
         public void Unbind(TBound b)
         {
-            lock (stateUpdateInProgress)
+            //lock (stateUpdateInProgress)
             {
                 boundObjects.Remove(b);
             }
@@ -45,16 +45,13 @@ namespace LedMusic2.Reactive.Binding
             if (sentCounter == 0)
             {
                 cachedUpdates = stateCreator();
-                bool lockTaken = false;
-                Monitor.Enter(stateUpdateInProgress, ref lockTaken);
-                if (!lockTaken)
-                    Console.WriteLine("!!!FAILED TO TAKE LOCK");
+                //Monitor.Enter(stateUpdateInProgress);
             }
 
             if (++sentCounter > boundObjects.Count)
             {
                 sentCounter = 0;
-                Monitor.Exit(stateUpdateInProgress);
+                //Monitor.Exit(stateUpdateInProgress);
             }
 
             return cachedUpdates;

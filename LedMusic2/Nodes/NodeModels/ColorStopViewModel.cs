@@ -7,11 +7,11 @@ namespace LedMusic2.Nodes.NodeModels
     {
 
         public double Position { get; set; }
-        public LedColorRGB Color { get; set; }
+        public LedColor Color { get; set; }
 
         public ColorStopViewModel(LedColor c, double p)
         {
-            Color = c.GetColorRGB();
+            Color = c;
             Position = p;
         }
 

@@ -63,7 +63,7 @@ namespace LedMusic2.NodeConnection
                 (x) =>
                 {
                     byte v = (byte)Math.Max(0, Math.Min(255, (double)x * 255));
-                    return new LedColorRGB(v, v, v);
+                    return new LedColor(v, v, v);
                 });
             converters.Add(doubleToColor);
 
@@ -72,19 +72,19 @@ namespace LedMusic2.NodeConnection
                 {
 
                     if (x == null)
-                        return new LedColorRGB(0, 0, 0);
+                        return new LedColor(0, 0, 0);
 
                     var arr = (LedColorArray)x;
-                    if (arr.Count > 0)
+                    if (arr.Length > 0)
                         return arr[0];
                     else
-                        return new LedColorRGB(0, 0, 0);
+                        return new LedColor(0, 0, 0);
                 });
             converters.Add(colorArrayToColor);
 
             //Color Array
             var colorToColorArray = new SingleTypeConverter(typeof(LedColor), typeof(LedColorArray),
-                (x) => (new LedColorArray { (LedColor)x }));
+                (x) => (new LedColorArray(new List<LedColor>() { (LedColor)x })));
             converters.Add(colorToColorArray);
 
             var doubleToColorArray = new ConverterCombination(typeof(double), typeof(LedColorArray));

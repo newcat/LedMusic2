@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LedMusic2.LedColors
+﻿namespace LedMusic2.LedColors
 {
 
-    public class LedColorRGBf : LedColor
+    struct LedColorRGBf
     {
 
-        public static LedColorRGBf FromLedColorRGB(LedColorRGB c)
+        public static LedColorRGBf FromLedColorRGB(LedColor c)
         {
             return new LedColorRGBf(c.R / 255f, c.G / 255f, c.B / 255f);
         }
@@ -26,24 +20,12 @@ namespace LedMusic2.LedColors
             B = b;
         }
 
-        public override LedColorRGB GetColorRGB()
+        public LedColor GetColorRGB()
         {
             byte red = (byte)(255 * R);
             byte green = (byte)(255 * G);
             byte blue = (byte)(255 * B);
-            return new LedColorRGB(red, green, blue);
-        }
-
-        public override LedColorHSV GetColorHSV()
-        {
-            return GetColorRGB().GetColorHSV();
-        }
-
-        protected override void SetRGB(byte r, byte g, byte b)
-        {
-            R = r / 255f;
-            G = g / 255f;
-            B = b / 255f;
+            return new LedColor(red, green, blue);
         }
 
     }

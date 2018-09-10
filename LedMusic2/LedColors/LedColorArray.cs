@@ -5,40 +5,39 @@ using System.Linq;
 
 namespace LedMusic2.LedColors
 {
-    public class LedColorArray : List<LedColor>, IEquatable<LedColorArray>, ISerializable
+    public struct LedColorArray : IEquatable<LedColorArray>, ISerializable
     {
 
-        public LedColorArray() : base() { }
+        private LedColor[] values;
+        public int Length => values?.Length ?? 0;
 
-        public LedColorArray(int capacity) : base(capacity)
+        public LedColorArray(IEnumerable<LedColor> collection)
         {
-        }
-
-        public LedColorArray(IEnumerable<LedColor> collection) : base(collection)
-        {
+            values = collection.ToArray();
         }
 
         public string Serialize()
         {
-            return string.Join(",", this.Select((c) => c.Serialize()));
+            return values == null ? "" : string.Join(",", values.Select((c) => c.Serialize()));
         }
 
-        public void Deserialize(string s)
+        public object Deserialize(string s)
         {
+            var c = new LedColor(0, 0, 0);
             var parts = s.Split(',');
-            Clear();
+            var l = new List<LedColor>(parts.Length);
             foreach (var part in parts)
-            {
-                var c = new LedColorRGB(0, 0, 0);
+            {                
                 c.Deserialize(part);
-                Add(c);
+                l.Add(c);
             }
+            return new LedColorArray(l);
         }
 
         public bool Equals(LedColorArray other)
         {
-            if (Count != other.Count) return false;
-            for (int i = 0; i < Count; i++)
+            if (Length != other.Length) return false;
+            for (int i = 0; i < Length; i++)
             {
                 if (!this[i].Equals(other[i])) return false;
             }
@@ -47,9 +46,15 @@ namespace LedMusic2.LedColors
 
         public override int GetHashCode()
         {
-            return this
+            return values
                 .Select((c) => c.GetHashCode())
                 .Aggregate((p, c) => p ^ c);
+        }
+
+        public LedColor this[int i]
+        {
+            get { return values[i]; }
+            set { values[i] = value; }
         }
 
     }

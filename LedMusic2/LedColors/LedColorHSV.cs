@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace LedMusic2.LedColors
 {
-    public class LedColorHSV : LedColor
+    public class LedColorHSV
     {
 
         public double H { get; set; } //Range 0..359
@@ -30,7 +30,7 @@ namespace LedMusic2.LedColors
                 S.ToString(CultureInfo.InvariantCulture), V.ToString(CultureInfo.InvariantCulture));
         }
 
-        public override LedColorRGB GetColorRGB()
+        public LedColor GetColorRGB()
         {
             int hi = Convert.ToInt32(Math.Floor(H / 60)) % 6;
             double f = H / 60 - Math.Floor(H / 60);
@@ -42,24 +42,22 @@ namespace LedMusic2.LedColors
             byte t = Convert.ToByte(value * (1 - (1 - f) * S));
 
             if (hi == 0)
-                return new LedColorRGB(v, t, p);
+                return new LedColor(v, t, p);
             else if (hi == 1)
-                return new LedColorRGB(q, v, p);
+                return new LedColor(q, v, p);
             else if (hi == 2)
-                return new LedColorRGB(p, v, t);
+                return new LedColor(p, v, t);
             else if (hi == 3)
-                return new LedColorRGB(p, q, v);
+                return new LedColor(p, q, v);
             else if (hi == 4)
-                return new LedColorRGB(t, p, v);
+                return new LedColor(t, p, v);
             else
-                return new LedColorRGB(v, p, q);
+                return new LedColor(v, p, q);
         }
 
-        public override LedColorHSV GetColorHSV() { return this; }
-
-        protected override void SetRGB(byte r, byte g, byte b)
+        protected void SetRGB(byte r, byte g, byte b)
         {
-            var c = new LedColorRGB(r, g, b);
+            var c = new LedColor(r, g, b);
             var h = c.GetColorHSV();
             H = h.H;
             S = h.S;

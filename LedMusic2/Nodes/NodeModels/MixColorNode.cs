@@ -46,20 +46,17 @@ namespace LedMusic2.Nodes.NodeModels
             LedColorArray colorsA = Inputs.GetNodeInterface<LedColorArray>("Color 1").Value;
             LedColorArray colorsB = Inputs.GetNodeInterface<LedColorArray>("Color 2").Value;
 
-            if (colorsA == null || colorsB == null)
-                return false;
-
             factor = (float)Inputs.GetNodeInterface<double>("Factor").Value;
             string mode = optMode.Value.Get();
 
-            int length = Math.Max(colorsA.Count, colorsB.Count);
+            int length = Math.Max(colorsA.Length, colorsB.Length);
             LedColorArray result = new LedColorArray(new LedColor[length]);
 
             for (int i = 0; i < length; i++)
             {
 
-                LedColor a = i < colorsA.Count && colorsA[i] != null ? colorsA[i] : new LedColorRGB(0, 0, 0);
-                LedColor b = i < colorsB.Count && colorsB[i] != null ? colorsB[i] : new LedColorRGB(0, 0, 0);
+                LedColor a = colorsA[i];
+                LedColor b = colorsB[i];
 
                 switch (mode)
                 {

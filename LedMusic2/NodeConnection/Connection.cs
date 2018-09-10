@@ -1,7 +1,6 @@
 ﻿using LedMusic2.Reactive;
 using LedMusic2.Nodes;
 using System;
-using System.Xml.Linq;
 using Newtonsoft.Json.Linq;
 
 namespace LedMusic2.NodeConnection

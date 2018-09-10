@@ -27,8 +27,8 @@ namespace LedMusic2.Nodes.NodeModels
 
             //Options.Add(new NodeOption(NodeOptionType.CUSTOM, "Test", typeof(NodeViews.ColorRampNode), this));
 
-            ColorStops.Add(new ColorStopViewModel(new LedColorRGB(0, 0, 0), 0));
-            ColorStops.Add(new ColorStopViewModel(new LedColorRGB(255, 255, 255), 1));
+            ColorStops.Add(new ColorStopViewModel(new LedColor(0, 0, 0), 0));
+            ColorStops.Add(new ColorStopViewModel(new LedColor(255, 255, 255), 1));
 
         }
 
@@ -41,13 +41,13 @@ namespace LedMusic2.Nodes.NodeModels
         {
 
             var resolution = GlobalProperties.Instance.Resolution;
-            var output = new LedColorRGB[resolution];
+            var output = new LedColor[resolution];
 
             if (ColorStops.Count == 0)
             {
                 for (int i = 0; i < resolution; i++)
                 {
-                    output[i] = new LedColorRGB(0, 0, 0);
+                    output[i] = new LedColor(0, 0, 0);
                 }
                 Outputs[0].SetValue(output);
                 return true;
@@ -72,14 +72,14 @@ namespace LedMusic2.Nodes.NodeModels
 
         }
 
-        private LedColorRGB getColorAtPosition(double position)
+        private LedColor getColorAtPosition(double position)
         {
 
             var prev = ColorStops.LastOrDefault(x => x.Position <= position);
             var next = ColorStops.FirstOrDefault(x => x.Position > position);
 
             if (prev == null && next == null)
-                return null;
+                return default(LedColor);
             else if (prev == null)
                 return next.Color;
             else if (next == null || prev.Position == position)
@@ -87,7 +87,7 @@ namespace LedMusic2.Nodes.NodeModels
             else
             {
                 var fac = (position - prev.Position) / (next.Position - prev.Position);
-                return new LedColorRGB(
+                return new LedColor(
                         (byte)Math.Max(0, Math.Min(255, prev.Color.R + fac * (next.Color.R - prev.Color.R))),
                         (byte)Math.Max(0, Math.Min(255, prev.Color.G + fac * (next.Color.G - prev.Color.G))),
                         (byte)Math.Max(0, Math.Min(255, prev.Color.B + fac * (next.Color.B - prev.Color.B))));

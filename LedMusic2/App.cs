@@ -49,21 +49,24 @@ namespace LedMusic2
 
         private static void messageReceived(object sender, MessageReceivedEventArgs e)
         {
-            var msg = e.Message as JObject;
-            switch ((string)msg["type"])
+            lock (timerLock)
             {
-                case "command":
-                    VM.HandleCommand((string)msg["command"], msg["payload"]);
-                    break;
-                case "save":
-                    save((string)msg["path"]);
-                    break;
-                case "load":
-                    load((string)msg["path"]);
-                    break;
-                default:
-                    Console.WriteLine("Unknown message type: {0}", msg["type"]);
-                    break;
+                var msg = e.Message as JObject;
+                switch ((string)msg["type"])
+                {
+                    case "command":
+                        VM.HandleCommand((string)msg["command"], msg["payload"]);
+                        break;
+                    case "save":
+                        save((string)msg["path"]);
+                        break;
+                    case "load":
+                        load((string)msg["path"]);
+                        break;
+                    default:
+                        Console.WriteLine("Unknown message type: {0}", msg["type"]);
+                        break;
+                }
             }
         }
 

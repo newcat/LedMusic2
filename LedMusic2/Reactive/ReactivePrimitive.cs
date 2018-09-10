@@ -135,8 +135,7 @@ namespace LedMusic2.Reactive
             {
                 if (typeof(ISerializable).IsAssignableFrom(typeof(T)))
                 {
-                    (Get() as ISerializable).Deserialize(payload.Value<string>());
-                    stateUpdate = getStateUpdate();
+                    Set((Get() as ISerializable).Deserialize(payload.Value<string>()));
                 } else
                 {
                     Set((payload as JValue).Value<T>());
@@ -150,15 +149,13 @@ namespace LedMusic2.Reactive
 
         private IStateUpdate getStateUpdate()
         {
-            if (isNullOrDefault(Get()))
-                return new StateUpdate<T>("Value", Get());
-
-            if (typeof(ISerializable).IsAssignableFrom(typeof(T)))
+            var val = Get();
+            if (typeof(ISerializable).IsAssignableFrom(typeof(T)) && val != null)
             {
-                return new StateUpdate<string>("Value", (Get() as ISerializable).Serialize());
+                return new StateUpdate<string>("Value", (val as ISerializable).Serialize());
             } else
             {
-                return new StateUpdate<T>("Value", Get());
+                return new StateUpdate<T>("Value", val);
             }
         }
 

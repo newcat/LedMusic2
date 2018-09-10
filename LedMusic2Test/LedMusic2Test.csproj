@@ -51,8 +51,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Nodes\NodeOptions\ColorOptionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Reactive.cs" />
+    <Compile Include="Reactive\ReactiveTests.cs" />
+    <Compile Include="Reactive\ReactiveTestObject.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

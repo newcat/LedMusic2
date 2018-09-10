@@ -3,6 +3,6 @@
     interface ISerializable
     {
         string Serialize();
-        void Deserialize(string s);
+        object Deserialize(string s);
     }
 }
