@@ -81,7 +81,7 @@ namespace LedMusic2
 
         private static void save(string path)
         {
-            File.WriteAllText(path, VM.GetFullState().ToJson().ToString());
+            File.WriteAllText(path, VM.GetFullState(Guid.NewGuid()).ToJson().ToString());
         }
 
         private static void load(string path)

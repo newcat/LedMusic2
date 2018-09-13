@@ -36,56 +36,5 @@ namespace LedMusic2Test.Reactive
 
         }
 
-        [TestMethod]
-        public void PrimitiveBinding()
-        {
-            var reactive = new ReactivePrimitive<int>(1);
-            var bound = reactive.Bind();
-            Assert.IsNotNull(reactive.GetFullState());
-            Assert.IsNotNull(bound.GetFullState());
-            reactive.Set(2);
-            Assert.IsNotNull(reactive.GetStateUpdates());
-            Assert.IsNotNull(bound.GetStateUpdates());
-        }
-
-        [TestMethod]
-        public void ObjectBinding()
-        {
-            var reactive = new ReactiveTestObject();
-            var bound = reactive.Bind();
-            Assert.IsNotNull(reactive.GetFullState());
-            Assert.IsNotNull(bound.GetFullState());
-            reactive.TestValue.Set(2);
-            Assert.IsNotNull(reactive.GetStateUpdates());
-            Assert.IsNotNull(bound.GetStateUpdates());
-            var bound2 = reactive.Bind();
-            reactive.TestValue.Set(3);
-            Assert.IsNotNull(reactive.GetStateUpdates());
-            Assert.IsNotNull(bound.GetStateUpdates());
-            Assert.IsNotNull(bound2.GetStateUpdates());
-        }
-
-        [TestMethod]
-        public void CollectionBinding()
-        {
-            var reactive = new ReactiveCollection<ReactiveListItem<int>>();
-            var bound = reactive.Bind();
-            Assert.IsNotNull(reactive.GetFullState());
-            Assert.IsNotNull(bound.GetFullState());
-            reactive.Add(new ReactiveListItem<int>(5));
-            reactive.Add(new ReactiveListItem<int>(6));
-            Assert.IsNotNull(reactive.GetStateUpdates());
-            Assert.IsNotNull(bound.GetStateUpdates());
-            var bound2 = reactive.Bind();
-            reactive.Add(new ReactiveListItem<int>(2));
-            reactive.Add(new ReactiveListItem<int>(1));
-            reactive.Remove(reactive[0]);
-            var stu = bound2.GetStateUpdates();
-            Assert.IsNotNull(stu);
-            stu.Print(0);
-            Assert.IsNotNull(reactive.GetStateUpdates());
-            Assert.IsNotNull(bound.GetStateUpdates());
-        }
-
     }
 }

@@ -58,6 +58,7 @@
     <Compile Include="LedColors\LedColorArray.cs" />
     <Compile Include="LedColors\LedColorRGBf.cs" />
     <Compile Include="NodeEditor\TemporaryConnectionState.cs" />
+    <Compile Include="Nodes\NodeOptions\ColorRampOption.cs" />
     <Compile Include="Reactive\Binding\BindHelper.cs" />
     <Compile Include="Reactive\Binding\BoundCollection.cs" />
     <Compile Include="Reactive\Binding\BoundObject.cs" />
@@ -97,7 +98,6 @@
     <Compile Include="Nodes\NodeModels\BooleanNode.cs" />
     <Compile Include="Nodes\NodeModels\ColorRampNode.cs" />
     <Compile Include="Nodes\NodeModels\MixColorNode.cs" />
-    <Compile Include="Nodes\NodeModels\ColorStopViewModel.cs" />
     <Compile Include="Nodes\NodeModels\OutputNode.cs" />
     <Compile Include="Nodes\NodeModels\ParticleNode.cs" />
     <Compile Include="Nodes\NodeModels\ValueNodes.cs" />

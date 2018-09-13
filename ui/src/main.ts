@@ -17,6 +17,8 @@ Vue.mixin(commandMixin);
 import vClickOutside from "v-click-outside";
 Vue.directive("click-outside", vClickOutside.directive);
 
+import "./components/Dark/index";
+
 Vue.config.productionTip = false;
 new Vue({
     router,

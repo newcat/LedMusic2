@@ -12,11 +12,11 @@ namespace LedMusic2Test.Nodes.NodeOptions
         {
 
             var opt = new ColorOption("Test");
-            opt.GetFullState();
+            opt.GetFullState(Guid.NewGuid());
 
             opt.HandleCommand("setValue", Convert.ToBase64String(new byte[] { 255, 0, 0 }));
 
-            var res = opt.GetStateUpdates();
+            var res = opt.GetStateUpdates(Guid.NewGuid());
             Assert.IsNotNull(res);
             Assert.IsTrue(res.Count > 0);
 

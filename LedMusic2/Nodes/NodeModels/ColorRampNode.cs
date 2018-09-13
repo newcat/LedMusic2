@@ -1,5 +1,6 @@
 ﻿using LedMusic2.LedColors;
 using LedMusic2.NodeConnection;
+using LedMusic2.Nodes.NodeOptions;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.ObjectModel;
@@ -14,9 +15,7 @@ namespace LedMusic2.Nodes.NodeModels
     public class ColorRampNode : NodeBase
     {
 
-        public double Width { get; set; } = 0;
-        public ObservableCollection<ColorStopViewModel> ColorStops { get; } = new ObservableCollection<ColorStopViewModel>();
-        public ColorStopViewModel SelectedColorStop { get; set; } = null;
+        private ColorRampOption opt = new ColorRampOption();
 
         public ColorRampNode() : base()
         {

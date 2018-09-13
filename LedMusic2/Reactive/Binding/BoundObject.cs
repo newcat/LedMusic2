@@ -14,8 +14,8 @@ namespace LedMusic2.Reactive.Binding
             Target = target;
         }
 
-        public StateUpdateCollection GetFullState() => Target.GetFullState();
-        public StateUpdateCollection GetStateUpdates() => Target.GetStateUpdates();
+        public StateUpdateCollection GetFullState(Guid requestId) => Target.GetFullState(requestId);
+        public StateUpdateCollection GetStateUpdates(Guid requestId) => Target.GetStateUpdates(requestId);
         public void HandleCommand(string command, JToken payload) => Target.HandleCommand(command, payload);
 
         #region IDisposable Support

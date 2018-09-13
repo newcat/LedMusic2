@@ -103,14 +103,14 @@ namespace LedMusic2.Reactive
             commandHandlers.Remove(command);
         }
 
-        public StateUpdateCollection GetStateUpdates()
+        public StateUpdateCollection GetStateUpdates(Guid requestId)
         {
-            return bindHelper.GetState(() =>
+            return bindHelper.GetState(requestId, () =>
             {
                 var updates = new StateUpdateCollection();
                 foreach (var child in children)
                 {
-                    var cupdates = child.Value?.GetStateUpdates();
+                    var cupdates = child.Value?.GetStateUpdates(requestId);
                     if (cupdates != null)
                         updates.Add(new StateUpdate<StateUpdateCollection>(child.Key, cupdates));
                 }
@@ -118,16 +118,16 @@ namespace LedMusic2.Reactive
             });
         }
 
-        public StateUpdateCollection GetFullState()
+        public StateUpdateCollection GetFullState(Guid requestId)
         {
-            return bindHelper.GetState(() =>
+            return bindHelper.GetState(requestId, () =>
             {
                 var updates = new StateUpdateCollection
                 {
                     new StateUpdate<string>("__Type", __Type)
                 };
                 foreach (var child in children)
-                    updates.Add(new StateUpdate<StateUpdateCollection>(child.Key, child.Value?.GetFullState()));
+                    updates.Add(new StateUpdate<StateUpdateCollection>(child.Key, child.Value?.GetFullState(requestId)));
                 return updates;
             });
         }

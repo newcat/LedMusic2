@@ -37,7 +37,7 @@ namespace LedMusic2.BrowserInterop
             {
                 sendJson(new JObject(
                     new JProperty("type", "fullstate"),
-                    new JProperty("state", VM.GetFullState().ToJson())
+                    new JProperty("state", VM.GetFullState(Guid.NewGuid()).ToJson())
                 ));
             }
         }
@@ -47,7 +47,7 @@ namespace LedMusic2.BrowserInterop
             lock (lockObject)
             {
                 if (ws == null || ws.State != WebSocketState.Open) return;
-                var updates = VM.GetStateUpdates();
+                var updates = VM.GetStateUpdates(Guid.NewGuid());
                 if (updates == null || updates.Count == 0) return;
                 sendJson(new JObject(
                     new JProperty("type", "stateupdate"),

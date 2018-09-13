@@ -13,8 +13,8 @@ namespace LedMusic2.Reactive
 
         public abstract string __Type { get; }
 
-        public abstract StateUpdateCollection GetStateUpdates();
-        public abstract StateUpdateCollection GetFullState();
+        public abstract StateUpdateCollection GetStateUpdates(Guid requestId);
+        public abstract StateUpdateCollection GetFullState(Guid requestId);
         public abstract void HandleCommand(string command, JToken payload);
         public abstract BoundPrimitive Bind();
         public abstract void Unbind(BoundPrimitive b);
@@ -100,9 +100,9 @@ namespace LedMusic2.Reactive
                 Set(res);
         }
 
-        public override StateUpdateCollection GetStateUpdates()
+        public override StateUpdateCollection GetStateUpdates(Guid requestId)
         {
-            return bindHelper.GetState(() =>
+            return bindHelper.GetState(requestId, () =>
             {
                 var x = stateUpdate != null ? new StateUpdateCollection(
                     new StateUpdate<string>("__Type", __Type),
@@ -114,9 +114,9 @@ namespace LedMusic2.Reactive
             });
         }
 
-        public override StateUpdateCollection GetFullState()
+        public override StateUpdateCollection GetFullState(Guid requestId)
         {
-            return bindHelper.GetState(() =>
+            return bindHelper.GetState(requestId, () =>
             {
                 stateUpdate = null;
                 return new StateUpdateCollection(

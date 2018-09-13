@@ -10,7 +10,7 @@
                 v-show="open"
                 :value="value"
                 @input="$emit('input', $event.hex)"
-                class="color-picker"
+                class="color-picker overlay"
             ></cp-chrome>
         </transition>
     </div>

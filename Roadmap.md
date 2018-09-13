@@ -3,6 +3,9 @@
 ## High Priority
 - Global Options UI
 - Multiple References on one Reactive object cause state updates only for one reference
+- Color Ramp UI
+- VST Channels UI
+- Outputs UI
 
 ## Medium Priority
 - Synchronize node interface value and the corresponding node option value
@@ -13,6 +16,7 @@
 - Don't allow multiple connections from one node interface to another
 - Selection of multiple nodes (ideally with selection rectangle like on Windows desktop)
 - Translate all nodes when dragging in empty part of node editor
+- Improve Loading / Saving
 
 ## Low Priority
 - Fix connections getting displayed wrong when hovering over node interface

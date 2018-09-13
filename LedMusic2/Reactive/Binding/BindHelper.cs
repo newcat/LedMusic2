@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace LedMusic2.Reactive.Binding
 {
@@ -12,8 +8,7 @@ namespace LedMusic2.Reactive.Binding
 
         private readonly List<TBound> boundObjects = new List<TBound>();
         private StateUpdateCollection cachedUpdates = null;
-        private int sentCounter = 0;
-        private readonly object stateUpdateInProgress = new object();
+        private Guid currentRequest = Guid.Empty;
 
         private readonly Func<TBound> createBoundObject;
 
@@ -24,36 +19,23 @@ namespace LedMusic2.Reactive.Binding
 
         public TBound Bind()
         {
-            //lock (stateUpdateInProgress)
-            {
-                var b = createBoundObject();
-                boundObjects.Add(b);
-                return b;
-            }
+            var b = createBoundObject();
+            boundObjects.Add(b);
+            return b;
         }
 
         public void Unbind(TBound b)
         {
-            //lock (stateUpdateInProgress)
-            {
-                boundObjects.Remove(b);
-            }
+            boundObjects.Remove(b);
         }
 
-        public StateUpdateCollection GetState(Func<StateUpdateCollection> stateCreator)
+        public StateUpdateCollection GetState(Guid requestId, Func<StateUpdateCollection> stateCreator)
         {
-            if (sentCounter == 0)
+            if (requestId != currentRequest)
             {
                 cachedUpdates = stateCreator();
-                //Monitor.Enter(stateUpdateInProgress);
+                currentRequest = requestId;
             }
-
-            if (++sentCounter > boundObjects.Count)
-            {
-                sentCounter = 0;
-                //Monitor.Exit(stateUpdateInProgress);
-            }
-
             return cachedUpdates;
         }
 

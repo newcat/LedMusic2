@@ -61,34 +61,34 @@ namespace LedMusic2.Reactive
             return Find((x) => x.Id == id);
         }
 
-        public StateUpdateCollection GetFullState()
+        public StateUpdateCollection GetFullState(Guid requestId)
         {
-            return bindHelper.GetState(() =>
+            return bindHelper.GetState(requestId, () =>
             {
                 var updates = new StateUpdateCollection(new StateUpdate<string>("__Type", __Type));
                 updates.AddRange((this as IEnumerable<T>)
-                    .Select(item => new StateUpdate<StateUpdateCollection>(item.Id.ToString(), item.GetFullState())));
+                    .Select(item => new StateUpdate<StateUpdateCollection>(item.Id.ToString(), item.GetFullState(requestId))));
                 addedItems.Clear();
                 removedItems.Clear();
                 return updates;
             });
         }
 
-        public StateUpdateCollection GetStateUpdates()
+        public StateUpdateCollection GetStateUpdates(Guid requestId)
         {
-            return bindHelper.GetState(() =>
+            return bindHelper.GetState(requestId, () =>
             {
                 var updates = new StateUpdateCollection();
-                updates.AddRange(addedItems.Select(item => new StateUpdate<StateUpdateCollection>(item.Id.ToString(), item.GetFullState())));
-                updates.AddRange(removedItems.Select(item => new StateUpdate<string>(item.Id.ToString(), "__Deleted")));
-                addedItems.Clear();
-                removedItems.Clear();
-                foreach (var item in this)
+                updates.AddRange(addedItems.Select(item => new StateUpdate<StateUpdateCollection>(item.Id.ToString(), item.GetFullState(requestId))));
+                updates.AddRange(removedItems.Select(item => new StateUpdate<string>(item.Id.ToString(), "__Deleted")));                
+                foreach (var item in this.Except(addedItems).Except(removedItems))
                 {
-                    var itemUpdates = item.GetStateUpdates();
+                    var itemUpdates = item.GetStateUpdates(requestId);
                     if (itemUpdates != null)
                         updates.Add(new StateUpdate<StateUpdateCollection>(item.Id.ToString(), itemUpdates));
                 }
+                addedItems.Clear();
+                removedItems.Clear();
                 return updates.Count > 0 ? updates : null;
             });
         }

@@ -53,7 +53,7 @@ namespace LedMusic2.LedColors
 
         public LedColor this[int i]
         {
-            get { return values[i]; }
+            get { return values == null ? default(LedColor) : values[i]; }
             set { values[i] = value; }
         }
 

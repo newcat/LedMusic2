@@ -9,7 +9,8 @@
         SELECT,
         PREVIEW,
         TEXT,
-        CUSTOM
+        CUSTOM,
+        COLORRAMP
 
     }
 }
